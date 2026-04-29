@@ -34,7 +34,7 @@
                 <span class="nav-label">Dashboard</span>
             </a>
 
-            <a href="#" class="nav-item">
+            <a href="<%= request.getContextPath() %>/actividades.jsp" class="nav-item">
                 <i class="bi bi-calendar3"></i>
                 <span class="nav-label">Actividades</span>
             </a>
