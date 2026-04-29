@@ -39,12 +39,12 @@
                 <span class="nav-label">Actividades</span>
             </a>
 
-            <a href="#" class="nav-item">
+            <a href="<%= request.getContextPath() %>/alumnos.jsp" class="nav-item">
                 <i class="bi bi-people-fill"></i>
                 <span class="nav-label">Alumnos</span>
             </a>
 
-            <a href="#" class="nav-item">
+            <a href="<%= request.getContextPath() %>/reportes.jsp" class="nav-item">
                 <i class="bi bi-file-earmark-bar-graph-fill"></i>
                 <span class="nav-label">Reportes</span>
             </a>
