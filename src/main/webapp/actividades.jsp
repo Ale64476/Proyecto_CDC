@@ -541,8 +541,11 @@
                 <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Cancelar</button>
                 <button type="button" class="btn activity-primary-btn modal-save-btn">Guardar asistencia</button>
             </div>
+        </div>
+    </div>
+</div>
 
-            <!-- Modal: Detalle rápido de alumno -->
+<!-- Modal: Detalle rápido de alumno -->
             <div class="modal fade" id="modalAlumnoDetalle" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content custom-modal">
@@ -572,9 +575,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="<%= request.getContextPath() %>/js/dashboard.js?v=<%= System.currentTimeMillis() %>"></script>
