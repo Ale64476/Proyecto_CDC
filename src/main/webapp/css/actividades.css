@@ -587,3 +587,41 @@
 .attendance-item input[type="checkbox"] {
     margin-top: 4px;
 }
+
+.attendance-existing-notice {
+    margin: 12px 0 16px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: rgba(118, 15, 56, 0.08);
+    border: 1px solid rgba(118, 15, 56, 0.16);
+    color: var(--primary);
+
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.attendance-existing-notice i {
+    font-size: 1.1rem;
+    margin-top: 2px;
+}
+
+.attendance-existing-notice div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.attendance-existing-notice strong {
+    font-size: 0.92rem;
+    font-weight: 700;
+}
+
+.attendance-existing-notice span {
+    font-size: 0.88rem;
+    color: var(--muted);
+}
+
+.attendance-existing-notice.hidden {
+    display: none;
+}

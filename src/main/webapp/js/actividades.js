@@ -252,3 +252,104 @@ function cerrarMiniModalActividad() {
         }
     }
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+    const formularioAsistencia = document.querySelector('form[action*="registrar-asistencia"]');
+    const fechaAsistencia = document.getElementById("attendanceDate");
+
+    if (!formularioAsistencia || !fechaAsistencia) {
+        return;
+    }
+
+    fechaAsistencia.addEventListener("change", consultarAsistenciaExistente);
+
+    const modalAsistencia = formularioAsistencia.closest(".modal");
+
+    if (modalAsistencia) {
+        modalAsistencia.addEventListener("shown.bs.modal", consultarAsistenciaExistente);
+    }
+
+    consultarAsistenciaExistente();
+});
+
+async function consultarAsistenciaExistente() {
+    const formularioAsistencia = document.querySelector('form[action*="registrar-asistencia"]');
+    const fechaAsistencia = document.getElementById("attendanceDate");
+
+    if (!formularioAsistencia || !fechaAsistencia) {
+        return;
+    }
+
+    const idActividadInput = formularioAsistencia.querySelector('[name="idActividad"]');
+
+    if (!idActividadInput || !idActividadInput.value || !fechaAsistencia.value) {
+        return;
+    }
+
+    limpiarChecksAsistencia(formularioAsistencia);
+    ocultarAvisoAsistenciaExistente();
+
+    try {
+        const url = "consultar-asistencia?idActividad="
+            + encodeURIComponent(idActividadInput.value)
+            + "&fechaAsistencia="
+            + encodeURIComponent(fechaAsistencia.value);
+
+        const respuesta = await fetch(url, {
+            headers: {
+                "Accept": "application/json"
+            }
+        });
+
+        if (!respuesta.ok) {
+            throw new Error("No se pudo consultar la asistencia.");
+        }
+
+        const datos = await respuesta.json();
+
+        marcarPresentesAsistencia(formularioAsistencia, datos.idsPresentes || []);
+
+        if (datos.existe) {
+            mostrarAvisoAsistenciaExistente();
+        }
+
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+function limpiarChecksAsistencia(formulario) {
+    const checks = formulario.querySelectorAll('input[name="idsPresentes"]');
+
+    checks.forEach(function (check) {
+        check.checked = false;
+    });
+}
+
+function marcarPresentesAsistencia(formulario, idsPresentes) {
+    const ids = new Set(idsPresentes.map(function (id) {
+        return String(id);
+    }));
+
+    const checks = formulario.querySelectorAll('input[name="idsPresentes"]');
+
+    checks.forEach(function (check) {
+        check.checked = ids.has(String(check.value));
+    });
+}
+
+function mostrarAvisoAsistenciaExistente() {
+    const aviso = document.getElementById("attendanceExistingNotice");
+
+    if (aviso) {
+        aviso.classList.remove("hidden");
+    }
+}
+
+function ocultarAvisoAsistenciaExistente() {
+    const aviso = document.getElementById("attendanceExistingNotice");
+
+    if (aviso) {
+        aviso.classList.add("hidden");
+    }
+}

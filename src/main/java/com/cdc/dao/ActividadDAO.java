@@ -26,7 +26,11 @@ public class ActividadDAO {
                 a.estado_actividad,
                 a.fecha_creacion,
                 a.fecha_desactivacion,
-                COUNT(DISTINCT CASE WHEN ins.estado_inscripcion = 'Activa' THEN ins.id_alumno END) AS total_inscritos,
+                COUNT(DISTINCT CASE 
+                    WHEN ins.estado_inscripcion = 'Activa'
+                    AND al.estado_alumno = 'Activo'
+                    THEN ins.id_alumno 
+                END) AS total_inscritos,
                 COALESCE(
                     GROUP_CONCAT(
                         DISTINCT CONCAT(
@@ -53,6 +57,7 @@ public class ActividadDAO {
             FROM actividad a
             JOIN instructor i ON i.id_instructor = a.id_instructor
             LEFT JOIN inscripcion ins ON ins.id_actividad = a.id_actividad
+            LEFT JOIN alumno al ON al.id_alumno = ins.id_alumno
             LEFT JOIN horario_actividad h ON h.id_actividad = a.id_actividad
             GROUP BY
                 a.id_actividad,
@@ -76,7 +81,11 @@ public class ActividadDAO {
                 a.estado_actividad,
                 a.fecha_creacion,
                 a.fecha_desactivacion,
-                COUNT(DISTINCT CASE WHEN ins.estado_inscripcion = 'Activa' THEN ins.id_alumno END) AS total_inscritos,
+                COUNT(DISTINCT CASE 
+                    WHEN ins.estado_inscripcion = 'Activa'
+                    AND al.estado_alumno = 'Activo'
+                    THEN ins.id_alumno 
+                END) AS total_inscritos,
                 COALESCE(
                     GROUP_CONCAT(
                         DISTINCT CONCAT(
@@ -103,6 +112,7 @@ public class ActividadDAO {
             FROM actividad a
             JOIN instructor i ON i.id_instructor = a.id_instructor
             LEFT JOIN inscripcion ins ON ins.id_actividad = a.id_actividad
+            LEFT JOIN alumno al ON al.id_alumno = ins.id_alumno
             LEFT JOIN horario_actividad h ON h.id_actividad = a.id_actividad
             WHERE a.id_actividad = ?
             GROUP BY
@@ -124,8 +134,8 @@ public class ActividadDAO {
                 COUNT(
                     CASE
                         WHEN asis.asistio = 1
-                         AND MONTH(asis.fecha_asistencia) = MONTH(CURDATE())
-                         AND YEAR(asis.fecha_asistencia) = YEAR(CURDATE())
+                        AND MONTH(asis.fecha_asistencia) = MONTH(CURDATE())
+                        AND YEAR(asis.fecha_asistencia) = YEAR(CURDATE())
                         THEN 1
                     END
                 ) AS asistencias_del_mes
@@ -133,13 +143,11 @@ public class ActividadDAO {
             JOIN alumno al ON al.id_alumno = ins.id_alumno
             LEFT JOIN asistencia asis
                 ON asis.id_alumno = ins.id_alumno
-               AND asis.id_actividad = ins.id_actividad
+                AND asis.id_actividad = ins.id_actividad
             WHERE ins.id_actividad = ?
-              AND ins.estado_inscripcion = 'Activa'
-            GROUP BY
-                al.id_alumno,
-                al.nombre_completo,
-                al.celular
+            AND ins.estado_inscripcion = 'Activa'
+            AND al.estado_alumno = 'Activo'
+            GROUP BY al.id_alumno, al.nombre_completo, al.celular
             ORDER BY al.nombre_completo ASC
             """;
 
@@ -172,23 +180,41 @@ public class ActividadDAO {
             WHERE id_actividad = ?
             """;
 
-    private static final String SQL_INSCRIBIR_ALUMNO = """
+    private static final String SQL_INSCRIBIR_ALUMNO_VALIDADO = """
             INSERT INTO inscripcion (
                 id_alumno,
                 id_actividad,
                 estado_inscripcion
             )
-            VALUES (?, ?, 'Activa')
+            SELECT ?, ?, 'Activa'
+            WHERE EXISTS (
+                SELECT 1
+                FROM actividad
+                WHERE id_actividad = ?
+                AND estado_actividad = 'Activa'
+            )
+            AND EXISTS (
+                SELECT 1
+                FROM alumno
+                WHERE id_alumno = ?
+                AND estado_alumno = 'Activo'
+            )
+            AND NOT EXISTS (
+                SELECT 1
+                FROM inscripcion
+                WHERE id_alumno = ?
+                AND id_actividad = ?
+            )
             """;
 
-private static final String SQL_ACTUALIZAR_ASISTENCIA_EXISTENTE = """
-        UPDATE asistencia
-        SET asistio = ?,
-            id_admin = ?
-        WHERE id_alumno = ?
-          AND id_actividad = ?
-          AND fecha_asistencia = ?
-        """;
+    private static final String SQL_ACTUALIZAR_ASISTENCIA_EXISTENTE = """
+            UPDATE asistencia
+            SET asistio = ?,
+                id_admin = ?
+            WHERE id_alumno = ?
+            AND id_actividad = ?
+            AND fecha_asistencia = ?
+            """;
 
     private static final String SQL_INSERTAR_ASISTENCIA = """
             INSERT INTO asistencia (
@@ -212,6 +238,14 @@ private static final String SQL_ACTUALIZAR_ASISTENCIA_EXISTENTE = """
             UPDATE actividad
             SET estado_actividad = ?
             WHERE id_actividad = ?
+            """;
+
+    private static final String SQL_LISTAR_IDS_PRESENTES_ASISTENCIA = """
+            SELECT id_alumno
+            FROM asistencia
+            WHERE id_actividad = ?
+            AND fecha_asistencia = ?
+            AND asistio = 1
             """;
 
     public List<Actividad> listarTodas() {
@@ -360,20 +394,52 @@ private static final String SQL_ACTUALIZAR_ASISTENCIA_EXISTENTE = """
         }
     }
 
-    public void inscribirAlumnosEnActividad(int idActividad, List<Integer> idsAlumnos) {
-        try (Connection connection = ConexionDB.getConnection();
-            PreparedStatement statement = connection.prepareStatement(SQL_INSCRIBIR_ALUMNO)) {
+    public int inscribirAlumnosEnActividad(int idActividad, List<Integer> idsAlumnos) {
+        int totalInscritos = 0;
 
-            for (Integer idAlumno : idsAlumnos) {
-                statement.setInt(1, idAlumno);
-                statement.setInt(2, idActividad);
-                statement.addBatch();
+        Connection connection = null;
+
+        try {
+            connection = ConexionDB.getConnection();
+            connection.setAutoCommit(false);
+
+            try (PreparedStatement statement = connection.prepareStatement(SQL_INSCRIBIR_ALUMNO_VALIDADO)) {
+                for (Integer idAlumno : idsAlumnos) {
+                    statement.setInt(1, idAlumno);
+                    statement.setInt(2, idActividad);
+
+                    statement.setInt(3, idActividad);
+                    statement.setInt(4, idAlumno);
+                    statement.setInt(5, idAlumno);
+                    statement.setInt(6, idActividad);
+
+                    totalInscritos += statement.executeUpdate();
+                }
             }
 
-            statement.executeBatch();
+            connection.commit();
+            return totalInscritos;
 
         } catch (SQLException e) {
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                } catch (SQLException rollbackError) {
+                    rollbackError.printStackTrace();
+                }
+            }
+
             throw new RuntimeException("Error al inscribir alumnos en la actividad.", e);
+
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.setAutoCommit(true);
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
@@ -461,6 +527,29 @@ private static final String SQL_ACTUALIZAR_ASISTENCIA_EXISTENTE = """
         }
 
         return false;
+    }
+
+    public List<Integer> listarIdsPresentesAsistencia(int idActividad, java.sql.Date fechaAsistencia) {
+        List<Integer> idsPresentes = new ArrayList<>();
+
+        try (
+                Connection connection = ConexionDB.getConnection();
+                PreparedStatement statement = connection.prepareStatement(SQL_LISTAR_IDS_PRESENTES_ASISTENCIA)
+        ) {
+            statement.setInt(1, idActividad);
+            statement.setDate(2, fechaAsistencia);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    idsPresentes.add(resultSet.getInt("id_alumno"));
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error al listar alumnos presentes de la asistencia.", e);
+        }
+
+        return idsPresentes;
     }
 
     public boolean cambiarEstadoActividad(int idActividad, String nuevoEstado) {

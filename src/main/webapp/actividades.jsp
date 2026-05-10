@@ -171,6 +171,32 @@
                         case "error_sistema":
                             textoMensaje = "Ocurrió un error interno. Revisa la consola de Tomcat.";
                             break;
+
+                        case "inscripcion_exitosa":
+                            textoMensaje = "Alumno(s) inscrito(s) correctamente.";
+                            break;
+                        case "inscripcion_parcial":
+                            textoMensaje = "Se inscribieron algunos alumnos. Otros fueron omitidos porque ya estaban inscritos o no estaban activos.";
+                            break;
+                        case "inscripcion_no_realizada":
+                            textoMensaje = "No se realizó ninguna inscripción. Revisa que la actividad esté activa y que los alumnos no estén inscritos previamente.";
+                            break;
+                        case "inscripcion_actividad_invalida":
+                            textoMensaje = "La actividad seleccionada no es válida.";
+                            break;
+                        case "inscripcion_actividad_inactiva":
+                            textoMensaje = "No puedes inscribir alumnos en una actividad inactiva.";
+                            break;
+                        case "inscripcion_sin_alumnos":
+                            textoMensaje = "Debes seleccionar al menos un alumno para inscribir.";
+                            break;
+                        case "inscripcion_alumnos_invalidos":
+                            textoMensaje = "Los alumnos seleccionados no son válidos.";
+                            break;
+                        case "inscripcion_datos_invalidos":
+                            textoMensaje = "Los datos de inscripción no son válidos.";
+                            break;
+
                         default:
                             textoMensaje = null;
                     }
@@ -779,6 +805,13 @@
                     <div class="form-group">
                         <label for="attendanceDate">Fecha</label>
                         <input type="date" id="attendanceDate" name="fechaAsistencia" class="form-control" required>
+                        <div id="attendanceExistingNotice" class="attendance-existing-notice hidden">
+                            <i class="bi bi-info-circle"></i>
+                            <div>
+                                <strong>Esta asistencia ya fue registrada.</strong>
+                                <span>Puedes modificar los alumnos marcados y guardar los cambios.</span>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="attendance-list mt-3">
