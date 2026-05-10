@@ -128,7 +128,11 @@ public class AlumnoDAO {
 
     private static final String SQL_CAMBIAR_ESTADO = """
             UPDATE alumno
-            SET estado_alumno = ?
+            SET estado_alumno = ?,
+                fecha_baja = CASE
+                    WHEN ? = 'Baja' THEN CURRENT_DATE
+                    ELSE NULL
+                END
             WHERE id_alumno = ?
             """;
 
@@ -261,7 +265,8 @@ public class AlumnoDAO {
             PreparedStatement statement = connection.prepareStatement(SQL_CAMBIAR_ESTADO)) {
 
             statement.setString(1, nuevoEstado);
-            statement.setInt(2, idAlumno);
+            statement.setString(2, nuevoEstado);
+            statement.setInt(3, idAlumno);
 
             return statement.executeUpdate() > 0;
 

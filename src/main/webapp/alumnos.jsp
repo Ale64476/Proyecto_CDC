@@ -144,6 +144,32 @@
                         case "error_sistema":
                             textoMensaje = "Ocurrió un error interno. Revisa la consola de Tomcat.";
                             break;
+
+                        case "alumno_reactivado":
+                            textoMensaje = "Alumno reactivado correctamente. Ya puede inscribirse y aparecer en asistencia.";
+                            break;
+                        case "alumno_inactivado":
+                            textoMensaje = "Alumno marcado como inactivo correctamente. Conserva su historial, pero no aparecerá en asistencia.";
+                            break;
+                        case "alumno_dado_baja":
+                            textoMensaje = "Alumno dado de baja correctamente. Su historial se conservará.";
+                            break;
+                        case "estado_alumno_id_invalido":
+                            textoMensaje = "El identificador del alumno no es válido.";
+                            break;
+                        case "estado_alumno_invalido":
+                            textoMensaje = "El nuevo estado del alumno no es válido.";
+                            break;
+                        case "estado_alumno_no_encontrado":
+                            textoMensaje = "No se encontró el alumno seleccionado.";
+                            break;
+                        case "estado_alumno_sin_cambios":
+                            textoMensaje = "El alumno ya tenía ese estado.";
+                            break;
+                        case "estado_alumno_no_actualizado":
+                            textoMensaje = "No se pudo actualizar el estado del alumno.";
+                            break;
+                        
                         default:
                             textoMensaje = null;
                     }
