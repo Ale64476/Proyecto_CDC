@@ -382,35 +382,62 @@
                             </div>
                         </div>
 
+                        <%
+                            boolean actividadActiva = actividadSeleccionada != null
+                                    && "Activa".equalsIgnoreCase(actividadSeleccionada.getEstadoActividad());
+
+                            String mensajeConfirmacionEstado = actividadActiva
+                                    ? "¿Seguro que deseas desactivar esta actividad? Seguirá existiendo en el historial, pero dejará de operar como activa."
+                                    : "¿Seguro que deseas reactivar esta actividad? Volverá a estar disponible en el sistema.";
+
+                            String nuevoEstadoActividad = actividadActiva ? "Inactiva" : "Activa";
+                            String claseBotonEstado = actividadActiva ? "danger" : "secondary";
+                            String iconoBotonEstado = actividadActiva ? "bi-slash-circle" : "bi-arrow-clockwise";
+                            String textoBotonEstado = actividadActiva ? "Desactivar" : "Reactivar";
+                        %>
+
                         <div class="activity-actions">
-                            <button class="action-btn secondary" type="button" data-bs-toggle="modal" data-bs-target="#modalEditarActividad">
+                            <button class="action-btn secondary"
+                                    type="button"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalEditarActividad">
                                 <i class="bi bi-pencil-square"></i>
                                 <span>Editar</span>
                             </button>
 
-                            <button class="action-btn secondary" type="button" data-bs-toggle="modal" data-bs-target="#modalAgregarAlumno">
-                                <i class="bi bi-person-plus-fill"></i>
-                                <span>Agregar alumno</span>
-                            </button>
+                            <% if (actividadActiva) { %>
+                                <button class="action-btn secondary"
+                                        type="button"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalAgregarAlumno">
+                                    <i class="bi bi-person-plus-fill"></i>
+                                    <span>Agregar alumno</span>
+                                </button>
 
-                            <button class="action-btn primary" type="button" data-bs-toggle="modal" data-bs-target="#modalAsistencia">
-                                <i class="bi bi-check2-square"></i>
-                                <span>Pasar asistencia</span>
-                            </button>
+                                <button class="action-btn primary"
+                                        type="button"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalAsistencia">
+                                    <i class="bi bi-check2-square"></i>
+                                    <span>Pasar asistencia</span>
+                                </button>
+                            <% } else { %>
+                                <button class="action-btn disabled-action"
+                                        type="button"
+                                        disabled
+                                        title="Esta actividad está inactiva. Reactívala para agregar alumnos.">
+                                    <i class="bi bi-person-plus-fill"></i>
+                                    <span>Agregar alumno</span>
+                                </button>
 
-                            <%
-                                boolean actividadActiva = actividadSeleccionada != null
-                                        && "Activa".equalsIgnoreCase(actividadSeleccionada.getEstadoActividad());
-
-                                String mensajeConfirmacionEstado = actividadActiva
-                                        ? "¿Seguro que deseas desactivar esta actividad? Seguirá existiendo en el historial, pero dejará de operar como activa."
-                                        : "¿Seguro que deseas reactivar esta actividad? Volverá a estar disponible en el sistema.";
-
-                                String nuevoEstadoActividad = actividadActiva ? "Inactiva" : "Activa";
-                                String claseBotonEstado = actividadActiva ? "danger" : "secondary";
-                                String iconoBotonEstado = actividadActiva ? "bi-slash-circle" : "bi-arrow-clockwise";
-                                String textoBotonEstado = actividadActiva ? "Desactivar" : "Reactivar";
-                            %>
+                                <button class="action-btn disabled-action"
+                                        type="button"
+                                        disabled
+                                        title="Esta actividad está inactiva. Reactívala para pasar asistencia.">
+                                    <i class="bi bi-check2-square"></i>
+                                    <span>Pasar asistencia</span>
+                                </button>
+                            <% } %>
 
                             <form method="post"
                                 action="<%= request.getContextPath() %>/cambiar-estado-actividad"
@@ -429,6 +456,16 @@
                                 </button>
                             </form>
                         </div>
+
+                        <% if (!actividadActiva) { %>
+                            <div class="inactive-activity-notice">
+                                <i class="bi bi-info-circle"></i>
+                                <div>
+                                    <strong>Actividad inactiva</strong>
+                                    <span>No permite inscripciones ni asistencia. Puedes reactivarla cuando sea necesario.</span>
+                                </div>
+                            </div>
+                        <% } %>
                     </section>
 
                     <!-- Alumnos inscritos -->
@@ -470,25 +507,34 @@
                                             <i class="bi bi-eye"></i>
                                         </button>
 
-                                        <form method="post"
-                                            action="<%= request.getContextPath() %>/retirar-alumno-actividad"
-                                            onsubmit="return confirm('¿Seguro que deseas retirar a este alumno de la actividad? Su historial se conservará.');"
-                                            style="display:inline;">
+                                        <% if (actividadActiva) { %>
+                                            <form method="post"
+                                                action="<%= request.getContextPath() %>/retirar-alumno-actividad"
+                                                onsubmit="return confirm('¿Seguro que deseas retirar a este alumno de la actividad? Su historial se conservará.');"
+                                                style="display:inline;">
 
-                                            <input type="hidden"
-                                                name="idActividad"
-                                                value="<%= actividadSeleccionada != null ? actividadSeleccionada.getIdActividad() : 0 %>">
+                                                <input type="hidden"
+                                                    name="idActividad"
+                                                    value="<%= actividadSeleccionada != null ? actividadSeleccionada.getIdActividad() : 0 %>">
 
-                                            <input type="hidden"
-                                                name="idAlumno"
-                                                value="<%= alumno.getIdAlumno() %>">
+                                                <input type="hidden"
+                                                    name="idAlumno"
+                                                    value="<%= alumno.getIdAlumno() %>">
 
-                                            <button type="submit"
-                                                    class="table-icon-btn danger"
-                                                    title="Retirar alumno">
+                                                <button type="submit"
+                                                        class="table-icon-btn danger"
+                                                        title="Retirar alumno">
+                                                    <i class="bi bi-person-dash"></i>
+                                                </button>
+                                            </form>
+                                        <% } else { %>
+                                            <button type="button"
+                                                    class="table-icon-btn disabled-table-action"
+                                                    disabled
+                                                    title="No puedes retirar alumnos mientras la actividad esté inactiva.">
                                                 <i class="bi bi-person-dash"></i>
                                             </button>
-                                        </form>
+                                        <% } %>
                                     </td>
                                 </tr>
                                 <%
