@@ -207,6 +207,34 @@ public class ActividadDAO {
             )
             """;
 
+    private static final String SQL_REACTIVAR_INSCRIPCION_VALIDADA = """
+            UPDATE inscripcion
+            SET estado_inscripcion = 'Activa'
+            WHERE id_alumno = ?
+            AND id_actividad = ?
+            AND estado_inscripcion <> 'Activa'
+            AND EXISTS (
+                SELECT 1
+                FROM actividad
+                WHERE id_actividad = ?
+                    AND estado_actividad = 'Activa'
+            )
+            AND EXISTS (
+                SELECT 1
+                FROM alumno
+                WHERE id_alumno = ?
+                    AND estado_alumno = 'Activo'
+            )
+            """;
+
+    private static final String SQL_CANCELAR_INSCRIPCION_ACTIVA = """
+            UPDATE inscripcion
+            SET estado_inscripcion = 'Cancelada'
+            WHERE id_alumno = ?
+            AND id_actividad = ?
+            AND estado_inscripcion = 'Activa'
+            """;
+
     private static final String SQL_ACTUALIZAR_ASISTENCIA_EXISTENTE = """
             UPDATE asistencia
             SET asistio = ?,
@@ -403,17 +431,32 @@ public class ActividadDAO {
             connection = ConexionDB.getConnection();
             connection.setAutoCommit(false);
 
-            try (PreparedStatement statement = connection.prepareStatement(SQL_INSCRIBIR_ALUMNO_VALIDADO)) {
+            try (
+                    PreparedStatement reactivarStatement = connection.prepareStatement(SQL_REACTIVAR_INSCRIPCION_VALIDADA);
+                    PreparedStatement insertarStatement = connection.prepareStatement(SQL_INSCRIBIR_ALUMNO_VALIDADO)
+            ) {
                 for (Integer idAlumno : idsAlumnos) {
-                    statement.setInt(1, idAlumno);
-                    statement.setInt(2, idActividad);
+                    reactivarStatement.setInt(1, idAlumno);
+                    reactivarStatement.setInt(2, idActividad);
+                    reactivarStatement.setInt(3, idActividad);
+                    reactivarStatement.setInt(4, idAlumno);
 
-                    statement.setInt(3, idActividad);
-                    statement.setInt(4, idAlumno);
-                    statement.setInt(5, idAlumno);
-                    statement.setInt(6, idActividad);
+                    int filasReactivadas = reactivarStatement.executeUpdate();
 
-                    totalInscritos += statement.executeUpdate();
+                    if (filasReactivadas > 0) {
+                        totalInscritos += filasReactivadas;
+                        continue;
+                    }
+
+                    insertarStatement.setInt(1, idAlumno);
+                    insertarStatement.setInt(2, idActividad);
+
+                    insertarStatement.setInt(3, idActividad);
+                    insertarStatement.setInt(4, idAlumno);
+                    insertarStatement.setInt(5, idAlumno);
+                    insertarStatement.setInt(6, idActividad);
+
+                    totalInscritos += insertarStatement.executeUpdate();
                 }
             }
 
@@ -440,6 +483,21 @@ public class ActividadDAO {
                     e.printStackTrace();
                 }
             }
+        }
+    }
+
+    public boolean retirarAlumnoDeActividad(int idActividad, int idAlumno) {
+        try (
+                Connection connection = ConexionDB.getConnection();
+                PreparedStatement statement = connection.prepareStatement(SQL_CANCELAR_INSCRIPCION_ACTIVA)
+        ) {
+            statement.setInt(1, idAlumno);
+            statement.setInt(2, idActividad);
+
+            return statement.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error al retirar alumno de la actividad.", e);
         }
     }
 

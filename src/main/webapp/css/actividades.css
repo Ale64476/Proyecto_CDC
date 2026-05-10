@@ -625,3 +625,14 @@
 .attendance-existing-notice.hidden {
     display: none;
 }
+
+.table-icon-btn.danger {
+    color: #b42318;
+    border-color: rgba(180, 35, 24, 0.18);
+    background: #fff;
+}
+
+.table-icon-btn.danger:hover {
+    background: rgba(180, 35, 24, 0.06);
+    color: #991b1b;
+}

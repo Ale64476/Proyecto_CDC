@@ -197,6 +197,22 @@
                             textoMensaje = "Los datos de inscripción no son válidos.";
                             break;
 
+                        case "retiro_exitoso":
+                            textoMensaje = "Alumno retirado de la actividad correctamente. Su historial se conservará.";
+                            break;
+                        case "retiro_no_realizado":
+                            textoMensaje = "No se pudo retirar al alumno. Puede que ya no tenga una inscripción activa.";
+                            break;
+                        case "retiro_datos_invalidos":
+                            textoMensaje = "Los datos para retirar al alumno no son válidos.";
+                            break;
+                        case "retiro_actividad_invalida":
+                            textoMensaje = "La actividad seleccionada no es válida.";
+                            break;
+                        case "retiro_actividad_inactiva":
+                            textoMensaje = "No puedes retirar alumnos de una actividad inactiva.";
+                            break;
+
                         default:
                             textoMensaje = null;
                     }
@@ -431,6 +447,26 @@
                                         <button class="table-icon-btn student-view-btn" title="Ver alumno" data-bs-toggle="modal" data-bs-target="#modalAlumnoDetalle">
                                             <i class="bi bi-eye"></i>
                                         </button>
+
+                                        <form method="post"
+                                            action="<%= request.getContextPath() %>/retirar-alumno-actividad"
+                                            onsubmit="return confirm('¿Seguro que deseas retirar a este alumno de la actividad? Su historial se conservará.');"
+                                            style="display:inline;">
+
+                                            <input type="hidden"
+                                                name="idActividad"
+                                                value="<%= actividadSeleccionada != null ? actividadSeleccionada.getIdActividad() : 0 %>">
+
+                                            <input type="hidden"
+                                                name="idAlumno"
+                                                value="<%= alumno.getIdAlumno() %>">
+
+                                            <button type="submit"
+                                                    class="table-icon-btn danger"
+                                                    title="Retirar alumno">
+                                                <i class="bi bi-person-dash"></i>
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
                                 <%
