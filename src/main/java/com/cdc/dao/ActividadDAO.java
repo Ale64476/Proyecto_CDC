@@ -181,7 +181,16 @@ public class ActividadDAO {
             VALUES (?, ?, 'Activa')
             """;
 
-    private static final String SQL_REGISTRAR_ASISTENCIA = """
+private static final String SQL_ACTUALIZAR_ASISTENCIA_EXISTENTE = """
+        UPDATE asistencia
+        SET asistio = ?,
+            id_admin = ?
+        WHERE id_alumno = ?
+          AND id_actividad = ?
+          AND fecha_asistencia = ?
+        """;
+
+    private static final String SQL_INSERTAR_ASISTENCIA = """
             INSERT INTO asistencia (
                 id_alumno,
                 id_actividad,
@@ -190,6 +199,13 @@ public class ActividadDAO {
                 id_admin
             )
             VALUES (?, ?, ?, ?, ?)
+            """;
+
+    private static final String SQL_EXISTE_ASISTENCIA_ACTIVIDAD_FECHA = """
+            SELECT COUNT(*) AS total
+            FROM asistencia
+            WHERE id_actividad = ?
+            AND fecha_asistencia = ?
             """;
 
     private static final String SQL_CAMBIAR_ESTADO_ACTIVIDAD = """
@@ -361,29 +377,90 @@ public class ActividadDAO {
         }
     }
 
-    public void registrarAsistencia(int idActividad, java.sql.Date fechaAsistencia,
-                                List<Integer> idsPresentes,
-                                List<Integer> idsTodosInscritos,
-                                int idAdmin) {
-        try (Connection connection = ConexionDB.getConnection();
-            PreparedStatement statement = connection.prepareStatement(SQL_REGISTRAR_ASISTENCIA)) {
+    public void registrarAsistencia(
+            int idActividad,
+            java.sql.Date fechaAsistencia,
+            List<Integer> idsPresentes,
+            List<Integer> idsTodosInscritos,
+            int idAdmin
+    ) {
+        Connection connection = null;
 
-            for (Integer idAlumno : idsTodosInscritos) {
-                boolean asistio = idsPresentes != null && idsPresentes.contains(idAlumno);
+        try {
+            connection = ConexionDB.getConnection();
+            connection.setAutoCommit(false);
 
-                statement.setInt(1, idAlumno);
-                statement.setInt(2, idActividad);
-                statement.setDate(3, fechaAsistencia);
-                statement.setBoolean(4, asistio);
-                statement.setInt(5, idAdmin);
-                statement.addBatch();
+            try (
+                    PreparedStatement actualizarStmt = connection.prepareStatement(SQL_ACTUALIZAR_ASISTENCIA_EXISTENTE);
+                    PreparedStatement insertarStmt = connection.prepareStatement(SQL_INSERTAR_ASISTENCIA)
+            ) {
+                for (Integer idAlumno : idsTodosInscritos) {
+                    boolean asistio = idsPresentes != null && idsPresentes.contains(idAlumno);
+
+                    actualizarStmt.setBoolean(1, asistio);
+                    actualizarStmt.setInt(2, idAdmin);
+                    actualizarStmt.setInt(3, idAlumno);
+                    actualizarStmt.setInt(4, idActividad);
+                    actualizarStmt.setDate(5, fechaAsistencia);
+
+                    int filasActualizadas = actualizarStmt.executeUpdate();
+
+                    if (filasActualizadas == 0) {
+                        insertarStmt.setInt(1, idAlumno);
+                        insertarStmt.setInt(2, idActividad);
+                        insertarStmt.setDate(3, fechaAsistencia);
+                        insertarStmt.setBoolean(4, asistio);
+                        insertarStmt.setInt(5, idAdmin);
+
+                        insertarStmt.executeUpdate();
+                    }
+                }
+
+                connection.commit();
             }
 
-            statement.executeBatch();
+        } catch (SQLException e) {
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                } catch (SQLException rollbackError) {
+                    rollbackError.printStackTrace();
+                }
+            }
+
+            throw new RuntimeException("Error al registrar asistencia.", e);
+
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.setAutoCommit(true);
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public boolean existeAsistenciaRegistrada(int idActividad, java.sql.Date fechaAsistencia) {
+        try (
+                Connection connection = ConexionDB.getConnection();
+                PreparedStatement statement = connection.prepareStatement(SQL_EXISTE_ASISTENCIA_ACTIVIDAD_FECHA)
+        ) {
+            statement.setInt(1, idActividad);
+            statement.setDate(2, fechaAsistencia);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getInt("total") > 0;
+                }
+            }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error al registrar asistencia.", e);
+            throw new RuntimeException("Error al validar asistencia existente.", e);
         }
+
+        return false;
     }
 
     public boolean cambiarEstadoActividad(int idActividad, String nuevoEstado) {

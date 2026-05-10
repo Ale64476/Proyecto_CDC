@@ -128,7 +128,7 @@
                             textoMensaje = "Debes registrar al menos un horario para la actividad.";
                             break;
                         case "actividad_horario_incompleto":
-                            textoMensaje = "Revisa los horarios. Hay un día, hora de inicio o hora de fin incompleto.";
+                            textoMensaje = "Revisa los horarios. Hay un día, hora de inicio o fin incompleto.";
                             break;
                         case "actividad_dia_invalido":
                             textoMensaje = "Uno de los días seleccionados no es válido.";
@@ -142,6 +142,32 @@
                         case "actividad_id_invalido":
                             textoMensaje = "El identificador de la actividad no es válido.";
                             break;
+
+                        case "asistencia_registrada":
+                            textoMensaje = "Asistencia registrada correctamente.";
+                            break;
+                        case "asistencia_actualizada":
+                            textoMensaje = "La asistencia existente fue actualizada correctamente.";
+                            break;
+                        case "asistencia_actividad_invalida":
+                            textoMensaje = "La actividad seleccionada no es válida.";
+                            break;
+                        case "asistencia_actividad_inactiva":
+                            textoMensaje = "No puedes registrar asistencia en una actividad inactiva.";
+                            break;
+                        case "asistencia_fecha_obligatoria":
+                            textoMensaje = "Debes seleccionar una fecha para registrar asistencia.";
+                            break;
+                        case "asistencia_fecha_futura":
+                            textoMensaje = "No puedes registrar asistencia con una fecha futura.";
+                            break;
+                        case "asistencia_sin_alumnos":
+                            textoMensaje = "No hay alumnos activos inscritos para registrar asistencia.";
+                            break;
+                        case "asistencia_datos_invalidos":
+                            textoMensaje = "Los datos de asistencia no son válidos.";
+                            break;
+
                         case "error_sistema":
                             textoMensaje = "Ocurrió un error interno. Revisa la consola de Tomcat.";
                             break;
