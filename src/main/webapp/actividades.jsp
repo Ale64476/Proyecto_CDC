@@ -1,4 +1,24 @@
+<%@ page import="java.util.List" %>
+<%@ page import="com.cdc.model.Actividad" %>
+<%@ page import="com.cdc.model.Alumno" %>
+<%@ page import="com.cdc.model.AlumnoInscritoActividad" %>
+<%@ page import="com.cdc.model.Instructor" %>
+<%@ page import="com.cdc.model.CalendarioActividad" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
+<%
+    List<Actividad> listaActividades = (List<Actividad>) request.getAttribute("listaActividades");
+    Actividad actividadSeleccionada = (Actividad) request.getAttribute("actividadSeleccionada");
+    List<AlumnoInscritoActividad> alumnosInscritos =
+            (List<AlumnoInscritoActividad>) request.getAttribute("alumnosInscritos");
+    List<Alumno> alumnosDisponibles =
+            (List<Alumno>) request.getAttribute("alumnosDisponibles");
+    List<Instructor> instructoresActivos =
+            (List<Instructor>) request.getAttribute("instructoresActivos");
+    List<CalendarioActividad> actividadesCalendario =
+            (List<CalendarioActividad>) request.getAttribute("actividadesCalendario");
+%>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -31,22 +51,22 @@
         </div>
 
         <nav class="sidebar-nav">
-            <a href="<%= request.getContextPath() %>/index.jsp" class="nav-item">
+            <a href="<%= request.getContextPath() %>/dashboard" class="nav-item">
                 <i class="bi bi-grid-1x2-fill"></i>
                 <span class="nav-label">Dashboard</span>
             </a>
 
-            <a href="<%= request.getContextPath() %>/actividades.jsp" class="nav-item active">
+            <a href="<%= request.getContextPath() %>/actividades" class="nav-item active">
                 <i class="bi bi-calendar3"></i>
                 <span class="nav-label">Actividades</span>
             </a>
 
-            <a href="<%= request.getContextPath() %>/alumnos.jsp" class="nav-item">
+            <a href="<%= request.getContextPath() %>/alumnos" class="nav-item">
                 <i class="bi bi-people-fill"></i>
                 <span class="nav-label">Alumnos</span>
             </a>
 
-            <a href="<%= request.getContextPath() %>/reportes.jsp" class="nav-item">
+            <a href="<%= request.getContextPath() %>/reportes" class="nav-item">
                 <i class="bi bi-file-earmark-bar-graph-fill"></i>
                 <span class="nav-label">Reportes</span>
             </a>
@@ -97,71 +117,44 @@
                     <div class="section-header">
                         <h3>Listado de actividades</h3>
                     </div>
-
                     <div class="activities-list" id="activitiesList">
-                        <article class="activity-item selected" data-activity-id="1">
+                        <%
+                            if (listaActividades != null && !listaActividades.isEmpty()) {
+                                for (Actividad actividad : listaActividades) {
+                                    boolean seleccionada = actividadSeleccionada != null
+                                            && actividadSeleccionada.getIdActividad() == actividad.getIdActividad();
+
+                                    String claseEstado = actividad.getEstadoActividad().equalsIgnoreCase("Inactiva")
+                                            ? "inactive"
+                                            : "active";
+                        %>
+                        <article class="activity-item <%= seleccionada ? "selected" : "" %>"
+                                data-activity-id="<%= actividad.getIdActividad() %>"
+                                onclick="window.location.href='<%= request.getContextPath() %>/actividades?id=<%= actividad.getIdActividad() %>'">
                             <div class="activity-item-icon">
-                                <i class="bi bi-palette-fill"></i>
+                                <i class="bi bi-journal-richtext"></i>
                             </div>
 
                             <div class="activity-item-body">
                                 <div class="activity-item-top">
-                                    <h4>Manualidades</h4>
-                                    <span class="status-badge active">Activa</span>
+                                    <h4><%= actividad.getNombreActividad() %></h4>
+                                    <span class="status-badge <%= claseEstado %>"><%= actividad.getEstadoActividad() %></span>
                                 </div>
-                                <p class="activity-item-instructor">Instructor: Ana López</p>
-                                <p class="activity-item-schedule"> 2 horarios registrados</p>
-                                <p class="activity-item-meta">14 inscritos</p>
+                                <p class="activity-item-instructor">Instructor: <%= actividad.getNombreInstructor() %></p>
+                                <p class="activity-item-schedule">
+                                    <%= actividad.getHorariosResumen() != null ? actividad.getHorariosResumen() : "Sin horario" %>
+                                </p>
+                                <p class="activity-item-meta"><%= actividad.getTotalInscritos() %> inscritos</p>
                             </div>
                         </article>
-
-                        <article class="activity-item" data-activity-id="2">
-                            <div class="activity-item-icon">
-                                <i class="bi bi-trophy-fill"></i>
-                            </div>
-
-                            <div class="activity-item-body">
-                                <div class="activity-item-top">
-                                    <h4>Boxeo</h4>
-                                    <span class="status-badge active">Activa</span>
-                                </div>
-                                <p class="activity-item-instructor">Instructor: Carlos Hernández</p>
-                                <p class="activity-item-schedule"> 2 horarios registrados</p>
-                                <p class="activity-item-meta">18 inscritos</p>
-                            </div>
-                        </article>
-
-                        <article class="activity-item" data-activity-id="3">
-                            <div class="activity-item-icon">
-                                <i class="bi bi-laptop-fill"></i>
-                            </div>
-
-                            <div class="activity-item-body">
-                                <div class="activity-item-top">
-                                    <h4>Computación</h4>
-                                    <span class="status-badge active">Activa</span>
-                                </div>
-                                <p class="activity-item-instructor">Instructor: Diego Ramírez</p>
-                                <p class="activity-item-schedule"> 2 horarios registrados</p>
-                                <p class="activity-item-meta">12 inscritos</p>
-                            </div>
-                        </article>
-
-                        <article class="activity-item" data-activity-id="4">
-                            <div class="activity-item-icon">
-                                <i class="bi bi-music-note-beamed"></i>
-                            </div>
-
-                            <div class="activity-item-body">
-                                <div class="activity-item-top">
-                                    <h4>Música</h4>
-                                    <span class="status-badge active">Activa</span>
-                                </div>
-                                <p class="activity-item-instructor">Instructor: Luis Morales</p>
-                                <p class="activity-item-schedule"> 2 horarios registrados</p>
-                                <p class="activity-item-meta">10 inscritos</p>
-                            </div>
-                        </article>
+                        <%
+                                }
+                            } else {
+                        %>
+                        <p>No hay actividades registradas.</p>
+                        <%
+                            }
+                        %>
                     </div>
                 </section>
 
@@ -171,34 +164,48 @@
                     <section class="activity-detail-card">
                         <div class="activity-detail-main">
                             <div class="activity-detail-icon">
-                                <i class="bi bi-palette-fill"></i>
+                                <i class="bi bi-journal-richtext"></i>
                             </div>
 
                             <div class="activity-detail-info">
                                 <div class="activity-detail-title-row">
-                                    <h2 id="activityDetailName">Manualidades</h2>
-                                    <span class="status-badge active" id="activityDetailStatus">Activa</span>
+                                    <h2 id="activityDetailName">
+                                        <%= actividadSeleccionada != null ? actividadSeleccionada.getNombreActividad() : "Sin actividad" %>
+                                    </h2>
+                                    <span class="status-badge <%= (actividadSeleccionada != null && actividadSeleccionada.getEstadoActividad().equalsIgnoreCase("Inactiva")) ? "inactive" : "active" %>" id="activityDetailStatus">
+                                        <%= actividadSeleccionada != null ? actividadSeleccionada.getEstadoActividad() : "N/D" %>
+                                    </span>
                                 </div>
 
                                 <div class="activity-detail-grid">
                                     <div class="detail-item">
                                         <span class="detail-label">Instructor</span>
-                                        <span class="detail-value" id="activityDetailInstructor">Ana López</span>
+                                        <span class="detail-value" id="activityDetailInstructor">
+                                            <%= actividadSeleccionada != null ? actividadSeleccionada.getNombreInstructor() : "" %>
+                                        </span>
                                     </div>
 
                                     <div class="detail-item">
                                         <span class="detail-label">Horarios</span>
-                                        <span class="detail-value" id="activityDetailSchedule">Lun 10:00 - 12:00 / Mié 16:00 - 18:00</span>
+                                        <span class="detail-value" id="activityDetailSchedule">
+                                            <%= actividadSeleccionada != null ? actividadSeleccionada.getHorariosResumen() : "" %>
+                                        </span>
                                     </div>
 
                                     <div class="detail-item">
                                         <span class="detail-label">Descripción</span>
-                                        <span class="detail-value" id="activityDetailDescription">Taller creativo para desarrollar habilidades manuales y expresión artística.</span>
+                                        <span class="detail-value" id="activityDetailDescription">
+                                            <%= (actividadSeleccionada != null && actividadSeleccionada.getDescripcionActividad() != null && !actividadSeleccionada.getDescripcionActividad().isBlank())
+                                                    ? actividadSeleccionada.getDescripcionActividad()
+                                                    : "Sin descripción registrada." %>
+                                        </span>
                                     </div>
 
                                     <div class="detail-item">
                                         <span class="detail-label">Inscritos</span>
-                                        <span class="detail-value" id="activityDetailCount">14</span>
+                                        <span class="detail-value" id="activityDetailCount">
+                                            <%= actividadSeleccionada != null ? actividadSeleccionada.getTotalInscritos() : 0 %>
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -220,10 +227,36 @@
                                 <span>Pasar asistencia</span>
                             </button>
 
-                            <button class="action-btn danger-outline" type="button">
-                                <i class="bi bi-pause-circle"></i>
-                                <span>Desactivar</span>
-                            </button>
+                            <%
+                                boolean actividadActiva = actividadSeleccionada != null
+                                        && "Activa".equalsIgnoreCase(actividadSeleccionada.getEstadoActividad());
+
+                                String mensajeConfirmacionEstado = actividadActiva
+                                        ? "¿Seguro que deseas desactivar esta actividad? Seguirá existiendo en el historial, pero dejará de operar como activa."
+                                        : "¿Seguro que deseas reactivar esta actividad? Volverá a estar disponible en el sistema.";
+
+                                String nuevoEstadoActividad = actividadActiva ? "Inactiva" : "Activa";
+                                String claseBotonEstado = actividadActiva ? "danger" : "secondary";
+                                String iconoBotonEstado = actividadActiva ? "bi-slash-circle" : "bi-arrow-clockwise";
+                                String textoBotonEstado = actividadActiva ? "Desactivar" : "Reactivar";
+                            %>
+
+                            <form method="post"
+                                action="<%= request.getContextPath() %>/cambiar-estado-actividad"
+                                onsubmit="return confirm('<%= mensajeConfirmacionEstado %>');"
+                                style="display: inline;">
+                                <input type="hidden" name="idActividad"
+                                    value="<%= actividadSeleccionada != null ? actividadSeleccionada.getIdActividad() : 0 %>">
+
+                                <input type="hidden" name="nuevoEstado"
+                                    value="<%= nuevoEstadoActividad %>">
+
+                                <button type="submit"
+                                        class="action-btn <%= claseBotonEstado %>">
+                                    <i class="bi <%= iconoBotonEstado %>"></i>
+                                    <span><%= textoBotonEstado %></span>
+                                </button>
+                            </form>
                         </div>
                     </section>
 
@@ -253,56 +286,30 @@
                                 </tr>
                                 </thead>
                                 <tbody id="studentsTableBody">
+                                <%
+                                    if (alumnosInscritos != null && !alumnosInscritos.isEmpty()) {
+                                        for (AlumnoInscritoActividad alumno : alumnosInscritos) {
+                                %>
                                 <tr>
-                                    <td>Carla Gómez</td>
-                                    <td>999 123 4567</td>
-                                    <td>8</td>
+                                    <td><%= alumno.getNombreCompleto() %></td>
+                                    <td><%= alumno.getCelular() %></td>
+                                    <td><%= alumno.getAsistenciasDelMes() %></td>
                                     <td>
                                         <button class="table-icon-btn student-view-btn" title="Ver alumno" data-bs-toggle="modal" data-bs-target="#modalAlumnoDetalle">
                                             <i class="bi bi-eye"></i>
                                         </button>
                                     </td>
                                 </tr>
+                                <%
+                                        }
+                                    } else {
+                                %>
                                 <tr>
-                                    <td>José Pérez</td>
-                                    <td>999 234 5678</td>
-                                    <td>7</td>
-                                    <td>
-                                        <button class="table-icon-btn student-view-btn" title="Ver alumno" data-bs-toggle="modal" data-bs-target="#modalAlumnoDetalle">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
+                                    <td colspan="4">No hay alumnos inscritos en esta actividad.</td>
                                 </tr>
-                                <tr>
-                                    <td>Andrea Ruiz</td>
-                                    <td>999 345 6789</td>
-                                    <td>6</td>
-                                    <td>
-                                        <button class="table-icon-btn student-view-btn" title="Ver alumno" data-bs-toggle="modal" data-bs-target="#modalAlumnoDetalle">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Mateo Chan</td>
-                                    <td>999 456 7890</td>
-                                    <td>5</td>
-                                    <td>
-                                        <button class="table-icon-btn student-view-btn" title="Ver alumno" data-bs-toggle="modal" data-bs-target="#modalAlumnoDetalle">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Sofía Castillo</td>
-                                    <td>999 567 8901</td>
-                                    <td>4</td>
-                                    <td>
-                                        <button class="table-icon-btn student-view-btn" title="Ver alumno" data-bs-toggle="modal" data-bs-target="#modalAlumnoDetalle">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
+                                <%
+                                    }
+                                %>
                                 </tbody>
                             </table>
                         </div>
@@ -312,36 +319,123 @@
                     <section class="calendar-summary-card">
                         <div class="section-header">
                             <h3>Calendario resumido</h3>
-                            <a href="#" class="section-link">Ver calendario completo</a>
+                            <a href="<%= request.getContextPath() %>/calendario" class="calendar-link">Ver calendario completo</a>
                         </div>
 
-                        <div class="calendar-summary-grid">
-                            <div class="calendar-day-column">
-                                <span class="calendar-day-name">Lun</span>
-                                <div class="calendar-chip">10:00 Manualidades</div>
-                                <div class="calendar-chip muted">16:00 Computación</div>
+                        <div class="mini-calendar">
+                            <div class="day-column">
+                                <span class="day-name">Lun</span>
+                                <%
+                                    int lunesCount = 0;
+                                    if (actividadesCalendario != null) {
+                                        for (CalendarioActividad item : actividadesCalendario) {
+                                            if ("Lunes".equalsIgnoreCase(item.getDiaSemana()) && lunesCount < 3) {
+                                %>
+                                <div class="slot active"><%= item.getHoraInicio().toString().substring(0, 5) %> <%= item.getNombreActividad() %></div>
+                                <%
+                                                lunesCount++;
+                                            }
+                                        }
+                                    }
+                                    while (lunesCount < 3) {
+                                %>
+                                <div class="slot empty"></div>
+                                <%
+                                        lunesCount++;
+                                    }
+                                %>
                             </div>
 
-                            <div class="calendar-day-column">
-                                <span class="calendar-day-name">Mar</span>
-                                <div class="calendar-chip">17:00 Boxeo</div>
+                            <div class="day-column">
+                                <span class="day-name">Mar</span>
+                                <%
+                                    int martesCount = 0;
+                                    if (actividadesCalendario != null) {
+                                        for (CalendarioActividad item : actividadesCalendario) {
+                                            if ("Martes".equalsIgnoreCase(item.getDiaSemana()) && martesCount < 3) {
+                                %>
+                                <div class="slot active"><%= item.getHoraInicio().toString().substring(0, 5) %> <%= item.getNombreActividad() %></div>
+                                <%
+                                                martesCount++;
+                                            }
+                                        }
+                                    }
+                                    while (martesCount < 3) {
+                                %>
+                                <div class="slot empty"></div>
+                                <%
+                                        martesCount++;
+                                    }
+                                %>
                             </div>
 
-                            <div class="calendar-day-column">
-                                <span class="calendar-day-name">Mié</span>
-                                <div class="calendar-chip">16:00 Manualidades</div>
-                                <div class="calendar-chip muted">15:00 Música</div>
+                            <div class="day-column">
+                                <span class="day-name">Mié</span>
+                                <%
+                                    int miercolesCount = 0;
+                                    if (actividadesCalendario != null) {
+                                        for (CalendarioActividad item : actividadesCalendario) {
+                                            if ("Miércoles".equalsIgnoreCase(item.getDiaSemana()) && miercolesCount < 3) {
+                                %>
+                                <div class="slot active"><%= item.getHoraInicio().toString().substring(0, 5) %> <%= item.getNombreActividad() %></div>
+                                <%
+                                                miercolesCount++;
+                                            }
+                                        }
+                                    }
+                                    while (miercolesCount < 3) {
+                                %>
+                                <div class="slot empty"></div>
+                                <%
+                                        miercolesCount++;
+                                    }
+                                %>
                             </div>
 
-                            <div class="calendar-day-column">
-                                <span class="calendar-day-name">Jue</span>
-                                <div class="calendar-chip">17:00 Boxeo</div>
+                            <div class="day-column">
+                                <span class="day-name">Jue</span>
+                                <%
+                                    int juevesCount = 0;
+                                    if (actividadesCalendario != null) {
+                                        for (CalendarioActividad item : actividadesCalendario) {
+                                            if ("Jueves".equalsIgnoreCase(item.getDiaSemana()) && juevesCount < 3) {
+                                %>
+                                <div class="slot active"><%= item.getHoraInicio().toString().substring(0, 5) %> <%= item.getNombreActividad() %></div>
+                                <%
+                                                juevesCount++;
+                                            }
+                                        }
+                                    }
+                                    while (juevesCount < 3) {
+                                %>
+                                <div class="slot empty"></div>
+                                <%
+                                        juevesCount++;
+                                    }
+                                %>
                             </div>
 
-                            <div class="calendar-day-column">
-                                <span class="calendar-day-name">Vie</span>
-                                <div class="calendar-chip muted">12:00 Computación</div>
-                                <div class="calendar-chip muted">15:00 Música</div>
+                            <div class="day-column">
+                                <span class="day-name">Vie</span>
+                                <%
+                                    int viernesCount = 0;
+                                    if (actividadesCalendario != null) {
+                                        for (CalendarioActividad item : actividadesCalendario) {
+                                            if ("Viernes".equalsIgnoreCase(item.getDiaSemana()) && viernesCount < 3) {
+                                %>
+                                <div class="slot active"><%= item.getHoraInicio().toString().substring(0, 5) %> <%= item.getNombreActividad() %></div>
+                                <%
+                                                viernesCount++;
+                                            }
+                                        }
+                                    }
+                                    while (viernesCount < 3) {
+                                %>
+                                <div class="slot empty"></div>
+                                <%
+                                        viernesCount++;
+                                    }
+                                %>
                             </div>
                         </div>
                     </section>
@@ -355,69 +449,79 @@
 <div class="modal fade" id="modalNuevaActividad" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content custom-modal">
-            <div class="modal-header">
-                <h5 class="modal-title">Nueva actividad</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
-
-            <div class="modal-body">
-                <div class="form-grid">
-                    <div class="form-group full">
-                        <label for="activityName">Nombre de la actividad</label>
-                        <input type="text" id="activityName" class="form-control" placeholder="Ej. Manualidades">
-                    </div>
-
-                    <div class="form-group full">
-                        <label for="activityInstructor">Instructor</label>
-                        <select id="activityInstructor" class="form-select">
-                            <option selected disabled>Selecciona un instructor</option>
-                            <option>Ana López</option>
-                            <option>Carlos Hernández</option>
-                            <option>Diego Ramírez</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group full">
-                        <label for="activityDescription">Descripción (opcional)</label>
-                        <textarea id="activityDescription" class="form-control" rows="3" placeholder="Describe brevemente la actividad"></textarea>
-                    </div>
+            <form method="post" action="<%= request.getContextPath() %>/guardar-actividad">
+                <div class="modal-header">
+                    <h5 class="modal-title">Nueva actividad</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
 
-                <div class="schedule-builder">
-                    <div class="schedule-builder-header">
-                        <h6>Horarios</h6>
-                        <button type="button" class="small-inline-btn" id="addScheduleRowBtn">
-                            <i class="bi bi-plus-lg"></i>
-                            <span>Agregar horario</span>
-                        </button>
+                <div class="modal-body">
+                    <div class="form-grid">
+                        <div class="form-group full">
+                            <label for="activityName">Nombre de la actividad</label>
+                            <input type="text" id="activityName" name="nombreActividad" class="form-control" placeholder="Ej. Manualidades" required>
+                        </div>
+
+                        <div class="form-group full">
+                            <label for="activityInstructor">Instructor</label>
+                            <select id="activityInstructor" name="idInstructor" class="form-select" required>
+                                <option selected disabled value="">Selecciona un instructor</option>
+                                <%
+                                    if (instructoresActivos != null) {
+                                        for (Instructor instructor : instructoresActivos) {
+                                %>
+                                <option value="<%= instructor.getIdInstructor() %>"><%= instructor.getNombreCompleto() %></option>
+                                <%
+                                        }
+                                    }
+                                %>
+                            </select>
+                        </div>
+
+                        <div class="form-group full">
+                            <label for="activityDescription">Descripción (opcional)</label>
+                            <textarea id="activityDescription" name="descripcionActividad" class="form-control" rows="3" placeholder="Describe brevemente la actividad"></textarea>
+                        </div>
                     </div>
 
-                    <div id="scheduleRows">
-                        <div class="schedule-row">
-                            <select class="form-select">
-                                <option>Lunes</option>
-                                <option>Martes</option>
-                                <option>Miércoles</option>
-                                <option>Jueves</option>
-                                <option>Viernes</option>
-                                <option>Sábado</option>
-                            </select>
+                    <input type="hidden" name="estadoActividad" value="Activa">
 
-                            <input type="time" class="form-control" value="10:00">
-                            <input type="time" class="form-control" value="12:00">
-
-                            <button type="button" class="table-icon-btn remove-schedule-btn" title="Quitar horario">
-                                <i class="bi bi-trash"></i>
+                    <div class="schedule-builder">
+                        <div class="schedule-builder-header">
+                            <h6>Horarios</h6>
+                            <button type="button" class="small-inline-btn" id="addScheduleRowBtn">
+                                <i class="bi bi-plus-lg"></i>
+                                <span>Agregar horario</span>
                             </button>
+                        </div>
+
+                        <div id="scheduleRows">
+                            <div class="schedule-row">
+                                <select class="form-select" name="diaSemana">
+                                    <option>Lunes</option>
+                                    <option>Martes</option>
+                                    <option>Miércoles</option>
+                                    <option>Jueves</option>
+                                    <option>Viernes</option>
+                                    <option>Sábado</option>
+                                </select>
+
+                                <input type="time" class="form-control" name="horaInicio" value="10:00">
+                                <input type="time" class="form-control" name="horaFin" value="12:00">
+
+                                <button type="button" class="table-icon-btn remove-schedule-btn" title="Quitar horario">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="modal-footer">
-                <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn activity-primary-btn modal-save-btn">Guardar</button>
-            </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn activity-primary-btn modal-save-btn">Guardar</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -426,19 +530,76 @@
 <div class="modal fade" id="modalEditarActividad" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content custom-modal">
-            <div class="modal-header">
-                <h5 class="modal-title">Editar actividad</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
+            <form method="post" action="<%= request.getContextPath() %>/actualizar-actividad">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar actividad</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
 
-            <div class="modal-body">
-                <p class="modal-note">Aquí irá el mismo formulario de creación, pero cargado con los datos de la actividad seleccionada.</p>
-            </div>
+                <div class="modal-body">
+                    <input type="hidden" name="idActividad"
+                           value="<%= actividadSeleccionada != null ? actividadSeleccionada.getIdActividad() : 0 %>">
 
-            <div class="modal-footer">
-                <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn activity-primary-btn modal-save-btn">Guardar cambios</button>
-            </div>
+                    <div class="activity-form-grid">
+                        <div class="form-group">
+                            <label for="editActivityName">Nombre de la actividad</label>
+                            <input type="text"
+                                   id="editActivityName"
+                                   name="nombreActividad"
+                                   class="form-control"
+                                   value="<%= actividadSeleccionada != null ? actividadSeleccionada.getNombreActividad() : "" %>"
+                                   required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editActivityInstructor">Instructor</label>
+                            <select id="editActivityInstructor" name="idInstructor" class="form-select" required>
+                                <option disabled value="">Selecciona un instructor</option>
+                                <%
+                                    if (instructoresActivos != null) {
+                                        for (Instructor instructor : instructoresActivos) {
+                                            boolean selectedInstructor =
+                                                    actividadSeleccionada != null &&
+                                                    actividadSeleccionada.getIdInstructor() == instructor.getIdInstructor();
+                                %>
+                                <option value="<%= instructor.getIdInstructor() %>" <%= selectedInstructor ? "selected" : "" %>>
+                                    <%= instructor.getNombreCompleto() %>
+                                </option>
+                                <%
+                                        }
+                                    }
+                                %>
+                            </select>
+                        </div>
+
+                        <div class="form-group full">
+                            <label for="editActivityDescription">Descripción</label>
+                            <textarea id="editActivityDescription"
+                                      name="descripcionActividad"
+                                      class="form-control"
+                                      rows="3"
+                                      placeholder="Describe brevemente la actividad"><%= actividadSeleccionada != null && actividadSeleccionada.getDescripcionActividad() != null ? actividadSeleccionada.getDescripcionActividad() : "" %></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editActivityStatus">Estado</label>
+                            <select id="editActivityStatus" name="estadoActividad" class="form-select" required>
+                                <option value="Activa" <%= actividadSeleccionada != null && "Activa".equalsIgnoreCase(actividadSeleccionada.getEstadoActividad()) ? "selected" : "" %>>Activa</option>
+                                <option value="Inactiva" <%= actividadSeleccionada != null && "Inactiva".equalsIgnoreCase(actividadSeleccionada.getEstadoActividad()) ? "selected" : "" %>>Inactiva</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <p class="modal-note mt-3">
+                        Por ahora la edición de horarios se hará después. En esta versión solo se actualizan los datos principales de la actividad.
+                    </p>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn activity-primary-btn modal-save-btn">Guardar cambios</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -447,100 +608,104 @@
 <div class="modal fade" id="modalAgregarAlumno" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content custom-modal">
-            <div class="modal-header">
-                <h5 class="modal-title">Agregar alumno a la actividad</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
-
-            <div class="modal-body">
-                <div class="toolbar-search modal-search">
-                    <i class="bi bi-search"></i>
-                    <input type="text" placeholder="Buscar alumno registrado">
+            <form method="post" action="<%= request.getContextPath() %>/inscribir-alumnos-actividad">
+                <div class="modal-header">
+                    <h5 class="modal-title">Agregar alumno a la actividad</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
 
-                <div class="assign-students-list">
-                    <label class="assign-student-item">
-                        <input type="checkbox">
-                        <span>Carla Gómez</span>
-                    </label>
+                <div class="modal-body">
+                    <input type="hidden" name="idActividad"
+                           value="<%= actividadSeleccionada != null ? actividadSeleccionada.getIdActividad() : 0 %>">
 
-                    <label class="assign-student-item">
-                        <input type="checkbox">
-                        <span>José Pérez</span>
-                    </label>
+                    <div class="toolbar-search modal-search">
+                        <i class="bi bi-search"></i>
+                        <input type="text" id="buscarAlumnoDisponible" placeholder="Buscar alumno registrado">
+                    </div>
 
-                    <label class="assign-student-item">
-                        <input type="checkbox">
-                        <span>Andrea Ruiz</span>
-                    </label>
-
-                    <label class="assign-student-item">
-                        <input type="checkbox">
-                        <span>Mateo Chan</span>
-                    </label>
+                    <div class="assign-students-list" id="listaAlumnosDisponibles">
+                        <%
+                            if (alumnosDisponibles != null && !alumnosDisponibles.isEmpty()) {
+                                for (Alumno alumno : alumnosDisponibles) {
+                        %>
+                        <label class="assign-student-item alumno-disponible-item">
+                            <input type="checkbox" name="idsAlumnos" value="<%= alumno.getIdAlumno() %>">
+                            <span>
+                                <strong><%= alumno.getNombreCompleto() %></strong><br>
+                                <small><%= alumno.getCelular() %></small>
+                            </span>
+                        </label>
+                        <%
+                                }
+                            } else {
+                        %>
+                        <p>No hay alumnos disponibles para inscribir en esta actividad.</p>
+                        <%
+                            }
+                        %>
+                    </div>
                 </div>
-            </div>
 
-            <div class="modal-footer">
-                <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn activity-primary-btn modal-save-btn">Agregar seleccionados</button>
-            </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn activity-primary-btn modal-save-btn">Agregar seleccionados</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
-<!-- Modal: Asistencia -->
+<!-- Modal: Pasar asistencia -->
 <div class="modal fade" id="modalAsistencia" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content custom-modal">
-            <div class="modal-header">
-                <h5 class="modal-title">Pasar asistencia</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
-
-            <div class="modal-body">
-                <div class="attendance-header">
-                    <div>
-                        <strong>Actividad:</strong> Manualidades
-                    </div>
-                    <div>
-                        <label for="attendanceDate"><strong>Fecha:</strong></label>
-                        <input type="date" id="attendanceDate" class="form-control attendance-date-input">
-                    </div>
+            <form method="post" action="<%= request.getContextPath() %>/registrar-asistencia">
+                <div class="modal-header">
+                    <h5 class="modal-title">Pasar asistencia</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
 
-                <div class="attendance-list">
-                    <label class="attendance-item">
-                        <input type="checkbox" checked>
-                        <span>Carla Gómez</span>
-                    </label>
+                <div class="modal-body">
+                    <input type="hidden" name="idActividad"
+                           value="<%= actividadSeleccionada != null ? actividadSeleccionada.getIdActividad() : 0 %>">
 
-                    <label class="attendance-item">
-                        <input type="checkbox" checked>
-                        <span>José Pérez</span>
-                    </label>
+                    <div class="form-group">
+                        <label for="attendanceDate">Fecha</label>
+                        <input type="date" id="attendanceDate" name="fechaAsistencia" class="form-control" required>
+                    </div>
 
-                    <label class="attendance-item">
-                        <input type="checkbox" checked>
-                        <span>Andrea Ruiz</span>
-                    </label>
+                    <div class="attendance-list mt-3">
+                        <%
+                            if (alumnosInscritos != null && !alumnosInscritos.isEmpty()) {
+                                for (AlumnoInscritoActividad alumno : alumnosInscritos) {
+                        %>
+                        <label class="attendance-item">
+                            <input type="checkbox" name="idsPresentes" value="<%= alumno.getIdAlumno() %>">
+                            <span>
+                                <strong><%= alumno.getNombreCompleto() %></strong><br>
+                                <small><%= alumno.getCelular() %></small>
+                            </span>
+                        </label>
+                        <%
+                                }
+                            } else {
+                        %>
+                        <p>No hay alumnos inscritos en esta actividad.</p>
+                        <%
+                            }
+                        %>
+                    </div>
 
-                    <label class="attendance-item">
-                        <input type="checkbox">
-                        <span>Mateo Chan</span>
-                    </label>
-
-                    <label class="attendance-item">
-                        <input type="checkbox" checked>
-                        <span>Sofía Castillo</span>
-                    </label>
+                    <p class="modal-note mt-3">
+                        Los alumnos marcados se registrarán como asistentes. Los no marcados se guardarán como ausentes.
+                    </p>
                 </div>
-            </div>
 
-            <div class="modal-footer">
-                <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn activity-primary-btn modal-save-btn">Guardar asistencia</button>
-            </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn activity-primary-btn modal-save-btn">Guardar asistencia</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

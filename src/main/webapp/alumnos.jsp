@@ -1,4 +1,27 @@
+<%@ page import="java.util.List" %>
+<%@ page import="com.cdc.model.Alumno" %>
+<%@ page import="com.cdc.model.ActividadAlumnoDetalle" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
+<%
+    List<Alumno> listaAlumnos = (List<Alumno>) request.getAttribute("listaAlumnos");
+    Alumno alumnoSeleccionado = (Alumno) request.getAttribute("alumnoSeleccionado");
+    List<ActividadAlumnoDetalle> actividadesAlumno =
+            (List<ActividadAlumnoDetalle>) request.getAttribute("actividadesAlumno");
+
+    int totalActividadesInscritas = 0;
+    int totalAsistenciasMes = 0;
+
+    if (actividadesAlumno != null) {
+        totalActividadesInscritas = actividadesAlumno.size();
+
+        for (ActividadAlumnoDetalle actividad : actividadesAlumno) {
+            totalAsistenciasMes += actividad.getAsistenciasDelMes();
+        }
+    }
+%>
+
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -34,22 +57,22 @@
         </div>
 
         <nav class="sidebar-nav">
-            <a href="<%= request.getContextPath() %>/index.jsp" class="nav-item">
+            <a href="<%= request.getContextPath() %>/dashboard" class="nav-item">
                 <i class="bi bi-grid-1x2-fill"></i>
                 <span class="nav-label">Dashboard</span>
             </a>
 
-            <a href="<%= request.getContextPath() %>/actividades.jsp" class="nav-item">
+            <a href="<%= request.getContextPath() %>/actividades" class="nav-item">
                 <i class="bi bi-calendar3"></i>
                 <span class="nav-label">Actividades</span>
             </a>
 
-            <a href="<%= request.getContextPath() %>/alumnos.jsp" class="nav-item active">
+            <a href="<%= request.getContextPath() %>/alumnos" class="nav-item active">
                 <i class="bi bi-people-fill"></i>
                 <span class="nav-label">Alumnos</span>
             </a>
 
-            <a href="<%= request.getContextPath() %>/reportes.jsp" class="nav-item">
+            <a href="<%= request.getContextPath() %>/reportes" class="nav-item">
                 <i class="bi bi-file-earmark-bar-graph-fill"></i>
                 <span class="nav-label">Reportes</span>
             </a>
@@ -102,83 +125,48 @@
                     </div>
 
                     <div class="student-list-scroll" id="studentList">
-                        <article class="student-list-item selected" data-student-id="1">
-                            <div class="student-list-avatar">CG</div>
+                        <%
+                            if (listaAlumnos != null && !listaAlumnos.isEmpty()) {
+                                boolean primero = true;
+                                for (Alumno alumno : listaAlumnos) {
+                                    String iniciales = "";
+                                    String[] partes = alumno.getNombreCompleto().trim().split("\\s+");
+                                    if (partes.length >= 2) {
+                                        iniciales = partes[0].substring(0, 1).toUpperCase() + partes[1].substring(0, 1).toUpperCase();
+                                    } else if (partes.length == 1) {
+                                        iniciales = partes[0].substring(0, 1).toUpperCase();
+                                    }
 
-                            <div class="student-list-body">
-                                <div class="student-list-top">
-                                    <h4>Carla Gómez</h4>
-                                    <span class="status-badge active">Activa</span>
+                                    String estado = alumno.getEstadoAlumno();
+                                    String claseEstado = estado.equalsIgnoreCase("Inactivo") || estado.equalsIgnoreCase("Baja")
+                                            ? "inactive"
+                                            : "active";
+                        %>
+                            <article class="student-list-item <%= (alumnoSeleccionado != null && alumnoSeleccionado.getIdAlumno() == alumno.getIdAlumno()) ? "selected" : "" %>"
+                                data-student-id="<%= alumno.getIdAlumno() %>"
+                                onclick="window.location.href='<%= request.getContextPath() %>/alumnos?id=<%= alumno.getIdAlumno() %>'">
+                                <div class="student-list-avatar"><%= iniciales %></div>
+
+                                <div class="student-list-body">
+                                    <div class="student-list-top">
+                                        <h4><%= alumno.getNombreCompleto() %></h4>
+                                        <span class="status-badge <%= claseEstado %>"><%= estado %></span>
+                                    </div>
+                                    <p class="student-list-phone"><%= alumno.getCelular() %></p>
+                                    <p class="student-list-meta">
+                                        ID: <%= alumno.getIdAlumno() %>
+                                    </p>
                                 </div>
-                                <p class="student-list-phone">999 123 4567</p>
-                                <p class="student-list-meta">3 actividades inscritas</p>
-                            </div>
-                        </article>
-
-                        <article class="student-list-item" data-student-id="2">
-                            <div class="student-list-avatar">JP</div>
-
-                            <div class="student-list-body">
-                                <div class="student-list-top">
-                                    <h4>José Pérez</h4>
-                                    <span class="status-badge active">Activo</span>
-                                </div>
-                                <p class="student-list-phone">999 234 5678</p>
-                                <p class="student-list-meta">2 actividades inscritas</p>
-                            </div>
-                        </article>
-
-                        <article class="student-list-item" data-student-id="3">
-                            <div class="student-list-avatar">AR</div>
-
-                            <div class="student-list-body">
-                                <div class="student-list-top">
-                                    <h4>Andrea Ruiz</h4>
-                                    <span class="status-badge active">Activa</span>
-                                </div>
-                                <p class="student-list-phone">999 345 6789</p>
-                                <p class="student-list-meta">3 actividades inscritas</p>
-                            </div>
-                        </article>
-
-                        <article class="student-list-item" data-student-id="4">
-                            <div class="student-list-avatar">MC</div>
-
-                            <div class="student-list-body">
-                                <div class="student-list-top">
-                                    <h4>Mateo Chan</h4>
-                                    <span class="status-badge active">Activo</span>
-                                </div>
-                                <p class="student-list-phone">999 456 7890</p>
-                                <p class="student-list-meta">1 actividad inscrita</p>
-                            </div>
-                        </article>
-
-                        <article class="student-list-item" data-student-id="5">
-                            <div class="student-list-avatar">SC</div>
-
-                            <div class="student-list-body">
-                                <div class="student-list-top">
-                                    <h4>Sofía Castillo</h4>
-                                    <span class="status-badge active">Activa</span>
-                                </div>
-                                <p class="student-list-phone">999 567 8901</p>
-                                <p class="student-list-meta">2 actividades inscritas</p>
-                            </div>
-                        </article>
-
-                        <article class="student-list-item" data-student-id="6">
-                            <div class="student-list-avatar">LM</div>
-
-                            <div class="student-list-body">
-                                <div class="student-list-top">
-                                    <h4>Lucía Martínez</h4>
-                                    <span class="status-badge inactive">Inactiva</span>
-                                </div>
-                                <p class="student-list-phone">999 678 9012</p>
-                                <p class="student-list-meta">0 actividades inscritas</p>
-                            </div>
-                        </article>
+                            </article>
+                        <%
+                                    primero = false;
+                                }
+                            } else {
+                        %>
+                            <p>No hay alumnos registrados.</p>
+                        <%
+                            }
+                        %>
                     </div>
                 </section>
 
@@ -187,47 +175,84 @@
                     <!-- Ficha -->
                     <section class="student-detail-card">
                         <div class="student-detail-main">
-                            <div class="student-detail-avatar" id="studentDetailAvatar">CG</div>
+                            <div class="student-detail-avatar" id="studentDetailAvatar">
+                                <%
+                                    if (alumnoSeleccionado != null) {
+                                        String[] partes = alumnoSeleccionado.getNombreCompleto().trim().split("\\s+");
+                                        if (partes.length >= 2) {
+                                            out.print(partes[0].substring(0, 1).toUpperCase() + partes[1].substring(0, 1).toUpperCase());
+                                        } else if (partes.length == 1) {
+                                            out.print(partes[0].substring(0, 1).toUpperCase());
+                                        }
+                                    } else {
+                                        out.print("--");
+                                    }
+                                %>
+                            </div>
 
                             <div class="student-detail-info">
                                 <div class="student-detail-title-row">
-                                    <h2 id="studentDetailName">Carla Gómez</h2>
-                                    <span class="status-badge active" id="studentDetailStatus">Activa</span>
+                                    <h2 id="studentDetailName"><%= alumnoSeleccionado != null ? alumnoSeleccionado.getNombreCompleto() : "Sin alumno" %></h2>
+                                    <span class="status-badge <%= (alumnoSeleccionado != null && (alumnoSeleccionado.getEstadoAlumno().equalsIgnoreCase("Inactivo") || alumnoSeleccionado.getEstadoAlumno().equalsIgnoreCase("Baja"))) ? "inactive" : "active" %>" id="studentDetailStatus">
+                                        <%= alumnoSeleccionado != null ? alumnoSeleccionado.getEstadoAlumno() : "N/D" %>
+                                    </span>
                                 </div>
 
                                 <div class="student-detail-grid">
                                     <div class="detail-item">
                                         <span class="detail-label">Fecha de nacimiento</span>
-                                        <span class="detail-value" id="studentDetailBirthDate">12/05/2009</span>
+                                        <span class="detail-value" id="studentDetailBirthDate">
+                                            <%= alumnoSeleccionado != null ? alumnoSeleccionado.getFechaNacimiento() : "" %>
+                                        </span>
                                     </div>
 
                                     <div class="detail-item">
                                         <span class="detail-label">Celular</span>
-                                        <span class="detail-value" id="studentDetailPhone">999 123 4567</span>
+                                        <span class="detail-value" id="studentDetailPhone">
+                                            <%= alumnoSeleccionado != null ? alumnoSeleccionado.getCelular() : "" %>
+                                        </span>
                                     </div>
 
                                     <div class="detail-item">
                                         <span class="detail-label">CURP</span>
-                                        <span class="detail-value" id="studentDetailCurp">GOGC090512MQRMLRA3</span>
+                                        <span class="detail-value" id="studentDetailCurp">
+                                            <%= alumnoSeleccionado != null ? alumnoSeleccionado.getCurp() : "" %>
+                                        </span>
                                     </div>
 
                                     <div class="detail-item">
                                         <span class="detail-label">Actividades inscritas</span>
-                                        <span class="detail-value" id="studentDetailActivitiesCount">3</span>
+                                        <span class="detail-value" id="studentActivitiesCount"><%= totalActividadesInscritas %></span>
                                     </div>
 
                                     <div class="detail-item full">
                                         <span class="detail-label">Domicilio</span>
-                                        <span class="detail-value" id="studentDetailAddress">Calle 24 #123, Col. Centro, Chetumal, Quintana Roo, C.P. 77000</span>
+                                        <span class="detail-value" id="studentDetailAddress">
+                                            <%= alumnoSeleccionado != null ? alumnoSeleccionado.getDomicilio() : "" %>
+                                        </span>
                                     </div>
 
                                     <div class="detail-item">
                                         <span class="detail-label">Asistencias del mes</span>
-                                        <span class="detail-value" id="studentDetailMonthAttendance">17</span>
+                                        <span class="metric-value" id="studentAttendanceCount"><%= totalAsistenciasMes %></span>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
+                        <%
+                            boolean alumnoActivo = alumnoSeleccionado != null
+                                    && "Activo".equalsIgnoreCase(alumnoSeleccionado.getEstadoAlumno());
+
+                            String mensajeConfirmacionAlumno = alumnoActivo
+                                    ? "¿Seguro que deseas dar de baja a este alumno? Seguirá existiendo en el historial del sistema."
+                                    : "¿Seguro que deseas reactivar a este alumno? Volverá a aparecer como disponible en el sistema.";
+
+                            String nuevoEstadoAlumno = alumnoActivo ? "Baja" : "Activo";
+                            String claseBotonAlumno = alumnoActivo ? "danger" : "secondary";
+                            String iconoBotonAlumno = alumnoActivo ? "bi-person-dash-fill" : "bi-arrow-clockwise";
+                            String textoBotonAlumno = alumnoActivo ? "Dar de baja" : "Reactivar";
+                        %>
 
                         <div class="student-actions">
                             <button class="action-btn secondary" type="button" data-bs-toggle="modal" data-bs-target="#modalEditarAlumno">
@@ -235,10 +260,21 @@
                                 <span>Editar</span>
                             </button>
 
-                            <button class="action-btn danger-outline" type="button">
-                                <i class="bi bi-pause-circle"></i>
-                                <span>Desactivar</span>
-                            </button>
+                            <form method="post"
+                                action="<%= request.getContextPath() %>/cambiar-estado-alumno"
+                                onsubmit="return confirm('<%= mensajeConfirmacionAlumno %>');"
+                                style="display: inline;">
+                                <input type="hidden" name="idAlumno"
+                                    value="<%= alumnoSeleccionado != null ? alumnoSeleccionado.getIdAlumno() : 0 %>">
+
+                                <input type="hidden" name="nuevoEstado"
+                                    value="<%= nuevoEstadoAlumno %>">
+
+                                <button type="submit" class="action-btn <%= claseBotonAlumno %>">
+                                    <i class="bi <%= iconoBotonAlumno %>"></i>
+                                    <span><%= textoBotonAlumno %></span>
+                                </button>
+                            </form>
                         </div>
                     </section>
 
@@ -260,27 +296,34 @@
                                 </tr>
                                 </thead>
                                 <tbody id="studentActivitiesTableBody">
+                                <%
+                                    if (actividadesAlumno != null && !actividadesAlumno.isEmpty()) {
+                                        for (ActividadAlumnoDetalle actividad : actividadesAlumno) {
+                                            String claseEstadoActividad = actividad.getEstadoActividad().equalsIgnoreCase("Inactiva")
+                                                    ? "inactive"
+                                                    : "active";
+                                %>
                                 <tr>
-                                    <td>Manualidades</td>
-                                    <td>Ana López</td>
-                                    <td>Lun 10:00 - 12:00 / Mié 16:00 - 18:00</td>
-                                    <td>8</td>
-                                    <td><span class="status-badge active">Activa</span></td>
+                                    <td><%= actividad.getNombreActividad() %></td>
+                                    <td><%= actividad.getNombreInstructor() %></td>
+                                    <td><%= actividad.getHorarios() %></td>
+                                    <td><%= actividad.getAsistenciasDelMes() %></td>
+                                    <td>
+                                        <span class="status-badge <%= claseEstadoActividad %>">
+                                            <%= actividad.getEstadoActividad() %>
+                                        </span>
+                                    </td>
                                 </tr>
+                                <%
+                                        }
+                                    } else {
+                                %>
                                 <tr>
-                                    <td>Computación</td>
-                                    <td>Diego Ramírez</td>
-                                    <td>Vie 12:00 - 14:00</td>
-                                    <td>5</td>
-                                    <td><span class="status-badge active">Activa</span></td>
+                                    <td colspan="5">Este alumno no tiene actividades inscritas.</td>
                                 </tr>
-                                <tr>
-                                    <td>Música</td>
-                                    <td>Luis Morales</td>
-                                    <td>Mié 15:00 - 16:30 / Vie 15:00 - 16:30</td>
-                                    <td>4</td>
-                                    <td><span class="status-badge active">Activa</span></td>
-                                </tr>
+                                <%
+                                    }
+                                %>
                                 </tbody>
                             </table>
                         </div>
@@ -295,52 +338,48 @@
 <div class="modal fade" id="modalNuevoAlumno" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content custom-modal">
-            <div class="modal-header">
-                <h5 class="modal-title">Nuevo alumno</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
+            <form method="post" action="<%= request.getContextPath() %>/guardar-alumno">
+                <div class="modal-header">
+                    <h5 class="modal-title">Nuevo alumno</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
 
-            <div class="modal-body">
-                <div class="student-form-grid">
-                    <div class="form-group">
-                        <label for="studentName">Nombre completo</label>
-                        <input type="text" id="studentName" class="form-control" placeholder="Ej. Carla Gómez">
-                    </div>
+                <div class="modal-body">
+                    <div class="student-form-grid">
+                        <div class="form-group">
+                            <label for="studentName">Nombre completo</label>
+                            <input type="text" id="studentName" name="nombreCompleto" class="form-control" placeholder="Ej. Carla Gómez" required>
+                        </div>
 
-                    <div class="form-group">
-                        <label for="studentBirthDate">Fecha de nacimiento</label>
-                        <input type="date" id="studentBirthDate" class="form-control">
-                    </div>
+                        <div class="form-group">
+                            <label for="studentBirthDate">Fecha de nacimiento</label>
+                            <input type="date" id="studentBirthDate" name="fechaNacimiento" class="form-control" required>
+                        </div>
 
-                    <div class="form-group">
-                        <label for="studentCurp">CURP</label>
-                        <input type="text" id="studentCurp" class="form-control" placeholder="Ej. GOGC090512MQRMLRA3">
-                    </div>
+                        <div class="form-group">
+                            <label for="studentCurp">CURP</label>
+                            <input type="text" id="studentCurp" name="curp" class="form-control" placeholder="Ej. GOGC090512MQRMLRA3" required maxlength="18">
+                        </div>
 
-                    <div class="form-group">
-                        <label for="studentPhone">Celular</label>
-                        <input type="text" id="studentPhone" class="form-control" placeholder="Ej. 999 123 4567">
-                    </div>
+                        <div class="form-group">
+                            <label for="studentPhone">Celular</label>
+                            <input type="text" id="studentPhone" name="celular" class="form-control" placeholder="Ej. 999 123 4567" required>
+                        </div>
 
-                    <div class="form-group full">
-                        <label for="studentAddress">Domicilio</label>
-                        <textarea id="studentAddress" class="form-control" rows="3" placeholder="Ej. Calle 24 #123, Col. Centro, Chetumal, Quintana Roo, C.P. 77000"></textarea>
-                    </div>
+                        <div class="form-group full">
+                            <label for="studentAddress">Domicilio</label>
+                                <textarea id="studentAddress" name="domicilio" class="form-control" rows="3" placeholder="Ej. Calle 24 #123, Col. Centro, Chetumal, Quintana Roo, C.P. 77000" required></textarea>
+                            </div>
 
-                    <div class="form-group">
-                        <label for="studentStatus">Estado</label>
-                        <select id="studentStatus" class="form-select">
-                            <option>Activo</option>
-                            <option>Inactivo</option>
-                        </select>
+                        <input type="hidden" name="estadoAlumno" value="Activo">
                     </div>
                 </div>
-            </div>
 
-            <div class="modal-footer">
-                <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn activity-primary-btn modal-save-btn">Guardar</button>
-            </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn activity-primary-btn modal-save-btn">Guardar</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -349,19 +388,82 @@
 <div class="modal fade" id="modalEditarAlumno" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content custom-modal">
-            <div class="modal-header">
-                <h5 class="modal-title">Editar alumno</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
+            <form method="post" action="<%= request.getContextPath() %>/actualizar-alumno">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar alumno</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
 
-            <div class="modal-body">
-                <p class="modal-note">Aquí irá el mismo formulario de alta, pero cargado con los datos del alumno seleccionado.</p>
-            </div>
+                <div class="modal-body">
+                    <input type="hidden" name="idAlumno" value="<%= alumnoSeleccionado != null ? alumnoSeleccionado.getIdAlumno() : 0 %>">
 
-            <div class="modal-footer">
-                <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn activity-primary-btn modal-save-btn">Guardar cambios</button>
-            </div>
+                    <div class="student-form-grid">
+                        <div class="form-group">
+                            <label for="editStudentName">Nombre completo</label>
+                            <input type="text"
+                                   id="editStudentName"
+                                   name="nombreCompleto"
+                                   class="form-control"
+                                   value="<%= alumnoSeleccionado != null ? alumnoSeleccionado.getNombreCompleto() : "" %>"
+                                   required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editStudentBirthDate">Fecha de nacimiento</label>
+                            <input type="date"
+                                   id="editStudentBirthDate"
+                                   name="fechaNacimiento"
+                                   class="form-control"
+                                   value="<%= alumnoSeleccionado != null && alumnoSeleccionado.getFechaNacimiento() != null ? alumnoSeleccionado.getFechaNacimiento().toString() : "" %>"
+                                   required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editStudentCurp">CURP</label>
+                            <input type="text"
+                                   id="editStudentCurp"
+                                   name="curp"
+                                   class="form-control"
+                                   value="<%= alumnoSeleccionado != null ? alumnoSeleccionado.getCurp() : "" %>"
+                                   maxlength="18"
+                                   required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editStudentPhone">Celular</label>
+                            <input type="text"
+                                   id="editStudentPhone"
+                                   name="celular"
+                                   class="form-control"
+                                   value="<%= alumnoSeleccionado != null ? alumnoSeleccionado.getCelular() : "" %>"
+                                   required>
+                        </div>
+
+                        <div class="form-group full">
+                            <label for="editStudentAddress">Domicilio</label>
+                            <textarea id="editStudentAddress"
+                                      name="domicilio"
+                                      class="form-control"
+                                      rows="3"
+                                      required><%= alumnoSeleccionado != null ? alumnoSeleccionado.getDomicilio() : "" %></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editStudentStatus">Estado</label>
+                            <select id="editStudentStatus" name="estadoAlumno" class="form-select" required>
+                                <option value="Activo" <%= alumnoSeleccionado != null && "Activo".equalsIgnoreCase(alumnoSeleccionado.getEstadoAlumno()) ? "selected" : "" %>>Activo</option>
+                                <option value="Inactivo" <%= alumnoSeleccionado != null && "Inactivo".equalsIgnoreCase(alumnoSeleccionado.getEstadoAlumno()) ? "selected" : "" %>>Inactivo</option>
+                                <option value="Baja" <%= alumnoSeleccionado != null && "Baja".equalsIgnoreCase(alumnoSeleccionado.getEstadoAlumno()) ? "selected" : "" %>>Baja</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn activity-primary-btn modal-save-btn">Guardar cambios</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

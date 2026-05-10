@@ -1,0 +1,123 @@
+.calendar-full-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 22px;
+}
+
+.calendar-week-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 18px;
+    align-items: start;
+}
+
+.calendar-day-panel {
+    background: #fafafa;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    min-height: 520px;
+    display: flex;
+    flex-direction: column;
+}
+
+.calendar-day-header {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    font-weight: 700;
+    color: var(--primary);
+    background: rgba(118, 15, 56, 0.05);
+    border-radius: 18px 18px 0 0;
+    text-align: center;
+}
+
+.calendar-day-body {
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.calendar-event-card {
+    background: #fff;
+    border: 1px solid rgba(118, 15, 56, 0.14);
+    border-left: 4px solid var(--primary);
+    border-radius: 14px;
+    padding: 12px 12px 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+}
+
+.calendar-event-card.inactive {
+    border-left-color: #9ca3af;
+    opacity: 0.78;
+}
+
+.calendar-event-time {
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 6px;
+}
+
+.calendar-event-card h4 {
+    margin: 0 0 6px;
+    font-size: 0.98rem;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.calendar-event-card p {
+    margin: 0;
+    font-size: 0.88rem;
+    color: var(--muted);
+}
+
+@media (max-width: 1400px) {
+    .calendar-week-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .calendar-day-panel {
+        min-height: 360px;
+    }
+}
+
+@media (max-width: 900px) {
+    .calendar-week-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .calendar-day-panel {
+        min-height: auto;
+    }
+}
+
+.topbar-left-calendar {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: var(--primary);
+    font-weight: 600;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: rgba(118, 15, 56, 0.06);
+    transition: 0.2s ease;
+}
+
+.back-link:hover {
+    background: rgba(118, 15, 56, 0.12);
+    color: var(--primary);
+}
+
+.calendar-day-header.today {
+    background: var(--primary);
+    color: #fff;
+    border-bottom-color: var(--primary);
+}

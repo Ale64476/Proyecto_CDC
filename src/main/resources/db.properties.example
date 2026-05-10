@@ -1,0 +1,3 @@
+db.url=jdbc:mysql://localhost:3307/CentroComunitario?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+db.user=cc_app
+db.password=CAMBIA_ESTA_PASSWORD

@@ -12,11 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const savedState = localStorage.getItem(storageKey);
-    if (savedState === "true") {
-        applySidebarState(true);
-    } else {
-        applySidebarState(false);
-    }
+    applySidebarState(savedState === "true");
 
     if (menuToggle) {
         menuToggle.addEventListener("click", () => {
@@ -33,7 +29,6 @@ document.addEventListener("DOMContentLoaded", () => {
             month: "long",
             year: "numeric"
         });
-
         currentDate.textContent = formatted;
     }
 });

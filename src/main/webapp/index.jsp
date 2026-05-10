@@ -1,4 +1,20 @@
+<%@ page import="java.util.List" %>
+<%@ page import="com.cdc.model.DashboardResumen" %>
+<%@ page import="com.cdc.model.ActividadProxima" %>
+<%@ page import="com.cdc.model.Aviso" %>
+<%@ page import="com.cdc.model.CalendarioActividad" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
+<%
+    DashboardResumen resumenDashboard = (DashboardResumen) request.getAttribute("resumenDashboard");
+    List<ActividadProxima> proximasActividades =
+            (List<ActividadProxima>) request.getAttribute("proximasActividades");
+    List<Aviso> avisosDashboard =
+            (List<Aviso>) request.getAttribute("avisosDashboard");
+    List<CalendarioActividad> actividadesCalendario =
+            (List<CalendarioActividad>) request.getAttribute("actividadesCalendario");
+%>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -29,22 +45,22 @@
         </div>
 
         <nav class="sidebar-nav">
-            <a href="<%= request.getContextPath() %>/index.jsp" class="nav-item active">
+            <a href="<%= request.getContextPath() %>/dashboard" class="nav-item active">
                 <i class="bi bi-grid-1x2-fill"></i>
                 <span class="nav-label">Dashboard</span>
             </a>
 
-            <a href="<%= request.getContextPath() %>/actividades.jsp" class="nav-item">
+            <a href="<%= request.getContextPath() %>/actividades" class="nav-item">
                 <i class="bi bi-calendar3"></i>
                 <span class="nav-label">Actividades</span>
             </a>
 
-            <a href="<%= request.getContextPath() %>/alumnos.jsp" class="nav-item">
+            <a href="<%= request.getContextPath() %>/alumnos" class="nav-item">
                 <i class="bi bi-people-fill"></i>
                 <span class="nav-label">Alumnos</span>
             </a>
 
-            <a href="<%= request.getContextPath() %>/reportes.jsp" class="nav-item">
+            <a href="<%= request.getContextPath() %>/reportes" class="nav-item">
                 <i class="bi bi-file-earmark-bar-graph-fill"></i>
                 <span class="nav-label">Reportes</span>
             </a>
@@ -73,7 +89,9 @@
                     </div>
                     <div>
                         <p class="metric-label">Alumnos registrados</p>
-                        <h2 class="metric-value">150</h2>
+                        <h2 class="metric-value">
+                            <%= resumenDashboard != null ? resumenDashboard.getTotalAlumnosRegistrados() : 0 %>
+                        </h2>
                     </div>
                 </article>
 
@@ -83,7 +101,9 @@
                     </div>
                     <div>
                         <p class="metric-label">Talleres activos</p>
-                        <h2 class="metric-value">20</h2>
+                        <h2 class="metric-value">
+                            <%= resumenDashboard != null ? resumenDashboard.getTotalActividadesActivas() : 0 %>
+                        </h2>
                     </div>
                 </article>
 
@@ -93,7 +113,9 @@
                     </div>
                     <div>
                         <p class="metric-label">Actividades de hoy</p>
-                        <h2 class="metric-value">3</h2>
+                        <h2 class="metric-value">
+                            <%= resumenDashboard != null ? resumenDashboard.getActividadesDeHoy() : 0 %>
+                        </h2>
                     </div>
                 </article>
 
@@ -103,7 +125,9 @@
                     </div>
                     <div>
                         <p class="metric-label">Asistencias hoy</p>
-                        <h2 class="metric-value">48</h2>
+                        <h2 class="metric-value">
+                            <%= resumenDashboard != null ? resumenDashboard.getAsistenciasRegistradasHoy() : 0 %>
+                        </h2>
                     </div>
                 </article>
             </section>
@@ -112,81 +136,186 @@
                 <article class="panel-card">
                     <div class="panel-header">
                         <h3>Calendario resumido</h3>
-                        <a href="#" class="panel-link">Ver completo</a>
+                        <a href="<%= request.getContextPath() %>/calendario" class="calendar-link">Ver completo</a>
                     </div>
 
                     <div class="mini-calendar">
                         <div class="day-column">
                             <span class="day-name">Lun</span>
+                            <%
+                                int lunesCount = 0;
+                                if (actividadesCalendario != null) {
+                                    for (CalendarioActividad item : actividadesCalendario) {
+                                        if ("Lunes".equalsIgnoreCase(item.getDiaSemana()) && lunesCount < 3) {
+                            %>
+                            <div class="slot active"><%= item.getNombreActividad() %></div>
+                            <%
+                                            lunesCount++;
+                                        }
+                                    }
+                                }
+                                while (lunesCount < 3) {
+                            %>
                             <div class="slot empty"></div>
-                            <div class="slot active">Arte</div>
-                            <div class="slot empty"></div>
+                            <%
+                                    lunesCount++;
+                                }
+                            %>
                         </div>
 
                         <div class="day-column">
                             <span class="day-name">Mar</span>
-                            <div class="slot active">Música</div>
+                            <%
+                                int martesCount = 0;
+                                if (actividadesCalendario != null) {
+                                    for (CalendarioActividad item : actividadesCalendario) {
+                                        if ("Martes".equalsIgnoreCase(item.getDiaSemana()) && martesCount < 3) {
+                            %>
+                            <div class="slot active"><%= item.getNombreActividad() %></div>
+                            <%
+                                            martesCount++;
+                                        }
+                                    }
+                                }
+                                while (martesCount < 3) {
+                            %>
                             <div class="slot empty"></div>
-                            <div class="slot active">Computación</div>
+                            <%
+                                    martesCount++;
+                                }
+                            %>
                         </div>
 
                         <div class="day-column">
                             <span class="day-name">Mié</span>
+                            <%
+                                int miercolesCount = 0;
+                                if (actividadesCalendario != null) {
+                                    for (CalendarioActividad item : actividadesCalendario) {
+                                        if ("Miércoles".equalsIgnoreCase(item.getDiaSemana()) && miercolesCount < 3) {
+                            %>
+                            <div class="slot active"><%= item.getNombreActividad() %></div>
+                            <%
+                                            miercolesCount++;
+                                        }
+                                    }
+                                }
+                                while (miercolesCount < 3) {
+                            %>
                             <div class="slot empty"></div>
-                            <div class="slot active">Boxeo</div>
-                            <div class="slot empty"></div>
+                            <%
+                                    miercolesCount++;
+                                }
+                            %>
                         </div>
 
                         <div class="day-column">
                             <span class="day-name">Jue</span>
-                            <div class="slot active">Pintura</div>
+                            <%
+                                int juevesCount = 0;
+                                if (actividadesCalendario != null) {
+                                    for (CalendarioActividad item : actividadesCalendario) {
+                                        if ("Jueves".equalsIgnoreCase(item.getDiaSemana()) && juevesCount < 3) {
+                            %>
+                            <div class="slot active"><%= item.getNombreActividad() %></div>
+                            <%
+                                            juevesCount++;
+                                        }
+                                    }
+                                }
+                                while (juevesCount < 3) {
+                            %>
                             <div class="slot empty"></div>
-                            <div class="slot empty"></div>
+                            <%
+                                    juevesCount++;
+                                }
+                            %>
                         </div>
 
                         <div class="day-column">
                             <span class="day-name">Vie</span>
+                            <%
+                                int viernesCount = 0;
+                                if (actividadesCalendario != null) {
+                                    for (CalendarioActividad item : actividadesCalendario) {
+                                        if ("Viernes".equalsIgnoreCase(item.getDiaSemana()) && viernesCount < 3) {
+                            %>
+                            <div class="slot active"><%= item.getNombreActividad() %></div>
+                            <%
+                                            viernesCount++;
+                                        }
+                                    }
+                                }
+                                while (viernesCount < 3) {
+                            %>
                             <div class="slot empty"></div>
-                            <div class="slot active">Danza</div>
-                            <div class="slot active">Lectura</div>
+                            <%
+                                    viernesCount++;
+                                }
+                            %>
                         </div>
                     </div>
                 </article>
 
                 <article class="panel-card">
                     <div class="panel-header">
-                        <h3>Próximas actividades</h3>
+                        <h3>Actividades de hoy</h3>
                     </div>
 
                     <ul class="activity-list">
-                        <li>
-                            <span class="activity-time">10:00</span>
-                            <div>
-                                <strong>Taller de pintura</strong>
-                                <small>Sala 1</small>
+                    <%
+                        if (proximasActividades != null && !proximasActividades.isEmpty()) {
+                            java.time.LocalTime horaActual = java.time.LocalTime.now();
+
+                            for (ActividadProxima actividad : proximasActividades) {
+                                java.time.LocalTime inicio = actividad.getHoraInicio() != null
+                                        ? actividad.getHoraInicio().toLocalTime()
+                                        : null;
+                                java.time.LocalTime fin = actividad.getHoraFin() != null
+                                        ? actividad.getHoraFin().toLocalTime()
+                                        : null;
+
+                                String estadoActividad = "Próxima";
+                                String claseEstadoActividad = "status-upcoming";
+
+                                if (inicio != null && fin != null) {
+                                    if (!horaActual.isBefore(inicio) && !horaActual.isAfter(fin)) {
+                                        estadoActividad = "En curso";
+                                        claseEstadoActividad = "status-current";
+                                    } else if (horaActual.isAfter(fin)) {
+                                        estadoActividad = "Finalizada";
+                                        claseEstadoActividad = "status-finished";
+                                    }
+                                }
+                    %>
+                        <li class="activity-list-item">
+                            <span class="activity-time">
+                                <%= actividad.getHoraInicio() != null ? actividad.getHoraInicio().toString().substring(0,5) : "--:--" %>
+                            </span>
+
+                            <div class="activity-main-info">
+                                <strong><%= actividad.getNombreActividad() %></strong>
+                                <small><%= actividad.getDiaSemana() %> · <%= actividad.getInstructor() %></small>
+                            </div>
+
+                            <span class="activity-state-badge <%= claseEstadoActividad %>">
+                                <%= estadoActividad %>
+                            </span>
+                        </li>
+                    <%
+                            }
+                        } else {
+                    %>
+                        <li class="activity-list-item">
+                            <span class="activity-time">--:--</span>
+                            <div class="activity-main-info">
+                                <strong>Sin actividades programadas hoy</strong>
+                                <small>No hay registros para el día actual</small>
                             </div>
                         </li>
-                        <li>
-                            <span class="activity-time">12:00</span>
-                            <div>
-                                <strong>Curso de computación</strong>
-                                <small>Aula digital</small>
-                            </div>
-                        </li>
-                        <li>
-                            <span class="activity-time">16:00</span>
-                            <div>
-                                <strong>Actividad deportiva</strong>
-                                <small>Cancha</small>
-                            </div>
-                        </li>
-                        <li>
-                            <span class="activity-time">18:00</span>
-                            <div>
-                                <strong>Reunión comunitaria</strong>
-                                <small>Salón principal</small>
-                            </div>
-                        </li>
+                    <%
+                        }
+                    %>
                     </ul>
                 </article>
 
@@ -224,18 +353,25 @@
                     </div>
 
                     <ul class="alerts-list">
-                        <li class="alert-item warning">
-                            <i class="bi bi-exclamation-triangle-fill"></i>
-                            <span>Taller de arte con cupo limitado.</span>
-                        </li>
-                        <li class="alert-item danger">
-                            <i class="bi bi-clock-fill"></i>
-                            <span>Actividad próxima sin asistencia registrada.</span>
-                        </li>
+                    <%
+                        if (avisosDashboard != null && !avisosDashboard.isEmpty()) {
+                            for (Aviso aviso : avisosDashboard) {
+                    %>
                         <li class="alert-item info">
-                            <i class="bi bi-people-fill"></i>
-                            <span>Taller de música sin alumnos inscritos.</span>
+                            <i class="bi bi-megaphone-fill"></i>
+                            <span><strong><%= aviso.getTitulo() %>:</strong> <%= aviso.getMensaje() %></span>
                         </li>
+                    <%
+                            }
+                        } else {
+                    %>
+                        <li class="alert-item info">
+                            <i class="bi bi-info-circle-fill"></i>
+                            <span>No hay avisos publicados.</span>
+                        </li>
+                    <%
+                        }
+                    %>
                     </ul>
                 </article>
             </section>

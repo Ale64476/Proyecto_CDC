@@ -498,3 +498,40 @@ body.sidebar-collapsed .nav-item::before {
         grid-template-columns: 1fr;
     }
 }
+
+.activity-list-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.activity-main-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+}
+
+.activity-state-badge {
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.status-current {
+    background: rgba(22, 163, 74, 0.12);
+    color: #15803d;
+}
+
+.status-upcoming {
+    background: rgba(118, 15, 56, 0.08);
+    color: var(--primary);
+}
+
+.status-finished {
+    background: #f3f4f6;
+    color: #6b7280;
+}
