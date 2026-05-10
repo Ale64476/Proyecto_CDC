@@ -213,6 +213,28 @@
                             textoMensaje = "No puedes retirar alumnos de una actividad inactiva.";
                             break;
 
+                        case "actividad_desactivada":
+                            textoMensaje = "Actividad desactivada correctamente. Ya no permitirá inscripciones ni asistencia.";
+                            break;
+                        case "actividad_reactivada":
+                            textoMensaje = "Actividad reactivada correctamente. Ya permite inscripciones y asistencia nuevamente.";
+                            break;
+                        case "estado_actividad_id_invalido": 
+                            textoMensaje = "El identificador de la actividad no es válido.";
+                            break;
+                        case "estado_actividad_invalido":
+                            textoMensaje = "El nuevo estado de la actividad no es válido.";
+                            break;
+                        case "estado_actividad_no_encontrada":
+                            textoMensaje = "No se encontró la actividad seleccionada.";
+                            break;
+                        case "estado_actividad_sin_cambios":
+                            textoMensaje = "La actividad ya tenía ese estado.";
+                            break;
+                        case "estado_actividad_no_actualizado":
+                            textoMensaje = "No se pudo actualizar el estado de la actividad.";
+                            break;
+
                         default:
                             textoMensaje = null;
                     }
