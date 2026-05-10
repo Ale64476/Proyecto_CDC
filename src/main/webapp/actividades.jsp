@@ -444,7 +444,11 @@
 
                             <form method="post"
                                 action="<%= request.getContextPath() %>/cambiar-estado-actividad"
-                                onsubmit="return confirm('<%= mensajeConfirmacionEstado %>');"
+                                class="js-confirm-submit"
+                                data-confirm-title="<%= actividadActiva ? "Desactivar actividad" : "Reactivar actividad" %>"
+                                data-confirm-message="<%= mensajeConfirmacionEstado %>"
+                                data-confirm-confirm-text="<%= textoBotonEstado %>"
+                                data-confirm-danger="<%= actividadActiva ? "true" : "false" %>"
                                 style="display: inline;">
                                 <input type="hidden" name="idActividad"
                                     value="<%= actividadSeleccionada != null ? actividadSeleccionada.getIdActividad() : 0 %>">
@@ -513,7 +517,11 @@
                                         <% if (actividadActiva) { %>
                                             <form method="post"
                                                 action="<%= request.getContextPath() %>/retirar-alumno-actividad"
-                                                onsubmit="return confirm('¿Seguro que deseas retirar a este alumno de la actividad? Su historial se conservará.');"
+                                                class="js-confirm-submit"
+                                                data-confirm-title="Retirar alumno"
+                                                data-confirm-message="¿Seguro que deseas retirar a <%= alumno.getNombreCompleto() %> de esta actividad? Su historial se conservará."
+                                                data-confirm-confirm-text="Retirar alumno"
+                                                data-confirm-danger="true"
                                                 style="display:inline;">
 
                                                 <input type="hidden"
@@ -1062,9 +1070,19 @@
             <p id="cdcMiniMessage">Hay un dato inválido.</p>
         </div>
 
-        <button type="button" class="cdc-mini-btn" id="cdcMiniOk">
-            Entendido
-        </button>
+        <div class="cdc-mini-actions">
+            <button type="button" class="cdc-mini-btn cdc-mini-btn-secondary oculto" id="cdcMiniCancel">
+                Cancelar
+            </button>
+
+            <button type="button" class="cdc-mini-btn cdc-mini-btn-danger oculto" id="cdcMiniConfirm">
+                Confirmar
+            </button>
+
+            <button type="button" class="cdc-mini-btn" id="cdcMiniOk">
+                Entendido
+            </button>
+        </div>
     </div>
 </div>
 

@@ -739,3 +739,45 @@ body.sidebar-collapsed .nav-item::before {
         transform: translateY(0) scale(1);
     }
 }
+
+.cdc-mini-actions {
+    margin-top: 22px;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.cdc-mini-actions .cdc-mini-btn {
+    margin-top: 0;
+}
+
+.cdc-mini-btn-secondary {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.cdc-mini-btn-secondary:hover {
+    background: #e5e7eb;
+}
+
+.cdc-mini-btn-danger {
+    background: #b42318;
+    color: #ffffff;
+}
+
+.cdc-mini-btn-danger:hover {
+    background: #991b1b;
+}
+
+.cdc-mini-btn-primary {
+    background: var(--primary);
+    color: #ffffff;
+}
+
+.cdc-mini-btn-primary:hover {
+    background: var(--primary-dark);
+}
+
+.oculto {
+    display: none !important;
+}

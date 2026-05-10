@@ -372,7 +372,11 @@
 
                             <form method="post"
                                 action="<%= request.getContextPath() %>/cambiar-estado-alumno"
-                                onsubmit="return confirm('<%= mensajeConfirmacionAlumno %>');"
+                                class="js-confirm-submit"
+                                data-confirm-title="<%= alumnoActivo ? "Dar de baja alumno" : "Reactivar alumno" %>"
+                                data-confirm-message="<%= mensajeConfirmacionAlumno %>"
+                                data-confirm-confirm-text="<%= textoBotonAlumno %>"
+                                data-confirm-danger="<%= alumnoActivo ? "true" : "false" %>"
                                 style="display: inline;">
                                 <input type="hidden" name="idAlumno"
                                     value="<%= alumnoSeleccionado != null ? alumnoSeleccionado.getIdAlumno() : 0 %>">
@@ -591,9 +595,19 @@
             <p id="cdcMiniMessage">Hay un dato inválido.</p>
         </div>
 
-        <button type="button" class="cdc-mini-btn" id="cdcMiniOk">
-            Entendido
-        </button>
+        <div class="cdc-mini-actions">
+            <button type="button" class="cdc-mini-btn cdc-mini-btn-secondary oculto" id="cdcMiniCancel">
+                Cancelar
+            </button>
+
+            <button type="button" class="cdc-mini-btn cdc-mini-btn-danger oculto" id="cdcMiniConfirm">
+                Confirmar
+            </button>
+
+            <button type="button" class="cdc-mini-btn" id="cdcMiniOk">
+                Entendido
+            </button>
+        </div>
     </div>
 </div>
 

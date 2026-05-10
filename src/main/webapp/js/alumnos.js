@@ -139,6 +139,7 @@ function mostrarMiniModal(titulo, mensaje, campo, formulario) {
 
     tituloModal.textContent = titulo;
     mensajeModal.textContent = mensaje;
+    activarModoInfoMiniModal();
 
     modal.classList.remove("oculto");
     modal.dataset.campo = campo || "";
@@ -188,5 +189,88 @@ function cerrarMiniModal() {
 
             delete formularioActivo.dataset.formularioActivo;
         }
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    configurarConfirmacionesPeligrosas();
+});
+
+function configurarConfirmacionesPeligrosas() {
+    const formulariosConfirmacion = document.querySelectorAll(".js-confirm-submit");
+
+    formulariosConfirmacion.forEach(function (formulario) {
+        formulario.addEventListener("submit", function (event) {
+            if (formulario.dataset.confirmado === "true") {
+                return;
+            }
+
+            event.preventDefault();
+
+            mostrarMiniModalConfirmacion(
+                formulario.dataset.confirmTitle || "Confirmar acción",
+                formulario.dataset.confirmMessage || "¿Deseas continuar?",
+                formulario.dataset.confirmConfirmText || "Confirmar",
+                formulario.dataset.confirmDanger === "true",
+                formulario
+            );
+        });
+    });
+}
+
+function mostrarMiniModalConfirmacion(titulo, mensaje, textoConfirmar, esPeligroso, formulario) {
+    const modal = document.getElementById("cdcMiniModal");
+    const tituloModal = document.getElementById("cdcMiniTitle");
+    const mensajeModal = document.getElementById("cdcMiniMessage");
+    const botonOk = document.getElementById("cdcMiniOk");
+    const botonCancelar = document.getElementById("cdcMiniCancel");
+    const botonConfirmar = document.getElementById("cdcMiniConfirm");
+
+    if (!modal || !tituloModal || !mensajeModal || !botonOk || !botonCancelar || !botonConfirmar) {
+        if (confirm(mensaje)) {
+            formulario.submit();
+        }
+        return;
+    }
+
+    tituloModal.textContent = titulo;
+    mensajeModal.textContent = mensaje;
+
+    botonOk.classList.add("oculto");
+    botonCancelar.classList.remove("oculto");
+    botonConfirmar.classList.remove("oculto");
+
+    botonConfirmar.textContent = textoConfirmar;
+    botonConfirmar.classList.toggle("cdc-mini-btn-danger", esPeligroso);
+    botonConfirmar.classList.toggle("cdc-mini-btn-primary", !esPeligroso);
+
+    botonConfirmar.onclick = function () {
+        formulario.dataset.confirmado = "true";
+        formulario.submit();
+    };
+
+    botonCancelar.onclick = function () {
+        cerrarMiniModal();
+    };
+
+    modal.classList.remove("oculto");
+}
+
+function activarModoInfoMiniModal() {
+    const botonOk = document.getElementById("cdcMiniOk");
+    const botonCancelar = document.getElementById("cdcMiniCancel");
+    const botonConfirmar = document.getElementById("cdcMiniConfirm");
+
+    if (botonOk) {
+        botonOk.classList.remove("oculto");
+    }
+
+    if (botonCancelar) {
+        botonCancelar.classList.add("oculto");
+    }
+
+    if (botonConfirmar) {
+        botonConfirmar.classList.add("oculto");
+        botonConfirmar.onclick = null;
     }
 }
