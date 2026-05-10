@@ -88,6 +88,90 @@
                 </div>
             </div>
 
+            <%
+                String tipoMensaje = request.getParameter("tipoMensaje");
+                String mensaje = request.getParameter("mensaje");
+
+                String textoMensaje = null;
+
+                if (mensaje != null) {
+                    switch (mensaje) {
+                        case "alumno_guardado":
+                            textoMensaje = "Alumno guardado correctamente.";
+                            break;
+                        case "alumno_actualizado":
+                            textoMensaje = "Alumno actualizado correctamente.";
+                            break;
+                        case "alumno_no_guardado":
+                            textoMensaje = "No se pudo guardar el alumno.";
+                            break;
+                        case "alumno_no_actualizado":
+                            textoMensaje = "No se pudo actualizar el alumno.";
+                            break;
+                        case "nombre_obligatorio":
+                            textoMensaje = "El nombre completo es obligatorio.";
+                            break;
+                        case "nombre_invalido":
+                            textoMensaje = "El nombre no debe contener números y debe tener al menos 3 caracteres.";
+                            break;
+                        case "fecha_obligatoria":
+                            textoMensaje = "La fecha de nacimiento es obligatoria.";
+                            break;
+                        case "fecha_invalida":
+                            textoMensaje = "La fecha de nacimiento no tiene un formato válido.";
+                            break;
+                        case "fecha_futura":
+                            textoMensaje = "La fecha de nacimiento no puede ser futura.";
+                            break;
+                        case "curp_obligatoria":
+                            textoMensaje = "La CURP es obligatoria.";
+                            break;
+                        case "curp_invalida":
+                            textoMensaje = "La CURP debe tener 18 caracteres alfanuméricos.";
+                            break;
+                        case "celular_invalido":
+                            textoMensaje = "El celular debe tener 10 dígitos.";
+                            break;
+                        case "domicilio_invalido":
+                            textoMensaje = "El domicilio debe tener al menos 5 caracteres.";
+                            break;
+                        case "estado_invalido":
+                            textoMensaje = "El estado del alumno no es válido.";
+                            break;
+                        case "id_alumno_invalido":
+                            textoMensaje = "El identificador del alumno no es válido.";
+                            break;
+                        case "error_sistema":
+                            textoMensaje = "Ocurrió un error interno. Revisa la consola de Tomcat.";
+                            break;
+                        default:
+                            textoMensaje = null;
+                    }
+                }
+
+                if (textoMensaje != null) {
+                    String claseAlerta = "exito".equalsIgnoreCase(tipoMensaje) ? "alert-success" : "alert-danger";
+            %>
+                <div class="cdc-toast <%= "exito".equalsIgnoreCase(tipoMensaje) ? "cdc-toast-success" : "cdc-toast-error" %>">
+                    <div class="cdc-toast-icon">
+                        <%= "exito".equalsIgnoreCase(tipoMensaje) ? "✓" : "!" %>
+                    </div>
+
+                    <div class="cdc-toast-content">
+                        <strong>
+                            <%= "exito".equalsIgnoreCase(tipoMensaje) ? "Operación exitosa" : "Revisa la información" %>
+                        </strong>
+                        <span><%= textoMensaje %></span>
+                    </div>
+
+                    <button type="button" class="cdc-toast-close" onclick="this.parentElement.style.display='none'">
+                        ×
+                    </button>
+                </div>
+            <%
+                }
+            %>
+
             <div class="topbar-right">
                 <button class="activity-primary-btn" type="button" data-bs-toggle="modal" data-bs-target="#modalNuevoAlumno">
                     <i class="bi bi-plus-lg"></i>
@@ -472,4 +556,24 @@
 <script src="<%= request.getContextPath() %>/js/dashboard.js?v=<%= System.currentTimeMillis() %>"></script>
 <script src="<%= request.getContextPath() %>/js/alumnos.js?v=<%= System.currentTimeMillis() %>"></script>
 </body>
+
+<div id="cdcMiniModal" class="cdc-mini-modal oculto">
+    <div class="cdc-mini-card">
+        <button type="button" class="cdc-mini-close" id="cdcMiniClose">×</button>
+
+        <div class="cdc-mini-icon" id="cdcMiniIcon">
+            !
+        </div>
+
+        <div class="cdc-mini-content">
+            <h3 id="cdcMiniTitle">Revisa la información</h3>
+            <p id="cdcMiniMessage">Hay un dato inválido.</p>
+        </div>
+
+        <button type="button" class="cdc-mini-btn" id="cdcMiniOk">
+            Entendido
+        </button>
+    </div>
+</div>
+
 </html>
