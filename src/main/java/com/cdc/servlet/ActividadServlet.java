@@ -17,6 +17,7 @@ import com.cdc.model.Actividad;
 import com.cdc.model.Alumno;
 import com.cdc.model.AlumnoInscritoActividad;
 import com.cdc.model.CalendarioActividad;
+import com.cdc.model.HorarioActividad;
 import com.cdc.model.Instructor;
 
 @WebServlet("/actividades")
@@ -43,32 +44,41 @@ public class ActividadServlet extends HttpServlet {
         Actividad actividadSeleccionada = null;
         List<AlumnoInscritoActividad> alumnosInscritos = null;
         List<Alumno> alumnosDisponibles = null;
+        List<HorarioActividad> horariosSeleccionados = null;
 
         String idParam = request.getParameter("id");
 
         if (idParam != null && !idParam.isBlank()) {
             try {
                 int idActividad = Integer.parseInt(idParam);
+
                 actividadSeleccionada = actividadDAO.buscarPorId(idActividad);
 
                 if (actividadSeleccionada != null) {
                     alumnosInscritos = actividadDAO.listarAlumnosInscritos(idActividad);
                     alumnosDisponibles = alumnoDAO.listarDisponiblesParaActividad(idActividad);
+                    horariosSeleccionados = actividadDAO.listarHorariosPorActividad(idActividad);
                 }
+
             } catch (NumberFormatException e) {
                 actividadSeleccionada = null;
             }
         }
 
-        if (actividadSeleccionada == null && !actividades.isEmpty()) {
+        if (actividadSeleccionada == null && actividades != null && !actividades.isEmpty()) {
             actividadSeleccionada = actividades.get(0);
-            alumnosInscritos = actividadDAO.listarAlumnosInscritos(actividadSeleccionada.getIdActividad());
-            alumnosDisponibles = alumnoDAO.listarDisponiblesParaActividad(actividadSeleccionada.getIdActividad());
+
+            int idActividad = actividadSeleccionada.getIdActividad();
+
+            alumnosInscritos = actividadDAO.listarAlumnosInscritos(idActividad);
+            alumnosDisponibles = alumnoDAO.listarDisponiblesParaActividad(idActividad);
+            horariosSeleccionados = actividadDAO.listarHorariosPorActividad(idActividad);
         }
 
         request.setAttribute("actividadSeleccionada", actividadSeleccionada);
         request.setAttribute("alumnosInscritos", alumnosInscritos);
         request.setAttribute("alumnosDisponibles", alumnosDisponibles);
+        request.setAttribute("horariosSeleccionados", horariosSeleccionados);
 
         request.getRequestDispatcher("/actividades.jsp").forward(request, response);
     }

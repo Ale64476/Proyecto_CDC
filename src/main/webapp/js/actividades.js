@@ -2,47 +2,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const buscarAlumnoDisponible = document.getElementById("buscarAlumnoDisponible");
     const listaAlumnosDisponibles = document.querySelectorAll(".alumno-disponible-item");
+
     const addScheduleRowBtn = document.getElementById("addScheduleRowBtn");
     const scheduleRows = document.getElementById("scheduleRows");
+
+    const addEditScheduleRowBtn = document.getElementById("addEditScheduleRowBtn");
+    const editScheduleRows = document.getElementById("editScheduleRows");
+
     const attendanceDate = document.getElementById("attendanceDate");
 
-    if (addScheduleRowBtn && scheduleRows) {
-        addScheduleRowBtn.addEventListener("click", () => {
-            const row = document.createElement("div");
-            row.className = "schedule-row";
-            row.innerHTML = `
-                <select class="form-select" name="diaSemana">
-                    <option>Lunes</option>
-                    <option>Martes</option>
-                    <option>Miércoles</option>
-                    <option>Jueves</option>
-                    <option>Viernes</option>
-                    <option>Sábado</option>
-                </select>
-
-                <input type="time" class="form-control" name="horaInicio" value="10:00">
-                <input type="time" class="form-control" name="horaFin" value="12:00">
-
-                <button type="button" class="table-icon-btn remove-schedule-btn" title="Quitar horario">
-                    <i class="bi bi-trash"></i>
-                </button>
-            `;
-            scheduleRows.appendChild(row);
-        });
-
-        scheduleRows.addEventListener("click", (event) => {
-            const removeBtn = event.target.closest(".remove-schedule-btn");
-            if (!removeBtn) return;
-
-            const row = removeBtn.closest(".schedule-row");
-            if (!row) return;
-
-            const totalRows = scheduleRows.querySelectorAll(".schedule-row").length;
-            if (totalRows > 1) {
-                row.remove();
-            }
-        });
-    }
+    configurarConstructorHorarios(addScheduleRowBtn, scheduleRows);
+    configurarConstructorHorarios(addEditScheduleRowBtn, editScheduleRows);
 
     if (attendanceDate) {
         const today = new Date();
@@ -63,6 +33,58 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+
+function configurarConstructorHorarios(botonAgregar, contenedor) {
+    if (!botonAgregar || !contenedor) {
+        return;
+    }
+
+    botonAgregar.addEventListener("click", () => {
+        contenedor.insertAdjacentHTML("beforeend", crearFilaHorario());
+    });
+
+    contenedor.addEventListener("click", (event) => {
+        const removeBtn = event.target.closest(".remove-schedule-btn");
+
+        if (!removeBtn) {
+            return;
+        }
+
+        const row = removeBtn.closest(".schedule-row");
+
+        if (!row) {
+            return;
+        }
+
+        const totalRows = contenedor.querySelectorAll(".schedule-row").length;
+
+        if (totalRows > 1) {
+            row.remove();
+        }
+    });
+}
+
+function crearFilaHorario() {
+    return `
+        <div class="schedule-row">
+            <select class="form-select" name="diaSemana">
+                <option value="Lunes">Lunes</option>
+                <option value="Martes">Martes</option>
+                <option value="Miércoles">Miércoles</option>
+                <option value="Jueves">Jueves</option>
+                <option value="Viernes">Viernes</option>
+                <option value="Sábado">Sábado</option>
+            </select>
+
+            <input type="time" class="form-control" name="horaInicio" value="10:00">
+            <input type="time" class="form-control" name="horaFin" value="12:00">
+
+            <button type="button" class="table-icon-btn remove-schedule-btn" title="Quitar horario">
+                <i class="bi bi-trash"></i>
+            </button>
+        </div>
+    `;
+}
 
 document.addEventListener("DOMContentLoaded", function () {
     const formulariosActividad = document.querySelectorAll(
@@ -118,7 +140,11 @@ function validarFormularioActividad(formulario) {
         };
     }
 
-    const esFormularioNuevo = formulario.getAttribute("action").includes("guardar-actividad");
+    const resultadoHorarios = validarHorariosActividad(formulario);
+
+    if (!resultadoHorarios.valido) {
+        return resultadoHorarios;
+    }
 
     if (esFormularioNuevo) {
         const resultadoHorarios = validarHorariosActividad(formulario);

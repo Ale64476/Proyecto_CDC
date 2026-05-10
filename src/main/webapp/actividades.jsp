@@ -4,6 +4,7 @@
 <%@ page import="com.cdc.model.AlumnoInscritoActividad" %>
 <%@ page import="com.cdc.model.Instructor" %>
 <%@ page import="com.cdc.model.CalendarioActividad" %>
+<%@ page import="com.cdc.model.HorarioActividad" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <%
@@ -17,6 +18,8 @@
             (List<Instructor>) request.getAttribute("instructoresActivos");
     List<CalendarioActividad> actividadesCalendario =
             (List<CalendarioActividad>) request.getAttribute("actividadesCalendario");
+    List<HorarioActividad> horariosSeleccionados =
+        (List<HorarioActividad>) request.getAttribute("horariosSeleccionados");
 %>
 
 <!DOCTYPE html>
@@ -827,9 +830,70 @@
                         </div>
                     </div>
 
-                    <p class="modal-note mt-3">
-                        Por ahora la edición de horarios se hará después. En esta versión solo se actualizan los datos principales de la actividad.
-                    </p>
+                    <div class="schedule-builder">
+                        <div class="schedule-builder-header">
+                            <h6>Horarios</h6>
+                            <button type="button" class="small-inline-btn" id="addEditScheduleRowBtn">
+                                <i class="bi bi-plus-lg"></i>
+                                <span>Agregar horario</span>
+                            </button>
+                        </div>
+
+                        <div id="editScheduleRows">
+                            <%
+                                if (horariosSeleccionados != null && !horariosSeleccionados.isEmpty()) {
+                                    for (HorarioActividad horario : horariosSeleccionados) {
+                                        String diaHorario = horario.getDiaSemana();
+                                        String horaInicioHorario = horario.getHoraInicio() != null
+                                                ? horario.getHoraInicio().toString().substring(0, 5)
+                                                : "10:00";
+                                        String horaFinHorario = horario.getHoraFin() != null
+                                                ? horario.getHoraFin().toString().substring(0, 5)
+                                                : "12:00";
+                            %>
+                            <div class="schedule-row">
+                                <select class="form-select" name="diaSemana">
+                                    <option value="Lunes" <%= "Lunes".equalsIgnoreCase(diaHorario) ? "selected" : "" %>>Lunes</option>
+                                    <option value="Martes" <%= "Martes".equalsIgnoreCase(diaHorario) ? "selected" : "" %>>Martes</option>
+                                    <option value="Miércoles" <%= "Miércoles".equalsIgnoreCase(diaHorario) ? "selected" : "" %>>Miércoles</option>
+                                    <option value="Jueves" <%= "Jueves".equalsIgnoreCase(diaHorario) ? "selected" : "" %>>Jueves</option>
+                                    <option value="Viernes" <%= "Viernes".equalsIgnoreCase(diaHorario) ? "selected" : "" %>>Viernes</option>
+                                    <option value="Sábado" <%= "Sábado".equalsIgnoreCase(diaHorario) ? "selected" : "" %>>Sábado</option>
+                                </select>
+
+                                <input type="time" class="form-control" name="horaInicio" value="<%= horaInicioHorario %>">
+                                <input type="time" class="form-control" name="horaFin" value="<%= horaFinHorario %>">
+
+                                <button type="button" class="table-icon-btn remove-schedule-btn" title="Quitar horario">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                            <%
+                                    }
+                                } else {
+                            %>
+                            <div class="schedule-row">
+                                <select class="form-select" name="diaSemana">
+                                    <option value="Lunes">Lunes</option>
+                                    <option value="Martes">Martes</option>
+                                    <option value="Miércoles">Miércoles</option>
+                                    <option value="Jueves">Jueves</option>
+                                    <option value="Viernes">Viernes</option>
+                                    <option value="Sábado">Sábado</option>
+                                </select>
+
+                                <input type="time" class="form-control" name="horaInicio" value="10:00">
+                                <input type="time" class="form-control" name="horaFin" value="12:00">
+
+                                <button type="button" class="table-icon-btn remove-schedule-btn" title="Quitar horario">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                            <%
+                                }
+                            %>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="modal-footer">

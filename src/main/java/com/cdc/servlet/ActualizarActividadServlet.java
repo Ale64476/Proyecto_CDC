@@ -1,6 +1,7 @@
 package com.cdc.servlet;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.cdc.dao.ActividadDAO;
 import com.cdc.model.Actividad;
+import com.cdc.model.HorarioActividad;
 import com.cdc.util.ActividadValidator;
 import com.cdc.util.MensajeRedirect;
 
@@ -27,7 +29,19 @@ public class ActualizarActividadServlet extends HttpServlet {
         Integer idActividad = null;
 
         try {
-            idActividad = Integer.parseInt(request.getParameter("idActividad"));
+            String idActividadStr = request.getParameter("idActividad");
+
+            if (idActividadStr == null || idActividadStr.isBlank()) {
+                response.sendRedirect(MensajeRedirect.actividades(
+                        request,
+                        null,
+                        "error",
+                        "actividad_id_invalido"
+                ));
+                return;
+            }
+
+            idActividad = Integer.parseInt(idActividadStr);
 
             if (idActividad <= 0) {
                 response.sendRedirect(MensajeRedirect.actividades(
@@ -38,33 +52,48 @@ public class ActualizarActividadServlet extends HttpServlet {
                 ));
                 return;
             }
-        } catch (Exception e) {
-            response.sendRedirect(MensajeRedirect.actividades(
-                    request,
-                    null,
-                    "error",
-                    "actividad_id_invalido"
-            ));
-            return;
-        }
 
-        String nombreActividad = ActividadValidator.limpiar(request.getParameter("nombreActividad"));
-        String descripcionActividad = ActividadValidator.limpiar(request.getParameter("descripcionActividad"));
-        String idInstructorStr = ActividadValidator.limpiar(request.getParameter("idInstructor"));
-        String estadoActividad = ActividadValidator.limpiar(request.getParameter("estadoActividad"));
+            String nombreActividad = ActividadValidator.limpiar(request.getParameter("nombreActividad"));
+            String descripcionActividad = ActividadValidator.limpiar(request.getParameter("descripcionActividad"));
+            String idInstructorStr = ActividadValidator.limpiar(request.getParameter("idInstructor"));
+            String estadoActividad = ActividadValidator.limpiar(request.getParameter("estadoActividad"));
 
-        String errorActividad = ActividadValidator.validarActividad(
-                nombreActividad,
-                idInstructorStr,
-                estadoActividad
-        );
+            String[] diasSemana = request.getParameterValues("diaSemana");
+            String[] horasInicio = request.getParameterValues("horaInicio");
+            String[] horasFin = request.getParameterValues("horaFin");
 
-        if (errorActividad != null) {
-            response.sendRedirect(MensajeRedirect.actividades(request, idActividad, "error", errorActividad));
-            return;
-        }
+            String errorActividad = ActividadValidator.validarActividad(
+                    nombreActividad,
+                    idInstructorStr,
+                    estadoActividad
+            );
 
-        try {
+            if (errorActividad != null) {
+                response.sendRedirect(MensajeRedirect.actividades(
+                        request,
+                        idActividad,
+                        "error",
+                        errorActividad
+                ));
+                return;
+            }
+
+            String errorHorarios = ActividadValidator.validarHorarios(
+                    diasSemana,
+                    horasInicio,
+                    horasFin
+            );
+
+            if (errorHorarios != null) {
+                response.sendRedirect(MensajeRedirect.actividades(
+                        request,
+                        idActividad,
+                        "error",
+                        errorHorarios
+                ));
+                return;
+            }
+
             Actividad actividad = new Actividad();
             actividad.setIdActividad(idActividad);
             actividad.setNombreActividad(nombreActividad);
@@ -72,7 +101,13 @@ public class ActualizarActividadServlet extends HttpServlet {
             actividad.setIdInstructor(ActividadValidator.convertirEntero(idInstructorStr));
             actividad.setEstadoActividad(estadoActividad);
 
-            boolean actualizado = actividadDAO.actualizarActividad(actividad);
+            List<HorarioActividad> horarios = ActividadValidator.construirHorarios(
+                    diasSemana,
+                    horasInicio,
+                    horasFin
+            );
+
+            boolean actualizado = actividadDAO.actualizarActividadConHorarios(actividad, horarios);
 
             if (actualizado) {
                 response.sendRedirect(MensajeRedirect.actividades(
@@ -92,7 +127,13 @@ public class ActualizarActividadServlet extends HttpServlet {
 
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect(MensajeRedirect.actividades(request, idActividad, "error", "error_sistema"));
+
+            response.sendRedirect(MensajeRedirect.actividades(
+                    request,
+                    idActividad,
+                    "error",
+                    "error_sistema"
+            ));
         }
     }
 }

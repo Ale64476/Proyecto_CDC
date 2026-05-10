@@ -171,6 +171,32 @@ public class ActividadDAO {
             VALUES (?, ?, ?, ?)
             """;
 
+    private static final String SQL_LISTAR_HORARIOS_POR_ACTIVIDAD = """
+            SELECT
+                id_actividad,
+                dia_semana,
+                hora_inicio,
+                hora_fin
+            FROM horario_actividad
+            WHERE id_actividad = ?
+            ORDER BY
+                CASE dia_semana
+                    WHEN 'Lunes' THEN 1
+                    WHEN 'Martes' THEN 2
+                    WHEN 'Miércoles' THEN 3
+                    WHEN 'Jueves' THEN 4
+                    WHEN 'Viernes' THEN 5
+                    WHEN 'Sábado' THEN 6
+                    WHEN 'Domingo' THEN 7
+                END,
+                hora_inicio
+            """;
+
+    private static final String SQL_ELIMINAR_HORARIOS_ACTIVIDAD = """
+            DELETE FROM horario_actividad
+            WHERE id_actividad = ?
+            """;
+
     private static final String SQL_ACTUALIZAR_ACTIVIDAD = """
             UPDATE actividad
             SET nombre_actividad = ?,
@@ -313,6 +339,34 @@ public class ActividadDAO {
         return null;
     }
 
+    public List<HorarioActividad> listarHorariosPorActividad(int idActividad) {
+        List<HorarioActividad> horarios = new ArrayList<>();
+
+        try (
+                Connection connection = ConexionDB.getConnection();
+                PreparedStatement statement = connection.prepareStatement(SQL_LISTAR_HORARIOS_POR_ACTIVIDAD)
+        ) {
+            statement.setInt(1, idActividad);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    HorarioActividad horario = new HorarioActividad();
+                    horario.setIdActividad(resultSet.getInt("id_actividad"));
+                    horario.setDiaSemana(resultSet.getString("dia_semana"));
+                    horario.setHoraInicio(resultSet.getTime("hora_inicio"));
+                    horario.setHoraFin(resultSet.getTime("hora_fin"));
+
+                    horarios.add(horario);
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error al listar horarios de la actividad.", e);
+        }
+
+        return horarios;
+    }
+
     public List<AlumnoInscritoActividad> listarAlumnosInscritos(int idActividad) {
         List<AlumnoInscritoActividad> alumnos = new ArrayList<>();
 
@@ -419,6 +473,71 @@ public class ActividadDAO {
 
         } catch (SQLException e) {
             throw new RuntimeException("Error al actualizar actividad.", e);
+        }
+    }
+
+    public boolean actualizarActividadConHorarios(Actividad actividad, List<HorarioActividad> horarios) {
+        Connection connection = null;
+
+        try {
+            connection = ConexionDB.getConnection();
+            connection.setAutoCommit(false);
+
+            try (
+                    PreparedStatement actividadStmt = connection.prepareStatement(SQL_ACTUALIZAR_ACTIVIDAD);
+                    PreparedStatement eliminarHorariosStmt = connection.prepareStatement(SQL_ELIMINAR_HORARIOS_ACTIVIDAD);
+                    PreparedStatement insertarHorarioStmt = connection.prepareStatement(SQL_INSERTAR_HORARIO)
+            ) {
+                actividadStmt.setString(1, actividad.getNombreActividad());
+                actividadStmt.setString(2, actividad.getDescripcionActividad());
+                actividadStmt.setInt(3, actividad.getIdInstructor());
+                actividadStmt.setString(4, actividad.getEstadoActividad());
+                actividadStmt.setInt(5, actividad.getIdActividad());
+
+                boolean actividadActualizada = actividadStmt.executeUpdate() > 0;
+
+                if (!actividadActualizada) {
+                    connection.rollback();
+                    return false;
+                }
+
+                eliminarHorariosStmt.setInt(1, actividad.getIdActividad());
+                eliminarHorariosStmt.executeUpdate();
+
+                for (HorarioActividad horario : horarios) {
+                    insertarHorarioStmt.setInt(1, actividad.getIdActividad());
+                    insertarHorarioStmt.setString(2, horario.getDiaSemana());
+                    insertarHorarioStmt.setTime(3, horario.getHoraInicio());
+                    insertarHorarioStmt.setTime(4, horario.getHoraFin());
+                    insertarHorarioStmt.addBatch();
+                }
+
+                insertarHorarioStmt.executeBatch();
+
+                connection.commit();
+                return true;
+            }
+
+        } catch (SQLException e) {
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                } catch (SQLException rollbackError) {
+                    rollbackError.printStackTrace();
+                }
+            }
+
+            throw new RuntimeException("Error al actualizar actividad con horarios.", e);
+
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.setAutoCommit(true);
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
