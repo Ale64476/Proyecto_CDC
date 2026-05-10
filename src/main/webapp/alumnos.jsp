@@ -552,11 +552,6 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="<%= request.getContextPath() %>/js/dashboard.js?v=<%= System.currentTimeMillis() %>"></script>
-<script src="<%= request.getContextPath() %>/js/alumnos.js?v=<%= System.currentTimeMillis() %>"></script>
-</body>
-
 <div id="cdcMiniModal" class="cdc-mini-modal oculto">
     <div class="cdc-mini-card">
         <button type="button" class="cdc-mini-close" id="cdcMiniClose">×</button>
@@ -575,5 +570,10 @@
         </button>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="<%= request.getContextPath() %>/js/dashboard.js?v=<%= System.currentTimeMillis() %>"></script>
+<script src="<%= request.getContextPath() %>/js/alumnos.js?v=<%= System.currentTimeMillis() %>"></script>
+</body>
 
 </html>

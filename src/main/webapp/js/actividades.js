@@ -63,3 +63,192 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    const formulariosActividad = document.querySelectorAll(
+        'form[action*="guardar-actividad"], form[action*="actualizar-actividad"]'
+    );
+
+    formulariosActividad.forEach(function (formulario) {
+        formulario.addEventListener("submit", function (event) {
+            const resultado = validarFormularioActividad(formulario);
+
+            if (!resultado.valido) {
+                event.preventDefault();
+
+                mostrarMiniModalActividad(
+                    "Revisa la información",
+                    resultado.mensaje,
+                    resultado.campo,
+                    formulario
+                );
+            }
+        });
+    });
+
+    configurarMiniModalActividad();
+});
+
+function validarFormularioActividad(formulario) {
+    const nombreActividad = obtenerValorActividad(formulario, "nombreActividad");
+    const idInstructor = obtenerValorActividad(formulario, "idInstructor");
+    const estadoActividad = obtenerValorActividad(formulario, "estadoActividad");
+
+    if (nombreActividad.length < 3) {
+        return {
+            valido: false,
+            campo: "nombreActividad",
+            mensaje: "El nombre de la actividad debe tener al menos 3 caracteres."
+        };
+    }
+
+    if (!idInstructor || Number(idInstructor) <= 0) {
+        return {
+            valido: false,
+            campo: "idInstructor",
+            mensaje: "Selecciona un instructor válido."
+        };
+    }
+
+    if (!["Activa", "Inactiva"].includes(estadoActividad)) {
+        return {
+            valido: false,
+            campo: "estadoActividad",
+            mensaje: "Selecciona un estado válido para la actividad."
+        };
+    }
+
+    const esFormularioNuevo = formulario.getAttribute("action").includes("guardar-actividad");
+
+    if (esFormularioNuevo) {
+        const resultadoHorarios = validarHorariosActividad(formulario);
+
+        if (!resultadoHorarios.valido) {
+            return resultadoHorarios;
+        }
+    }
+
+    return {
+        valido: true,
+        campo: null,
+        mensaje: null
+    };
+}
+
+function validarHorariosActividad(formulario) {
+    const filas = formulario.querySelectorAll(".schedule-row");
+
+    if (filas.length === 0) {
+        return {
+            valido: false,
+            campo: "diaSemana",
+            mensaje: "Agrega al menos un horario para la actividad."
+        };
+    }
+
+    for (const fila of filas) {
+        const dia = obtenerValorDentroDeFila(fila, "diaSemana");
+        const horaInicio = obtenerValorDentroDeFila(fila, "horaInicio");
+        const horaFin = obtenerValorDentroDeFila(fila, "horaFin");
+
+        if (!dia || !horaInicio || !horaFin) {
+            return {
+                valido: false,
+                campo: !dia ? "diaSemana" : (!horaInicio ? "horaInicio" : "horaFin"),
+                mensaje: "Cada horario debe tener día, hora de inicio y hora de fin."
+            };
+        }
+
+        if (horaInicio >= horaFin) {
+            return {
+                valido: false,
+                campo: "horaInicio",
+                mensaje: "La hora de inicio debe ser menor que la hora de fin."
+            };
+        }
+    }
+
+    return {
+        valido: true,
+        campo: null,
+        mensaje: null
+    };
+}
+
+function obtenerValorActividad(formulario, nombreCampo) {
+    const campo = formulario.querySelector('[name="' + nombreCampo + '"]');
+    return campo ? campo.value.trim() : "";
+}
+
+function obtenerValorDentroDeFila(fila, nombreCampo) {
+    const campo = fila.querySelector('[name="' + nombreCampo + '"]');
+    return campo ? campo.value.trim() : "";
+}
+
+function mostrarMiniModalActividad(titulo, mensaje, campo, formulario) {
+    const modal = document.getElementById("cdcMiniModal");
+    const tituloModal = document.getElementById("cdcMiniTitle");
+    const mensajeModal = document.getElementById("cdcMiniMessage");
+
+    if (!modal || !tituloModal || !mensajeModal) {
+        alert(mensaje);
+        return;
+    }
+
+    tituloModal.textContent = titulo;
+    mensajeModal.textContent = mensaje;
+
+    modal.classList.remove("oculto");
+    modal.dataset.campo = campo || "";
+
+    if (formulario) {
+        formulario.dataset.formularioActivo = "true";
+    }
+}
+
+function configurarMiniModalActividad() {
+    const modal = document.getElementById("cdcMiniModal");
+    const botonCerrar = document.getElementById("cdcMiniClose");
+    const botonOk = document.getElementById("cdcMiniOk");
+
+    if (!modal || !botonCerrar || !botonOk) {
+        return;
+    }
+
+    botonCerrar.addEventListener("click", cerrarMiniModalActividad);
+    botonOk.addEventListener("click", cerrarMiniModalActividad);
+
+    modal.addEventListener("click", function (event) {
+        if (event.target === modal) {
+            cerrarMiniModalActividad();
+        }
+    });
+}
+
+function cerrarMiniModalActividad() {
+    const modal = document.getElementById("cdcMiniModal");
+
+    if (!modal) {
+        return;
+    }
+
+    const campo = modal.dataset.campo;
+
+    modal.classList.add("oculto");
+
+    if (campo) {
+        const formularioActivo = document.querySelector('form[data-formulario-activo="true"]');
+
+        if (formularioActivo) {
+            const input = formularioActivo.querySelector('[name="' + campo + '"]');
+
+            if (input) {
+                setTimeout(function () {
+                    input.focus();
+                }, 80);
+            }
+
+            delete formularioActivo.dataset.formularioActivo;
+        }
+    }
+}

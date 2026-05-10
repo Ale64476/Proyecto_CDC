@@ -91,6 +91,87 @@
         </header>
 
         <main class="content">
+
+            <%
+                String tipoMensaje = request.getParameter("tipoMensaje");
+                String mensaje = request.getParameter("mensaje");
+
+                String textoMensaje = null;
+
+                if (mensaje != null) {
+                    switch (mensaje) {
+                        case "actividad_guardada":
+                            textoMensaje = "Actividad guardada correctamente.";
+                            break;
+                        case "actividad_actualizada":
+                            textoMensaje = "Actividad actualizada correctamente.";
+                            break;
+                        case "actividad_no_actualizada":
+                            textoMensaje = "No se pudo actualizar la actividad.";
+                            break;
+                        case "actividad_nombre_obligatorio":
+                            textoMensaje = "El nombre de la actividad es obligatorio.";
+                            break;
+                        case "actividad_nombre_invalido":
+                            textoMensaje = "El nombre de la actividad debe tener al menos 3 caracteres.";
+                            break;
+                        case "actividad_instructor_obligatorio":
+                            textoMensaje = "Debes seleccionar un instructor.";
+                            break;
+                        case "actividad_instructor_invalido":
+                            textoMensaje = "El instructor seleccionado no es válido.";
+                            break;
+                        case "actividad_estado_invalido":
+                            textoMensaje = "El estado de la actividad no es válido.";
+                            break;
+                        case "actividad_horario_obligatorio":
+                            textoMensaje = "Debes registrar al menos un horario para la actividad.";
+                            break;
+                        case "actividad_horario_incompleto":
+                            textoMensaje = "Revisa los horarios. Hay un día, hora de inicio o hora de fin incompleto.";
+                            break;
+                        case "actividad_dia_invalido":
+                            textoMensaje = "Uno de los días seleccionados no es válido.";
+                            break;
+                        case "actividad_hora_invalida":
+                            textoMensaje = "La hora de inicio debe ser menor que la hora de fin.";
+                            break;
+                        case "actividad_hora_formato_invalido":
+                            textoMensaje = "Uno de los horarios no tiene un formato válido.";
+                            break;
+                        case "actividad_id_invalido":
+                            textoMensaje = "El identificador de la actividad no es válido.";
+                            break;
+                        case "error_sistema":
+                            textoMensaje = "Ocurrió un error interno. Revisa la consola de Tomcat.";
+                            break;
+                        default:
+                            textoMensaje = null;
+                    }
+                }
+
+                if (textoMensaje != null) {
+            %>
+                <div class="cdc-toast <%= "exito".equalsIgnoreCase(tipoMensaje) ? "cdc-toast-success" : "cdc-toast-error" %>">
+                    <div class="cdc-toast-icon">
+                        <%= "exito".equalsIgnoreCase(tipoMensaje) ? "✓" : "!" %>
+                    </div>
+
+                    <div class="cdc-toast-content">
+                        <strong>
+                            <%= "exito".equalsIgnoreCase(tipoMensaje) ? "Operación exitosa" : "Revisa la información" %>
+                        </strong>
+                        <span><%= textoMensaje %></span>
+                    </div>
+
+                    <button type="button" class="cdc-toast-close" onclick="this.parentElement.style.display='none'">
+                        ×
+                    </button>
+                </div>
+            <%
+                }
+            %>
+
             <!-- Barra de control -->
             <section class="activities-toolbar">
                 <div class="toolbar-search">
@@ -711,35 +792,54 @@
 </div>
 
 <!-- Modal: Detalle rápido de alumno -->
-            <div class="modal fade" id="modalAlumnoDetalle" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content custom-modal">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Detalle del alumno</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                        </div>
+<div class="modal fade" id="modalAlumnoDetalle" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content custom-modal">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalle del alumno</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
 
-                        <div class="modal-body">
-                            <div class="student-quick-view">
-                                <div class="student-avatar-large">CG</div>
+            <div class="modal-body">
+                <div class="student-quick-view">
+                    <div class="student-avatar-large">CG</div>
 
-                                <div class="student-quick-info">
-                                    <h4>Carla Gómez</h4>
-                                    <p><strong>Teléfono:</strong> 999 123 4567</p>
-                                    <p><strong>Actividad:</strong> Manualidades</p>
-                                    <p><strong>Asistencias del mes:</strong> 8</p>
-                                    <p><strong>Estado:</strong> Activa en el taller</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Cerrar</button>
-                            <button type="button" class="btn activity-primary-btn modal-save-btn">Ir a Alumnos</button>
-                        </div>
+                    <div class="student-quick-info">
+                        <h4>Carla Gómez</h4>
+                        <p><strong>Teléfono:</strong> 999 123 4567</p>
+                        <p><strong>Actividad:</strong> Manualidades</p>
+                        <p><strong>Asistencias del mes:</strong> 8</p>
+                        <p><strong>Estado:</strong> Activa en el taller</p>
                     </div>
                 </div>
             </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn activity-primary-btn modal-save-btn">Ir a Alumnos</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+            <div id="cdcMiniModal" class="cdc-mini-modal oculto">
+    <div class="cdc-mini-card">
+        <button type="button" class="cdc-mini-close" id="cdcMiniClose">×</button>
+
+        <div class="cdc-mini-icon" id="cdcMiniIcon">
+            !
+        </div>
+
+        <div class="cdc-mini-content">
+            <h3 id="cdcMiniTitle">Revisa la información</h3>
+            <p id="cdcMiniMessage">Hay un dato inválido.</p>
+        </div>
+
+        <button type="button" class="cdc-mini-btn" id="cdcMiniOk">
+            Entendido
+        </button>
+    </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="<%= request.getContextPath() %>/js/dashboard.js?v=<%= System.currentTimeMillis() %>"></script>
