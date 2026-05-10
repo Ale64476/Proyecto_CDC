@@ -146,14 +146,6 @@ function validarFormularioActividad(formulario) {
         return resultadoHorarios;
     }
 
-    if (esFormularioNuevo) {
-        const resultadoHorarios = validarHorariosActividad(formulario);
-
-        if (!resultadoHorarios.valido) {
-            return resultadoHorarios;
-        }
-    }
-
     return {
         valido: true,
         campo: null,
