@@ -21,6 +21,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     configurarMiniModal();
+    configurarBuscadorAlumnos();
 });
 
 function validarFormularioAlumno(formulario) {
@@ -273,4 +274,110 @@ function activarModoInfoMiniModal() {
         botonConfirmar.classList.add("oculto");
         botonConfirmar.onclick = null;
     }
+}
+function configurarBuscadorAlumnos() {
+    const buscador = document.getElementById("searchStudentListInput");
+    const filtroEstado = document.getElementById("studentStatusFilter");
+    const filtroOrden = document.getElementById("studentOrderFilter");
+    const listaAlumnos = document.getElementById("studentList");
+
+    if (!listaAlumnos) {
+        return;
+    }
+
+    const tarjetasAlumno = Array.from(
+        listaAlumnos.querySelectorAll(".student-list-item")
+    );
+
+    function aplicarFiltros() {
+    const textoBusqueda = normalizarTexto(buscador ? buscador.value : "");
+    const estadoSeleccionado = normalizarTexto(filtroEstado ? filtroEstado.value : "all");
+
+    tarjetasAlumno.forEach(function (tarjeta) {
+        const textoTarjeta = normalizarTexto(tarjeta.textContent);
+
+        const coincideBusqueda =
+            textoBusqueda === "" || textoTarjeta.includes(textoBusqueda);
+
+        let coincideEstado = true;
+
+        if (
+            estadoSeleccionado === "active" ||
+            estadoSeleccionado === "activo" ||
+            estadoSeleccionado === "activos"
+        ) {
+            coincideEstado =
+                textoTarjeta.includes("activo") &&
+                !textoTarjeta.includes("inactivo") &&
+                !textoTarjeta.includes("baja");
+        } else if (
+            estadoSeleccionado === "inactive" ||
+            estadoSeleccionado === "inactivo" ||
+            estadoSeleccionado === "inactivos"
+        ) {
+            coincideEstado =
+                textoTarjeta.includes("inactivo") ||
+                textoTarjeta.includes("baja");
+        }
+
+        tarjeta.style.display =
+            coincideBusqueda && coincideEstado ? "" : "none";
+    });
+
+    ordenarAlumnos();
+}
+
+    function ordenarAlumnos() {
+        if (!filtroOrden) {
+            return;
+        }
+
+        const ordenSeleccionado = filtroOrden.value;
+
+        if (ordenSeleccionado !== "name") {
+            return;
+        }
+
+        const tarjetasOrdenadas = tarjetasAlumno.slice().sort(function (a, b) {
+            const nombreA = normalizarTexto(obtenerNombreAlumno(a));
+            const nombreB = normalizarTexto(obtenerNombreAlumno(b));
+
+            return nombreA.localeCompare(nombreB);
+        });
+
+        tarjetasOrdenadas.forEach(function (tarjeta) {
+            listaAlumnos.appendChild(tarjeta);
+        });
+    }
+
+    if (buscador) {
+        buscador.addEventListener("input", aplicarFiltros);
+    }
+
+    if (filtroEstado) {
+        filtroEstado.addEventListener("change", aplicarFiltros);
+    }
+
+    if (filtroOrden) {
+        filtroOrden.addEventListener("change", aplicarFiltros);
+    }
+
+    aplicarFiltros();
+    function normalizarTexto(texto) {
+    return String(texto || "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .trim();
+}
+
+function obtenerNombreAlumno(tarjeta) {
+    const nombre = tarjeta.querySelector("h4");
+
+    if (nombre) {
+        return nombre.textContent;
+    }
+
+    return tarjeta.textContent;
+}
 }
