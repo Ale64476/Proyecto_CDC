@@ -1,0 +1,494 @@
+.gero-top-action {
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--muted);
+    border-radius: 999px;
+    padding: 10px 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+}
+
+.gero-toolbar {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+}
+
+.gero-search {
+    flex: 1;
+    min-width: 280px;
+    max-width: 460px;
+    height: 48px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 14px;
+}
+
+.gero-search i {
+    color: var(--muted);
+}
+
+.gero-search input {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+}
+
+.gero-select {
+    min-width: 180px;
+    height: 48px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: #fff;
+    padding: 0 14px;
+    color: var(--text);
+}
+
+.gero-primary-btn {
+    height: 48px;
+    border: none;
+    border-radius: 14px;
+    background: var(--primary);
+    color: #fff;
+    padding: 0 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-weight: 700;
+    transition: background var(--transition), transform var(--transition);
+}
+
+.gero-primary-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+.gero-primary-btn.compact {
+    height: 42px;
+    padding: 0 15px;
+}
+
+.gero-primary-btn:disabled,
+.gero-primary-btn.disabled {
+    background: #d1d5db;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.gero-layout {
+    display: grid;
+    grid-template-columns: 390px 1fr;
+    gap: 24px;
+    align-items: start;
+}
+
+.gero-list-card,
+.gero-patient-card,
+.gero-consultas-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.gero-list-card {
+    padding: 22px;
+}
+
+.gero-count {
+    background: rgba(118, 15, 56, 0.08);
+    color: var(--primary);
+    border-radius: 999px;
+    padding: 6px 10px;
+    font-weight: 700;
+    font-size: 0.86rem;
+}
+
+.gero-expedientes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-height: calc(100vh - 255px);
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.gero-expediente-item {
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 15px;
+    display: flex;
+    gap: 13px;
+    align-items: center;
+    cursor: pointer;
+    transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+}
+
+.gero-expediente-item:hover {
+    border-color: rgba(118, 15, 56, 0.25);
+    transform: translateY(-1px);
+}
+
+.gero-expediente-item.selected {
+    border-color: rgba(118, 15, 56, 0.50);
+    background: rgba(118, 15, 56, 0.03);
+}
+
+.gero-patient-avatar {
+    width: 72px;
+    min-width: 72px;
+    height: 72px;
+    border-radius: 22px;
+    background: rgba(118, 15, 56, 0.10);
+    color: var(--primary);
+    display: grid;
+    place-items: center;
+    font-size: 1.4rem;
+    font-weight: 800;
+}
+
+.gero-patient-avatar.small {
+    width: 52px;
+    min-width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    font-size: 1rem;
+}
+
+.gero-expediente-item .gero-patient-avatar {
+    width: 54px;
+    min-width: 54px;
+    height: 54px;
+    border-radius: 16px;
+    font-size: 1rem;
+}
+
+.gero-expediente-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.gero-expediente-body h4 {
+    margin: 0 0 4px;
+    font-size: 1rem;
+    font-weight: 800;
+}
+
+.gero-expediente-body p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.gero-expediente-meta {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 7px;
+}
+
+.gero-detail-column {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.gero-patient-card {
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.gero-patient-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.gero-patient-title-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.gero-patient-title-row h2 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 800;
+}
+
+.gero-patient-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    margin-top: 12px;
+    color: var(--muted);
+}
+
+.gero-patient-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.gero-patient-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.gero-consultas-card {
+    display: grid;
+    grid-template-columns: 310px 1fr;
+    min-height: 520px;
+    overflow: hidden;
+}
+
+.gero-consultas-list-panel {
+    padding: 22px;
+    border-right: 1px solid var(--border);
+}
+
+.gero-consultas-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.gero-consulta-item {
+    border: 1px solid var(--border);
+    background: #fff;
+    border-radius: 14px;
+    padding: 13px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    cursor: pointer;
+    transition: border-color var(--transition), background var(--transition);
+}
+
+.gero-consulta-item.selected {
+    border-color: rgba(118, 15, 56, 0.45);
+    background: rgba(118, 15, 56, 0.03);
+}
+
+.gero-consulta-icon {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    border-radius: 12px;
+    background: #f3f4f6;
+    display: grid;
+    place-items: center;
+    color: var(--primary);
+}
+
+.gero-consulta-item h4 {
+    margin: 0 0 4px;
+    font-size: 0.95rem;
+    font-weight: 800;
+}
+
+.gero-consulta-item p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.88rem;
+}
+
+.gero-consulta-detail-panel {
+    padding: 22px;
+    position: relative;
+}
+
+.gero-consulta-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+}
+
+.gero-consulta-detail-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 800;
+}
+
+.gero-consulta-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.gero-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 22px;
+}
+
+.gero-detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.gero-detail-item span {
+    color: var(--muted);
+    font-size: 0.88rem;
+}
+
+.gero-detail-item strong {
+    font-size: 0.96rem;
+    color: var(--text);
+}
+
+.gero-clinical-block {
+    margin-bottom: 22px;
+}
+
+.gero-clinical-block h4 {
+    margin: 0 0 8px;
+    font-size: 0.96rem;
+    font-weight: 800;
+}
+
+.gero-clinical-block p {
+    margin: 0;
+    color: #374151;
+    line-height: 1.55;
+    white-space: pre-line;
+}
+
+.gero-form-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    border-radius: 14px;
+    padding: 14px;
+    background: rgba(118, 15, 56, 0.06);
+    color: var(--primary);
+    margin-bottom: 18px;
+}
+
+.gero-form-note i {
+    font-size: 1.2rem;
+    margin-top: 2px;
+}
+
+.gero-form-note div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.gero-form-note span {
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.gero-consulta-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.gero-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.gero-empty-state {
+    min-height: 360px;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    color: var(--muted);
+}
+
+.gero-empty-state i {
+    font-size: 2.5rem;
+    color: rgba(118, 15, 56, 0.35);
+    margin-bottom: 10px;
+}
+
+.gero-empty-state h3 {
+    color: var(--text);
+    font-size: 1.1rem;
+    font-weight: 800;
+}
+
+.gero-student-preview {
+    margin-top: 16px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.gero-student-preview div:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.gero-student-preview span {
+    color: var(--muted);
+    font-size: 0.92rem;
+}
+
+.status-badge.archived {
+    background: #f3f4f6;
+    color: #6b7280;
+}
+
+@media (max-width: 1400px) {
+    .gero-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .gero-expedientes-list {
+        max-height: none;
+    }
+}
+
+@media (max-width: 1000px) {
+    .gero-patient-card,
+    .gero-patient-actions {
+        align-items: flex-start;
+    }
+
+    .gero-patient-card {
+        flex-direction: column;
+    }
+
+    .gero-consultas-card {
+        grid-template-columns: 1fr;
+    }
+
+    .gero-consultas-list-panel {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .gero-detail-grid {
+        grid-template-columns: 1fr;
+    }
+}

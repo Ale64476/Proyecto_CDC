@@ -76,6 +76,12 @@
                 <i class="bi bi-file-earmark-bar-graph-fill"></i>
                 <span class="nav-label">Reportes</span>
             </a>
+            
+            <a href="<%= request.getContextPath() %>/gerontologia" class="nav-item">
+                <i class="bi bi-heart-pulse-fill"></i>
+                <span class="nav-label">Gerontología</span>
+            </a>
+
         </nav>
     </aside>
 
