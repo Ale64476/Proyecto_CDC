@@ -274,7 +274,7 @@
             <section class="activities-toolbar">
                 <div class="toolbar-search">
                     <i class="bi bi-search"></i>
-                    <input type="text" id="searchActivityInput" placeholder="Buscar actividad">
+                    <input type="text" id="searchActivityListInput" placeholder="Buscar actividad">
                 </div>
 
                 <select id="activityStatusFilter" class="toolbar-select">
