@@ -136,6 +136,19 @@ public class AlumnoDAO {
             WHERE id_alumno = ?
             """;
 
+    private static final String SQL_EXISTE_CURP = """
+            SELECT COUNT(*) AS total
+            FROM alumno
+            WHERE curp = ?
+            """;
+
+    private static final String SQL_EXISTE_CURP_OTRO_ALUMNO = """
+            SELECT COUNT(*) AS total
+            FROM alumno
+            WHERE curp = ?
+            AND id_alumno <> ?
+            """;
+
     public List<Alumno> listarTodos() {
         List<Alumno> alumnos = new ArrayList<>();
 
@@ -171,6 +184,47 @@ public class AlumnoDAO {
         }
 
         return null;
+    }
+
+    public boolean existeCurp(String curp) {
+        try (
+                Connection connection = ConexionDB.getConnection();
+                PreparedStatement statement = connection.prepareStatement(SQL_EXISTE_CURP)
+        ) {
+            statement.setString(1, curp);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getInt("total") > 0;
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error al validar CURP existente.", e);
+        }
+
+        return false;
+    }
+
+    public boolean existeCurpEnOtroAlumno(String curp, int idAlumno) {
+        try (
+                Connection connection = ConexionDB.getConnection();
+                PreparedStatement statement = connection.prepareStatement(SQL_EXISTE_CURP_OTRO_ALUMNO)
+        ) {
+            statement.setString(1, curp);
+            statement.setInt(2, idAlumno);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getInt("total") > 0;
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error al validar CURP existente en otro alumno.", e);
+        }
+
+        return false;
     }
 
     public List<ActividadAlumnoDetalle> listarActividadesPorAlumno(int idAlumno) {

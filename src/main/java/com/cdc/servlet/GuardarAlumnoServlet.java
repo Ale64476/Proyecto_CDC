@@ -40,8 +40,14 @@ public class GuardarAlumnoServlet extends HttpServlet {
                 estadoAlumno
         );
 
-        if (errorValidacion != null) {
-            response.sendRedirect(MensajeRedirect.alumnos(request, null, "error", errorValidacion));
+        try {
+            if (alumnoDAO.existeCurp(curp)) {
+                response.sendRedirect(MensajeRedirect.alumnos(request, null, "error", "curp_duplicada"));
+                return;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendRedirect(MensajeRedirect.alumnos(request, null, "error", "error_sistema"));
             return;
         }
 

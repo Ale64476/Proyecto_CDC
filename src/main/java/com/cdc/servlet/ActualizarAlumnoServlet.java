@@ -55,6 +55,17 @@ public class ActualizarAlumnoServlet extends HttpServlet {
         }
 
         try {
+            if (alumnoDAO.existeCurpEnOtroAlumno(curp, idAlumno)) {
+                response.sendRedirect(MensajeRedirect.alumnos(request, idAlumno, "error", "curp_duplicada"));
+                return;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendRedirect(MensajeRedirect.alumnos(request, idAlumno, "error", "error_sistema"));
+            return;
+        }
+
+        try {
             Alumno alumno = new Alumno();
             alumno.setIdAlumno(idAlumno);
             alumno.setNombreCompleto(nombreCompleto);

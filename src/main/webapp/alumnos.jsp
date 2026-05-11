@@ -170,6 +170,10 @@
                             textoMensaje = "No se pudo actualizar el estado del alumno.";
                             break;
                         
+                        case "curp_duplicada":
+                            textoMensaje = "Ya existe un alumno registrado con esa CURP.";
+                            break;
+                        
                         default:
                             textoMensaje = null;
                     }
