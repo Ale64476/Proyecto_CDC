@@ -278,7 +278,7 @@ function activarModoInfoMiniModal() {
 function configurarBuscadorAlumnos() {
     const buscador = document.getElementById("searchStudentListInput");
     const filtroEstado = document.getElementById("studentStatusFilter");
-    const filtroOrden = document.getElementById("studentOrderFilter");
+    
     const listaAlumnos = document.getElementById("studentList");
 
     if (!listaAlumnos) {
@@ -300,25 +300,23 @@ function configurarBuscadorAlumnos() {
             textoBusqueda === "" || textoTarjeta.includes(textoBusqueda);
 
         let coincideEstado = true;
-
+        
         if (
-            estadoSeleccionado === "active" ||
-            estadoSeleccionado === "activo" ||
             estadoSeleccionado === "activos"
         ) {
             coincideEstado =
-                textoTarjeta.includes("activo") &&
-                !textoTarjeta.includes("inactivo") &&
-                !textoTarjeta.includes("baja");
+                textoTarjeta.includes("activo")&& !textoTarjeta.includes("inactivo")&&!textoTarjeta.includes("baja");
+
         } else if (
-            estadoSeleccionado === "inactive" ||
-            estadoSeleccionado === "inactivo" ||
+
             estadoSeleccionado === "inactivos"
         ) {
             coincideEstado =
-                textoTarjeta.includes("inactivo") ||
-                textoTarjeta.includes("baja");
+                textoTarjeta.includes("inactivo")
         }
+            else if (estadoSeleccionado === "baja") {
+                coincideEstado = textoTarjeta.includes("baja");
+            }
 
         tarjeta.style.display =
             coincideBusqueda && coincideEstado ? "" : "none";

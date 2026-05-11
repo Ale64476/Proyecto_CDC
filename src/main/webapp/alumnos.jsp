@@ -228,12 +228,9 @@
                     <option value="todos">Estado: Todos</option>
                     <option value="activos">Estado: Activos</option>
                     <option value="inactivos">Estado: Inactivos</option>
+                    <option value="baja">Estado: Baja</option>
                 </select>
 
-                <select id="studentOrderFilter" class="toolbar-select">
-                    <option value="nombre">Ordenar por nombre</option>
-                    <option value="asistencias">Ordenar por asistencias del mes</option>
-                </select>
             </section>
 
             <!-- Layout -->
