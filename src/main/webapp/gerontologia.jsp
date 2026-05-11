@@ -65,30 +65,32 @@
             </div>
 
             <div class="topbar-right">
-                <button type="button" class="gero-top-action" title="Módulo visual para demo">
-                    <i class="bi bi-info-circle"></i>
-                    Vista de demostración
+                <button type="button"
+                        class="gero-primary-btn gero-main-action"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalNuevoExpediente">
+                    <i class="bi bi-plus-lg"></i>
+                    Nuevo expediente
                 </button>
             </div>
         </header>
 
         <main class="content">
             <section class="gero-toolbar">
-                <div class="gero-search">
-                    <i class="bi bi-search"></i>
-                    <input type="text" id="buscarExpediente" placeholder="Buscar expediente">
+                <div class="gero-toolbar-left">
+                    <div class="gero-search">
+                        <i class="bi bi-search"></i>
+                        <input type="text" id="buscarExpediente" placeholder="Buscar expediente">
+                    </div>
+
+                    <select id="filtroExpediente" class="gero-select">
+                        <option value="Activo">Activos</option>
+                        <option value="Archivado">Archivados</option>
+                        <option value="Todos">Todos</option>
+                    </select>
                 </div>
 
-                <select id="filtroExpediente" class="gero-select">
-                    <option value="Activo">Activos</option>
-                    <option value="Archivado">Archivados</option>
-                    <option value="Todos">Todos</option>
-                </select>
 
-                <button type="button" class="gero-primary-btn" data-bs-toggle="modal" data-bs-target="#modalNuevoExpediente">
-                    <i class="bi bi-plus-lg"></i>
-                    Nuevo expediente
-                </button>
             </section>
 
             <section class="gero-layout">
@@ -131,7 +133,7 @@
                                 Nueva consulta
                             </button>
 
-                            <button type="button" class="action-btn danger-outline" id="btnArchivarExpediente">
+                            <button type="button" class="gero-outline-danger-btn" id="btnArchivarExpediente">
                                 <i class="bi bi-archive"></i>
                                 <span>Archivar expediente</span>
                             </button>
@@ -221,7 +223,7 @@
                                 </div>
 
                                 <div class="gero-form-actions">
-                                    <button type="button" class="action-btn secondary" id="btnCancelarConsulta">
+                                    <button type="button" class="gero-secondary-btn" id="btnCancelarConsulta">
                                         Cancelar
                                     </button>
 
@@ -273,7 +275,7 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="action-btn secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="gero-secondary-btn" data-bs-dismiss="modal">Cancelar</button>
                 <button type="button" class="gero-primary-btn compact" id="btnCrearExpediente">
                     Crear expediente
                 </button>

@@ -492,3 +492,237 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* Ajustes de integración visual con el resto del sistema */
+
+.gero-toolbar {
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.gero-toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+    min-width: 0;
+    flex-wrap: wrap;
+}
+
+.gero-main-action {
+    margin-left: auto;
+    min-width: 190px;
+    font-weight: 600;
+}
+
+.gero-search {
+    max-width: 420px;
+}
+
+.gero-primary-btn {
+    font-weight: 600;
+}
+
+.gero-list-card,
+.gero-patient-card,
+.gero-consultas-card {
+    padding: 22px;
+}
+
+.gero-patient-card {
+    min-height: auto;
+    padding: 22px 24px;
+    align-items: center;
+}
+
+.gero-patient-avatar {
+    width: 64px;
+    min-width: 64px;
+    height: 64px;
+    border-radius: 18px;
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.gero-patient-title-row {
+    margin-bottom: 8px;
+}
+
+.gero-patient-title-row h2 {
+    font-size: 1.55rem;
+    line-height: 1.2;
+    font-weight: 700;
+}
+
+.gero-patient-meta {
+    margin-top: 8px;
+    gap: 16px;
+    font-size: 0.94rem;
+}
+
+.gero-expediente-body h4,
+.gero-consulta-item h4,
+.gero-consulta-detail-header h3,
+.gero-clinical-block h4,
+.gero-empty-state h3 {
+    font-weight: 700;
+}
+
+.gero-expediente-body h4 {
+    font-size: 1rem;
+}
+
+.gero-expediente-item {
+    min-height: 94px;
+    padding: 14px 15px;
+}
+
+.gero-expediente-item .gero-patient-avatar {
+    width: 52px;
+    min-width: 52px;
+    height: 52px;
+}
+
+.gero-expediente-meta {
+    align-items: center;
+}
+
+.gero-expediente-meta p {
+    font-size: 0.88rem;
+}
+
+.gero-consultas-card {
+    padding: 0;
+}
+
+.gero-consultas-list-panel,
+.gero-consulta-detail-panel {
+    padding: 22px;
+}
+
+.gero-detail-grid {
+    gap: 18px;
+}
+
+.gero-clinical-block {
+    margin-bottom: 20px;
+}
+
+.gero-clinical-block p {
+    font-size: 0.95rem;
+}
+
+/* Badges propios del módulo */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.status-badge.active {
+    background: #eaf7ee;
+    color: #2f855a;
+}
+
+.status-badge.archived {
+    background: #f3f4f6;
+    color: #6b7280;
+}
+
+/* Botones propios de Gerontología */
+.gero-secondary-btn,
+.gero-outline-danger-btn {
+    height: 42px;
+    border-radius: 12px;
+    padding: 0 15px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    font-weight: 600;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--text);
+    transition: background var(--transition), color var(--transition), border-color var(--transition), transform var(--transition);
+}
+
+.gero-secondary-btn:hover {
+    background: #f9fafb;
+}
+
+.gero-outline-danger-btn {
+    color: #b42318;
+    border-color: rgba(180, 35, 24, 0.24);
+}
+
+.gero-outline-danger-btn:hover {
+    background: rgba(180, 35, 24, 0.05);
+    border-color: rgba(180, 35, 24, 0.36);
+    color: #991b1b;
+}
+
+.gero-patient-actions {
+    align-items: center;
+}
+
+/* Icon buttons propios del módulo */
+.table-icon-btn {
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--border);
+    background: #fff;
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    color: var(--muted);
+    transition: background var(--transition), color var(--transition), border-color var(--transition);
+}
+
+.table-icon-btn:hover {
+    color: var(--primary);
+    background: rgba(118, 15, 56, 0.04);
+    border-color: rgba(118, 15, 56, 0.18);
+}
+
+.table-icon-btn.danger {
+    color: #b42318;
+    border-color: rgba(180, 35, 24, 0.18);
+}
+
+.table-icon-btn.danger:hover {
+    background: rgba(180, 35, 24, 0.06);
+    color: #991b1b;
+}
+
+/* Ajuste para evitar que el botón de archivar se vea como botón HTML básico */
+button {
+    font-family: inherit;
+}
+
+/* Responsive */
+@media (max-width: 1100px) {
+    .gero-toolbar {
+        align-items: stretch;
+    }
+
+    .gero-main-action {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .gero-toolbar-left {
+        width: 100%;
+    }
+
+    .gero-search,
+    .gero-select {
+        flex: 1;
+        max-width: none;
+    }
+}
