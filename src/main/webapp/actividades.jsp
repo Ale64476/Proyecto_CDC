@@ -27,7 +27,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Actividades - CDC Plan Chac</title>
+    <title>Talleres - CDC Plan Chac</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -61,7 +61,7 @@
 
             <a href="<%= request.getContextPath() %>/actividades" class="nav-item active">
                 <i class="bi bi-calendar3"></i>
-                <span class="nav-label">Actividades</span>
+                <span class="nav-label">Talleres</span>
             </a>
 
             <a href="<%= request.getContextPath() %>/alumnos" class="nav-item">
@@ -85,15 +85,15 @@
         <header class="topbar">
             <div class="topbar-left">
                 <div>
-                    <h1 class="page-title">Actividades</h1>
+                    <h1 class="page-title">Talleres</h1>
                     <p class="page-subtitle">Administra talleres, horarios, alumnos y asistencia</p>
                 </div>
             </div>
 
             <div class="topbar-right">
-                <button class="activity-primary-btn" type="button" data-bs-toggle="modal" data-bs-target="#modalNuevaActividad">
+                <button class="activity-primary-btn" type="button" data-bs-toggle="modal" data-bs-target="#modalNuevoTaller">
                     <i class="bi bi-plus-lg"></i>
-                    <span>Nueva actividad</span>
+                    <span>Nuevo taller</span>
                 </button>
             </div>
         </header>
@@ -283,10 +283,6 @@
                     <option value="inactivas">Estado: Inactivas</option>
                 </select>
 
-                <select id="activityOrderSelect" class="toolbar-select">
-                    <option value="nombre">Ordenar por nombre</option>
-                    <option value="inscritos">Ordenar por inscritos</option>
-                </select>
             </section>
 
             <!-- Layout principal -->
@@ -307,7 +303,7 @@
                                             ? "inactive"
                                             : "active";
                         %>
-                        <article class="activity-item <%= seleccionada ? "selected" : "" %>"
+                        <article class="activity-item activity-list-item <%= seleccionada ? "selected" : "" %>"
                                 data-activity-id="<%= actividad.getIdActividad() %>"
                                 onclick="window.location.href='<%= request.getContextPath() %>/actividades?id=<%= actividad.getIdActividad() %>'">
                             <div class="activity-item-icon">

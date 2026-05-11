@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     configurarConstructorHorarios(addScheduleRowBtn, scheduleRows);
     configurarConstructorHorarios(addEditScheduleRowBtn, editScheduleRows);
+    configurarBuscadorActividades();
 
     if (attendanceDate) {
         const today = new Date();
@@ -453,5 +454,63 @@ function activarModoInfoMiniModalActividad() {
     if (botonConfirmar) {
         botonConfirmar.classList.add("oculto");
         botonConfirmar.onclick = null;
+    }
+}
+
+function configurarBuscadorActividades() {
+    const buscador = document.getElementById("searchActivityListInput");
+    const filtroEstado = document.getElementById("activityStatusFilter");
+    const listaActividades = document.getElementById("activitiesList");
+
+    if (!listaActividades) {
+        return;
+    }
+
+    const tarjetasActividad = Array.from(
+        listaActividades.querySelectorAll(".activity-list-item")
+    );
+
+    function aplicarFiltros() {
+        const textoBusqueda = normalizarTextoActividad(buscador ? buscador.value : "");
+        const estadoSeleccionado = normalizarTextoActividad(
+            filtroEstado ? filtroEstado.value : "todas"
+        );
+
+        tarjetasActividad.forEach(function (tarjeta) {
+            const textoTarjeta = normalizarTextoActividad(tarjeta.textContent);
+
+            const coincideBusqueda =
+                textoBusqueda === "" || textoTarjeta.includes(textoBusqueda);
+
+            let coincideEstado = true;
+
+            if (estadoSeleccionado === "activas") {
+                coincideEstado =
+                    textoTarjeta.includes("activa") &&
+                    !textoTarjeta.includes("inactiva");
+            } else if (estadoSeleccionado === "inactivas") {
+                coincideEstado = textoTarjeta.includes("inactiva");
+            }
+
+            tarjeta.style.display = coincideBusqueda && coincideEstado ? "" : "none";
+        });
+    }
+
+    if (buscador) {
+        buscador.addEventListener("input", aplicarFiltros);
+    }
+
+    if (filtroEstado) {
+        filtroEstado.addEventListener("change", aplicarFiltros);
+    }
+
+    aplicarFiltros();
+
+    function normalizarTextoActividad(texto) {
+        return String(texto || "")
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .trim();
     }
 }
