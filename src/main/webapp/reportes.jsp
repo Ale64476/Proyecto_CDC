@@ -39,7 +39,7 @@
     <!-- CSS global -->
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/styles.css?v=<%= System.currentTimeMillis() %>">
     <!-- CSS compartido -->
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/actividades.css?v=<%= System.currentTimeMillis() %>">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/talleres.css?v=<%= System.currentTimeMillis() %>">
     <!-- CSS de reportes -->
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/reportes.css?v=<%= System.currentTimeMillis() %>">
 </head>
@@ -65,7 +65,7 @@
 
             <a href="<%= request.getContextPath() %>/actividades" class="nav-item">
                 <i class="bi bi-calendar3"></i>
-                <span class="nav-label">Actividades</span>
+                <span class="nav-label">Talleres</span>
             </a>
 
             <a href="<%= request.getContextPath() %>/alumnos" class="nav-item">
@@ -115,9 +115,9 @@
                         <label for="reportType">Tipo de reporte</label>
                         <select id="reportType" name="tipo" class="form-select">
                             <option value="alumnos" <%= "alumnos".equals(tipoReporteSeleccionado) ? "selected" : "" %>>Reporte de alumnos</option>
-                            <option value="actividades" <%= "actividades".equals(tipoReporteSeleccionado) ? "selected" : "" %>>Reporte de actividades</option>
-                            <option value="alumnos_por_actividad" <%= "alumnos_por_actividad".equals(tipoReporteSeleccionado) ? "selected" : "" %>>Alumnos por actividad</option>
-                            <option value="asistencia_por_actividad" <%= "asistencia_por_actividad".equals(tipoReporteSeleccionado) ? "selected" : "" %>>Asistencia por actividad</option>
+                            <option value="talleres" <%= "talleres".equals(tipoReporteSeleccionado) ? "selected" : "" %>>Reporte de talleres</option>
+                            <option value="alumnos_por_taller" <%= "alumnos_por_taller".equals(tipoReporteSeleccionado) ? "selected" : "" %>>Alumnos por taller</option>
+                            <option value="asistencia_por_taller" <%= "asistencia_por_taller".equals(tipoReporteSeleccionado) ? "selected" : "" %>>Asistencia por taller</option>
                         </select>
                     </div>
 

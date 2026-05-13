@@ -38,8 +38,8 @@
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/styles.css?v=<%= System.currentTimeMillis() %>">
     <!-- CSS de alumnos -->
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/alumnos.css?v=<%= System.currentTimeMillis() %>">
-    <!-- CSS de actividades -->
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/actividades.css?v=<%= System.currentTimeMillis() %>">
+    <!-- CSS de talleres -->
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/talleres.css?v=<%= System.currentTimeMillis() %>">
 
 </head>
 <body>
@@ -64,7 +64,7 @@
 
             <a href="<%= request.getContextPath() %>/actividades" class="nav-item">
                 <i class="bi bi-calendar3"></i>
-                <span class="nav-label">Actividades</span>
+                <span class="nav-label">Talleres</span>
             </a>
 
             <a href="<%= request.getContextPath() %>/alumnos" class="nav-item active">

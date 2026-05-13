@@ -36,8 +36,8 @@
 
     <!-- CSS global -->
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/styles.css?v=<%= System.currentTimeMillis() %>">
-    <!-- CSS de actividades -->
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/actividades.css?v=<%= System.currentTimeMillis() %>">
+    <!-- CSS de talleres -->
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/talleres.css?v=<%= System.currentTimeMillis() %>">
 </head>
 <body>
 
@@ -694,13 +694,13 @@
     </div>
 </div>
 
-<!-- Modal: Nueva actividad -->
-<div class="modal fade" id="modalNuevaActividad" tabindex="-1" aria-hidden="true">
+<!-- Modal: Nuevo Taller -->
+<div class="modal fade" id="modalNuevoTaller" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content custom-modal">
             <form method="post" action="<%= request.getContextPath() %>/guardar-actividad">
                 <div class="modal-header">
-                    <h5 class="modal-title">Nueva actividad</h5>
+                    <h5 class="modal-title">Nuevo Taller</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
 

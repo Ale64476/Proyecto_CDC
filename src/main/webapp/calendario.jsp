@@ -43,7 +43,7 @@
 
             <a href="<%= request.getContextPath() %>/actividades" class="nav-item">
                 <i class="bi bi-calendar3"></i>
-                <span class="nav-label">Actividades</span>
+                <span class="nav-label">Talleres</span>
             </a>
 
             <a href="<%= request.getContextPath() %>/alumnos" class="nav-item">
