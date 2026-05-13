@@ -63,7 +63,7 @@
                 <span class="nav-label">Dashboard</span>
             </a>
 
-            <a href="<%= request.getContextPath() %>/actividades" class="nav-item">
+            <a href="<%= request.getContextPath() %>/talleres" class="nav-item">
                 <i class="bi bi-calendar3"></i>
                 <span class="nav-label">Talleres</span>
             </a>
@@ -115,9 +115,9 @@
                         <label for="reportType">Tipo de reporte</label>
                         <select id="reportType" name="tipo" class="form-select">
                             <option value="alumnos" <%= "alumnos".equals(tipoReporteSeleccionado) ? "selected" : "" %>>Reporte de alumnos</option>
-                            <option value="talleres" <%= "talleres".equals(tipoReporteSeleccionado) ? "selected" : "" %>>Reporte de talleres</option>
-                            <option value="alumnos_por_taller" <%= "alumnos_por_taller".equals(tipoReporteSeleccionado) ? "selected" : "" %>>Alumnos por taller</option>
-                            <option value="asistencia_por_taller" <%= "asistencia_por_taller".equals(tipoReporteSeleccionado) ? "selected" : "" %>>Asistencia por taller</option>
+                            <option value="actividades" <%= "actividades".equals(tipoReporteSeleccionado) ? "selected" : "" %>>Reporte de talleres</option>
+                            <option value="alumnos_por_actividad" <%= "alumnos_por_actividad".equals(tipoReporteSeleccionado) ? "selected" : "" %>>Alumnos por taller</option>
+                            <option value="asistencia_por_actividad" <%= "asistencia_por_actividad".equals(tipoReporteSeleccionado) ? "selected" : "" %>>Asistencia por taller</option>
                         </select>
                     </div>
 
@@ -140,7 +140,7 @@
                     </div>
 
                     <div class="form-group dynamic-filter filter-activity-select hidden-filter">
-                        <label for="activityReportSelect">Actividad</label>
+                        <label for="activityReportSelect">Taller</label>
                         <select id="activityReportSelect" class="form-select">
                             <option value="manualidades">Manualidades</option>
                             <option value="boxeo">Boxeo</option>
@@ -257,11 +257,11 @@
                         </tbody>
                     </table>
 
-                    <!-- actividades -->
+                    <!-- Talleres -->
                     <table class="report-preview-table preview-table <%= "actividades".equals(tipoReporteSeleccionado) ? "active-preview" : "" %>" id="previewActividades">
                         <thead>
                         <tr>
-                            <th>Actividad</th>
+                            <th>Taller</th>
                             <th>Instructor</th>
                             <th>Horarios</th>
                             <th>Inscritos</th>
@@ -293,13 +293,13 @@
                         </tbody>
                     </table>
 
-                    <!-- alumnos por actividad -->
-                    <table class="report-preview-table preview-table <%= "alumnos_por_actividad".equals(tipoReporteSeleccionado) ? "active-preview" : "" %>" id="previewAlumnosActividad">
+                    <!-- alumnos por Taller -->
+                    <table class="report-preview-table preview-table <%= "alumnos_por_Taller".equals(tipoReporteSeleccionado) ? "active-preview" : "" %>" id="previewAlumnosActividad">
                         <thead>
                         <tr>
                             <th>Alumno</th>
                             <th>Celular</th>
-                            <th>Actividad</th>
+                            <th>Taller</th>
                             <th>Instructor</th>
                             <th>Asistencias del mes</th>
                         </tr>
@@ -329,12 +329,12 @@
                         </tbody>
                     </table>
 
-                    <!-- asistencia por actividad -->
+                    <!-- asistencia por Taller -->
                     <table class="report-preview-table preview-table <%= "asistencia_por_actividad".equals(tipoReporteSeleccionado) ? "active-preview" : "" %>" id="previewAsistenciaActividad">
                         <thead>
                         <tr>
                             <th>Alumno</th>
-                            <th>Actividad</th>
+                            <th>Taller</th>
                             <th>Fecha</th>
                             <th>Asistencia</th>
                         </tr>
