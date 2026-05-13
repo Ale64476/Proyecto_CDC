@@ -20,7 +20,7 @@ import com.cdc.model.CalendarioActividad;
 import com.cdc.model.HorarioActividad;
 import com.cdc.model.Instructor;
 
-@WebServlet("/actividades")
+@WebServlet("/talleres")
 public class ActividadServlet extends HttpServlet {
 
     private final ActividadDAO actividadDAO = new ActividadDAO();
@@ -80,6 +80,6 @@ public class ActividadServlet extends HttpServlet {
         request.setAttribute("alumnosDisponibles", alumnosDisponibles);
         request.setAttribute("horariosSeleccionados", horariosSeleccionados);
 
-        request.getRequestDispatcher("/actividades.jsp").forward(request, response);
+        request.getRequestDispatcher("/talleres.jsp").forward(request, response);
     }
 }

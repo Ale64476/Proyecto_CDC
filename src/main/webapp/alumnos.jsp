@@ -62,7 +62,7 @@
                 <span class="nav-label">Dashboard</span>
             </a>
 
-            <a href="<%= request.getContextPath() %>/actividades" class="nav-item">
+            <a href="<%= request.getContextPath() %>/talleres" class="nav-item">
                 <i class="bi bi-calendar3"></i>
                 <span class="nav-label">Talleres</span>
             </a>
@@ -338,7 +338,7 @@
                                     </div>
 
                                     <div class="detail-item">
-                                        <span class="detail-label">Actividades inscritas</span>
+                                        <span class="detail-label">Talleres inscritos</span>
                                         <span class="detail-value" id="studentActivitiesCount"><%= totalActividadesInscritas %></span>
                                     </div>
 
@@ -399,10 +399,10 @@
                         </div>
                     </section>
 
-                    <!-- Actividades inscritas -->
+                    <!-- Talleres inscritos -->
                     <section class="student-activities-card">
                         <div class="section-header">
-                            <h3>Actividades inscritas</h3>
+                            <h3>Talleres inscritos</h3>
                         </div>
 
                         <div class="student-activities-table-wrapper">
@@ -440,7 +440,7 @@
                                     } else {
                                 %>
                                 <tr>
-                                    <td colspan="5">Este alumno no tiene actividades inscritas.</td>
+                                    <td colspan="5">Este alumno no tiene talleres inscritos.</td>
                                 </tr>
                                 <%
                                     }

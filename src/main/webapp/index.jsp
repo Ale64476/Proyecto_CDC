@@ -50,7 +50,7 @@
                 <span class="nav-label">Dashboard</span>
             </a>
 
-            <a href="<%= request.getContextPath() %>/actividades" class="nav-item">
+            <a href="<%= request.getContextPath() %>/talleres" class="nav-item">
                 <i class="bi bi-calendar3"></i>
                 <span class="nav-label">Talleres</span>
             </a>
@@ -117,7 +117,7 @@
                         <i class="bi bi-calendar-check-fill"></i>
                     </div>
                     <div>
-                        <p class="metric-label">Actividades de hoy</p>
+                        <p class="metric-label">Talleres de hoy</p>
                         <h2 class="metric-value">
                             <%= resumenDashboard != null ? resumenDashboard.getActividadesDeHoy() : 0 %>
                         </h2>
@@ -264,7 +264,7 @@
 
                 <article class="panel-card">
                     <div class="panel-header">
-                        <h3>Actividades de hoy</h3>
+                        <h3>Talleres de hoy</h3>
                     </div>
 
                     <ul class="activity-list">
@@ -314,7 +314,7 @@
                         <li class="activity-list-item">
                             <span class="activity-time">--:--</span>
                             <div class="activity-main-info">
-                                <strong>Sin actividades programadas hoy</strong>
+                                <strong>Sin talleres programadas hoy</strong>
                                 <small>No hay registros para el día actual</small>
                             </div>
                         </li>
@@ -337,7 +337,7 @@
 
                         <button class="quick-btn">
                             <i class="bi bi-calendar-plus-fill"></i>
-                            <span>Crear actividad</span>
+                            <span>Crear taller</span>
                         </button>
 
                         <button class="quick-btn">

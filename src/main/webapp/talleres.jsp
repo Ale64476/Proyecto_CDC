@@ -59,7 +59,7 @@
                 <span class="nav-label">Dashboard</span>
             </a>
 
-            <a href="<%= request.getContextPath() %>/actividades" class="nav-item active">
+            <a href="<%= request.getContextPath() %>/talleres" class="nav-item active">
                 <i class="bi bi-calendar3"></i>
                 <span class="nav-label">Talleres</span>
             </a>
@@ -290,7 +290,7 @@
                 <!-- Columna izquierda -->
                 <section class="activities-list-card">
                     <div class="section-header">
-                        <h3>Listado de actividades</h3>
+                        <h3>Listado de talleres</h3>
                     </div>
                     <div class="activities-list" id="activitiesList">
                         <%
