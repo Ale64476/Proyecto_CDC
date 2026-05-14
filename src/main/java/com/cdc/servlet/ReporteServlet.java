@@ -23,18 +23,33 @@ public class ReporteServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        
+        
         String tipo = request.getParameter("tipo");
+
         if (tipo == null || tipo.isBlank()) {
-            tipo = "alumnos";
+             tipo = "alumnos";
         }
 
-        List<ReporteAlumno> reporteAlumnos = reporteDAO.listarReporteAlumnos();
-        List<ReporteActividad> reporteActividades = reporteDAO.listarReporteActividades();
-        List<ReporteAlumnoActividad> reporteAlumnosActividad = reporteDAO.listarReporteAlumnosPorActividad();
-        List<ReporteAsistenciaActividad> reporteAsistencia = reporteDAO.listarReporteAsistenciaPorActividad();
+        String estadoAlumno = request.getParameter("estadoAlumno");
+        String estadoTaller = request.getParameter("estadoTaller");
+        String idActividad = request.getParameter("idActividad");
+        String fechaInicio = request.getParameter("fechaInicio");
+        String fechaFin = request.getParameter("fechaFin");
 
+        List<ReporteAlumno> reporteAlumnos = reporteDAO.listarReporteAlumnos(estadoAlumno);
+        List<ReporteActividad> reporteActividades = reporteDAO.listarReporteActividades(estadoTaller);
+        List<ReporteAlumnoActividad> reporteAlumnosActividad = reporteDAO.listarReporteAlumnosPorActividad(idActividad, estadoAlumno);
+        List<ReporteAsistenciaActividad> reporteAsistencia = reporteDAO.listarReporteAsistenciaPorActividad(idActividad, fechaInicio, fechaFin);
+
+        
         request.setAttribute("tipoReporteSeleccionado", tipo);
+        request.setAttribute("estadoAlumnoSeleccionado", estadoAlumno);
+        request.setAttribute("estadoTallerSeleccionado", estadoTaller);
+        request.setAttribute("idActividadSeleccionada", idActividad);
+        request.setAttribute("fechaInicioSeleccionada", fechaInicio);
+        request.setAttribute("fechaFinSeleccionada", fechaFin);
+
         request.setAttribute("reporteAlumnos", reporteAlumnos);
         request.setAttribute("reporteActividades", reporteActividades);
         request.setAttribute("reporteAlumnosActividad", reporteAlumnosActividad);

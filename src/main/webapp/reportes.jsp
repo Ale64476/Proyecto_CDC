@@ -10,6 +10,11 @@
     if (tipoReporteSeleccionado == null || tipoReporteSeleccionado.isBlank()) {
         tipoReporteSeleccionado = "alumnos";
     }
+    String estadoAlumnoSeleccionado = (String) request.getAttribute("estadoAlumnoSeleccionado");
+    String estadoTallerSeleccionado = (String) request.getAttribute("estadoTallerSeleccionado");
+    String idActividadSeleccionada = (String) request.getAttribute("idActividadSeleccionada");
+    String fechaInicioSeleccionada = (String) request.getAttribute("fechaInicioSeleccionada");
+    String fechaFinSeleccionada = (String) request.getAttribute("fechaFinSeleccionada");
 
     String nombreTipoReporte = (String) request.getAttribute("nombreTipoReporte");
     Integer totalRegistrosReporte = (Integer) request.getAttribute("totalRegistrosReporte");
@@ -114,66 +119,58 @@
                     <div class="form-group">
                         <label for="reportType">Tipo de reporte</label>
                         <select id="reportType" name="tipo" class="form-select">
-                            <option value="alumnos" <%= "alumnos".equals(tipoReporteSeleccionado) ? "selected" : "" %>>Reporte de alumnos</option>
-                            <option value="actividades" <%= "actividades".equals(tipoReporteSeleccionado) ? "selected" : "" %>>Reporte de talleres</option>
+                            <option value="alumnos" <%= "alumnos".equals(tipoReporteSeleccionado) ? "selected" : "" %>>Alumnos del centro</option>
+                            <option value="actividades" <%= "actividades".equals(tipoReporteSeleccionado) ? "selected" : "" %>>Talleres disponibles</option>
                             <option value="alumnos_por_actividad" <%= "alumnos_por_actividad".equals(tipoReporteSeleccionado) ? "selected" : "" %>>Alumnos por taller</option>
                             <option value="asistencia_por_actividad" <%= "asistencia_por_actividad".equals(tipoReporteSeleccionado) ? "selected" : "" %>>Asistencia por taller</option>
                         </select>
                     </div>
 
-                    <div class="form-group dynamic-filter filter-student-status">
-                        <label for="studentStatusReport">Estado</label>
-                        <select id="studentStatusReport" class="form-select">
-                            <option value="todos">Todos</option>
-                            <option value="activos">Activos</option>
-                            <option value="inactivos">Inactivos</option>
+                    <div class="form-group dynamic-filter filter-student-status hidden-filter">
+                        <label for="studentStatusReport">Estado de alumno</label>
+                        <select id="studentStatusReport" name="estadoAlumno" class="form-select">
+                            <option value="" <%= estadoAlumnoSeleccionado == null || estadoAlumnoSeleccionado.isBlank() ? "selected" : "" %>>Todos</option>
+                            <option value="Activo" <%= "Activo".equals(estadoAlumnoSeleccionado) ? "selected" : "" %>>Activo</option>
+                            <option value="Inactivo" <%= "Inactivo".equals(estadoAlumnoSeleccionado) ? "selected" : "" %>>Inactivo</option>
+                            <option value="Baja" <%= "Baja".equals(estadoAlumnoSeleccionado) ? "selected" : "" %>>Baja</option>
                         </select>
                     </div>
 
                     <div class="form-group dynamic-filter filter-activity-status hidden-filter">
-                        <label for="activityStatusReport">Estado</label>
-                        <select id="activityStatusReport" class="form-select">
-                            <option value="todas">Todas</option>
-                            <option value="activas">Activas</option>
-                            <option value="inactivas">Inactivas</option>
+                        <label for="activityStatusReport">Estado de taller</label>
+                        <select id="activityStatusReport" name="estadoTaller" class="form-select">
+                            <option value="" <%= estadoTallerSeleccionado == null || estadoTallerSeleccionado.isBlank() ? "selected" : "" %>>Todas</option>
+                            <option value="Activa" <%= "Activa".equals(estadoTallerSeleccionado) ? "selected" : "" %>>Activa</option>
+                            <option value="Inactiva" <%= "Inactiva".equals(estadoTallerSeleccionado) ? "selected" : "" %>>Inactiva</option>
+                            <option value="Cancelada" <%= "Cancelada".equals(estadoTallerSeleccionado) ? "selected" : "" %>>Cancelada</option>
+                            <option value="Finalizada" <%= "Finalizada".equals(estadoTallerSeleccionado) ? "selected" : "" %>>Finalizada</option>
                         </select>
                     </div>
 
                     <div class="form-group dynamic-filter filter-activity-select hidden-filter">
                         <label for="activityReportSelect">Taller</label>
-                        <select id="activityReportSelect" class="form-select">
-                            <option value="manualidades">Manualidades</option>
-                            <option value="boxeo">Boxeo</option>
-                            <option value="computacion">Computación</option>
-                            <option value="musica">Música</option>
-                        </select>
+                        <select id="activityReportSelect" name="idActividad" class="form-select">
+                        <option value="" <%= idActividadSeleccionada == null || idActividadSeleccionada.isBlank() ? "selected" : "" %>>Todos los talleres</option>
+                        <option value="1" <%= "1".equals(idActividadSeleccionada) ? "selected" : "" %>>Manualidades</option>
+                        <option value="2" <%= "2".equals(idActividadSeleccionada) ? "selected" : "" %>>Boxeo</option>
+                        <option value="3" <%= "3".equals(idActividadSeleccionada) ? "selected" : "" %>>Computación</option>
+                        <option value="4" <%= "4".equals(idActividadSeleccionada) ? "selected" : "" %>>Música</option>
+                        <option value="5" <%= "5".equals(idActividadSeleccionada) ? "selected" : "" %>>Corte de cabello</option>
+                    </select>
                     </div>
 
-                    <div class="form-group dynamic-filter filter-instructor hidden-filter">
-                        <label for="instructorReportSelect">Instructor</label>
-                        <select id="instructorReportSelect" class="form-select">
-                            <option value="todos">Todos</option>
-                            <option value="ana_lopez">Ana López</option>
-                            <option value="carlos_hernandez">Carlos Hernández</option>
-                            <option value="diego_ramirez">Diego Ramírez</option>
-                            <option value="luis_morales">Luis Morales</option>
-                        </select>
-                    </div>
 
                     <div class="form-group dynamic-filter filter-date-from hidden-filter">
                         <label for="reportDateFrom">Fecha desde</label>
-                        <input type="date" id="reportDateFrom" class="form-control">
+                        <input type="date" id="reportDateFrom" name="fechaInicio" class="form-control" value="<%= fechaInicioSeleccionada != null ? fechaInicioSeleccionada : "" %>">
                     </div>
 
                     <div class="form-group dynamic-filter filter-date-to hidden-filter">
                         <label for="reportDateTo">Fecha hasta</label>
-                        <input type="date" id="reportDateTo" class="form-control">
+                        <input type="date" id="reportDateTo" name="fechaFin" class="form-control" value="<%= fechaFinSeleccionada != null ? fechaFinSeleccionada : "" %>">
                     </div>
 
-                    <div class="form-group dynamic-filter filter-search-student">
-                        <label for="reportStudentSearch">Buscar alumno</label>
-                        <input type="text" id="reportStudentSearch" class="form-control" placeholder="Ej. Carla Gómez">
-                    </div>
+
                 </div>
 
                 <div class="report-actions">
