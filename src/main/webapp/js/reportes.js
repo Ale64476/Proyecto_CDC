@@ -57,4 +57,42 @@ document.addEventListener("DOMContentLoaded", () => {
 
     actualizarFiltros();
 
-});
+
+    const exportExcelBtn = document.getElementById("exportExcelBtn");
+
+if (exportExcelBtn) {
+    exportExcelBtn.addEventListener("click", () => {
+        const tablaActiva = document.querySelector(".preview-table.active-preview");
+
+        if (!tablaActiva) {
+            alert("Primero genera o selecciona un reporte para exportar.");
+            return;
+        }
+
+        const html = `
+            <html>
+                <head>
+                    <meta charset="UTF-8">
+                </head>
+                <body>
+                    ${tablaActiva.outerHTML}
+                </body>
+            </html>
+        `;
+
+        const blob = new Blob([html], {
+            type: "application/vnd.ms-excel;charset=utf-8;"
+        });
+
+        const url = URL.createObjectURL(blob);
+        const enlace = document.createElement("a");
+
+        enlace.href = url;
+        enlace.download = "reporte.xls";
+        enlace.click();
+
+        URL.revokeObjectURL(url);
+    });
+}
+}
+);
