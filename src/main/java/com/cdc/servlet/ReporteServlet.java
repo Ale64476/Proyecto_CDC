@@ -48,9 +48,9 @@ public class ReporteServlet extends HttpServlet {
         };
 
         String nombreTipo = switch (tipo) {
-            case "actividades" -> "Reporte de actividades";
-            case "alumnos_por_actividad" -> "Alumnos por actividad";
-            case "asistencia_por_actividad" -> "Asistencia por actividad";
+            case "actividades" -> "Reporte de talleres";
+            case "alumnos_por_actividad" -> "Alumnos por taller";
+            case "asistencia_por_actividad" -> "Asistencia por taller";
             default -> "Reporte de alumnos";
         };
 

@@ -89,7 +89,7 @@ public class ReporteDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error al obtener reporte de actividades.", e);
+            throw new RuntimeException("Error al obtener reporte de talleres.", e);
         }
 
         return lista;
@@ -115,7 +115,7 @@ public class ReporteDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error al obtener reporte de alumnos por actividad.", e);
+            throw new RuntimeException("Error al obtener reporte de alumnos por taller.", e);
         }
 
         return lista;
@@ -140,7 +140,7 @@ public class ReporteDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error al obtener reporte de asistencia por actividad.", e);
+            throw new RuntimeException("Error al obtener reporte de asistencia por taller.", e);
         }
 
         return lista;

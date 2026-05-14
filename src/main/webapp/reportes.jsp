@@ -294,7 +294,7 @@
                     </table>
 
                     <!-- alumnos por Taller -->
-                    <table class="report-preview-table preview-table <%= "alumnos_por_Taller".equals(tipoReporteSeleccionado) ? "active-preview" : "" %>" id="previewAlumnosActividad">
+                    <table class="report-preview-table preview-table <%= "alumnos_por_actividad".equals(tipoReporteSeleccionado) ? "active-preview" : "" %>" id="previewAlumnosActividad">
                         <thead>
                         <tr>
                             <th>Alumno</th>

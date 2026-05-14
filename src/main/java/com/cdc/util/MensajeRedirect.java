@@ -28,7 +28,7 @@ public final class MensajeRedirect {
     public static String actividades(HttpServletRequest request, Integer idActividad, String tipo, String mensaje) {
     StringBuilder url = new StringBuilder();
 
-    url.append(request.getContextPath()).append("/actividades?");
+    url.append(request.getContextPath()).append("/talleres?");
 
     if (idActividad != null && idActividad > 0) {
         url.append("id=").append(idActividad).append("&");

@@ -305,7 +305,7 @@
                         %>
                         <article class="activity-item activity-list-item <%= seleccionada ? "selected" : "" %>"
                                 data-activity-id="<%= actividad.getIdActividad() %>"
-                                onclick="window.location.href='<%= request.getContextPath() %>/actividades?id=<%= actividad.getIdActividad() %>'">
+                                onclick="window.location.href='<%= request.getContextPath() %>/talleres?id=<%= actividad.getIdActividad() %>'">
                             <div class="activity-item-icon">
                                 <i class="bi bi-journal-richtext"></i>
                             </div>
@@ -326,7 +326,7 @@
                                 }
                             } else {
                         %>
-                        <p>No hay actividades registradas.</p>
+                        <p>No hay talleres registrados.</p>
                         <%
                             }
                         %>
@@ -1089,6 +1089,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="<%= request.getContextPath() %>/js/dashboard.js?v=<%= System.currentTimeMillis() %>"></script>
-<script src="<%= request.getContextPath() %>/js/actividades.js?v=<%= System.currentTimeMillis() %>"></script>
+<script src="<%= request.getContextPath() %>/js/talleres.js?v=<%= System.currentTimeMillis() %>"></script>
 </body>
 </html>
