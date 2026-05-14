@@ -39,7 +39,7 @@ public class ReporteDAO {
             SELECT nombre_alumno, nombre_actividad, fecha_asistencia,
                    asistio, fecha_registro_asistencia, registrado_por
             FROM vw_reporte_asistencia_por_actividad
-            ORDER BY fecha_asistencia DESC, nombre_actividad ASC, nombre_alumno ASC
+           
             """;
 
     public List<ReporteAlumno> listarReporteAlumnos(String estadoAlumno) {
@@ -191,7 +191,7 @@ public class ReporteDAO {
             parametros.add(fechaFin);
         }
 
-        sql.append(" ORDER BY fecha DESC, nombre_actividad ASC, nombre_alumno ASC");
+        sql.append(" ORDER BY fecha_asistencia DESC, nombre_actividad ASC, nombre_alumno ASC");
 
         try (Connection connection = ConexionDB.getConnection();
         PreparedStatement statement = connection.prepareStatement(sql.toString())) {
