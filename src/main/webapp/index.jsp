@@ -362,33 +362,53 @@
                     </div>
                 </article>
 
-                <article class="panel-card">
+                <section class="panel-card">
                     <div class="panel-header">
-                        <h3>Avisos</h3>
+                        <h3>Respaldo de base de datos</h3>
                     </div>
 
-                    <ul class="alerts-list">
-                    <%
-                        if (avisosDashboard != null && !avisosDashboard.isEmpty()) {
-                            for (Aviso aviso : avisosDashboard) {
-                    %>
-                        <li class="alert-item info">
-                            <i class="bi bi-megaphone-fill"></i>
-                            <span><strong><%= aviso.getTitulo() %>:</strong> <%= aviso.getMensaje() %></span>
-                        </li>
-                    <%
-                            }
-                        } else {
-                    %>
-                        <li class="alert-item info">
-                            <i class="bi bi-info-circle-fill"></i>
-                            <span>No hay avisos publicados.</span>
-                        </li>
-                    <%
-                        }
-                    %>
-                    </ul>
-                </article>
+                    <div class="backup-panel">
+                        <div class="backup-info">
+                            <i class="fa-solid fa-database"></i>
+                            <div>
+                                <strong>Backup del sistema</strong>
+                                <p>Descarga una copia de seguridad en formato SQL de la base de datos centrocomunitario.</p>
+                            </div>
+                        </div>
+
+                        <a href="<%= request.getContextPath() %>/descargar-backup" class="backup-btn">
+                            <i class="fa-solid fa-download"></i>
+                            Descargar backup
+                        </a>
+
+                        <form action="<%= request.getContextPath() %>/importar-backup"
+                            method="post"
+                            enctype="multipart/form-data"
+                            class="backup-import-form"
+                            onsubmit="return confirm('Esta acción restaurará la base de datos usando el archivo seleccionado. Se recomienda descargar un backup antes de continuar. ¿Deseas continuar?');">
+
+                            <label for="archivoBackup" class="backup-file-label">
+                                <i class="fa-solid fa-file-import"></i>
+                                Importar backup SQL
+                            </label>
+
+                            <input type="file"
+                                id="archivoBackup"
+                                name="archivoBackup"
+                                accept=".sql"
+                                required>
+
+                            <button type="submit" class="backup-btn backup-btn-secondary">
+                                <i class="fa-solid fa-upload"></i>
+                                Restaurar backup
+                            </button>
+                        </form>
+
+                        <p class="backup-note">
+                            Recomendado antes de hacer cambios importantes o antes de restaurar información.
+                        </p>
+                    </div>
+                </section>
             </section>
         </main>
     </div>

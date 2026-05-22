@@ -781,3 +781,95 @@ body.sidebar-collapsed .nav-item::before {
 .oculto {
     display: none !important;
 }
+
+.backup-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.backup-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px;
+    border-radius: 14px;
+    background: rgba(118, 15, 56, 0.08);
+    color: var(--text);
+}
+
+.backup-info i {
+    color: var(--primary);
+    font-size: 1.4rem;
+    margin-top: 2px;
+}
+
+.backup-info strong {
+    display: block;
+    margin-bottom: 4px;
+}
+
+.backup-info p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.92rem;
+    line-height: 1.4;
+}
+
+.backup-btn {
+    border: none;
+    border-radius: 14px;
+    padding: 14px 16px;
+    background: var(--primary);
+    color: #ffffff;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: background var(--transition), transform var(--transition);
+}
+
+.backup-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+.backup-note {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.88rem;
+    line-height: 1.4;
+}
+
+.backup-import-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-top: 4px;
+}
+
+.backup-file-label {
+    font-weight: 700;
+    color: var(--text);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.backup-import-form input[type="file"] {
+    padding: 12px;
+    border: 1px dashed rgba(118, 15, 56, 0.35);
+    border-radius: 12px;
+    background: #fff;
+    color: var(--muted);
+}
+
+.backup-btn-secondary {
+    background: #4b5563;
+}
+
+.backup-btn-secondary:hover {
+    background: #374151;
+}

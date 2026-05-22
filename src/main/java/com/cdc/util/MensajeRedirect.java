@@ -85,6 +85,16 @@ public final class MensajeRedirect {
         return url.toString();
     }
 
+    public static String dashboard(HttpServletRequest request, String tipo, String mensaje) {
+        StringBuilder url = new StringBuilder();
+
+        url.append(request.getContextPath()).append("/dashboard?");
+        url.append("tipoMensaje=").append(codificar(tipo));
+        url.append("&mensaje=").append(codificar(mensaje));
+
+        return url.toString();
+    }
+
     private static String codificar(String valor) {
         return URLEncoder.encode(valor, StandardCharsets.UTF_8);
     }
