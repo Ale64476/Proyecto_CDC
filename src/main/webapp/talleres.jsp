@@ -73,6 +73,11 @@
                 <i class="bi bi-person-badge-fill"></i>
                 <span class="nav-label">Instructores</span>
             </a>
+
+            <a href="<%= request.getContextPath() %>/eventos" class="nav-item">
+                <i class="bi bi-megaphone-fill"></i>
+                <span class="nav-label">Eventos</span>
+            </a>
             
             <a href="<%= request.getContextPath() %>/reportes" class="nav-item">
                 <i class="bi bi-file-earmark-bar-graph-fill"></i>
