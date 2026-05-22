@@ -726,3 +726,43 @@ button {
         max-width: none;
     }
 }
+
+.gero-empty-small {
+    border: 1px dashed var(--border);
+    border-radius: 14px;
+    padding: 18px;
+    color: var(--muted);
+    text-align: center;
+    font-size: 0.92rem;
+    background: #fff;
+}
+
+.gero-outline-danger-btn,
+.gero-secondary-btn {
+    height: 42px;
+    border-radius: 12px;
+    padding: 0 15px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    font-weight: 600;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--text);
+    transition: background var(--transition), color var(--transition), border-color var(--transition);
+}
+
+.gero-secondary-btn:hover {
+    background: #f9fafb;
+}
+
+.gero-outline-danger-btn {
+    color: #b42318;
+    border-color: rgba(180, 35, 24, 0.24);
+}
+
+.gero-outline-danger-btn:hover {
+    background: rgba(180, 35, 24, 0.05);
+    color: #991b1b;
+}

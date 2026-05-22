@@ -1,142 +1,108 @@
-const alumnosDisponiblesDemo = [
-    { id: 101, nombre: "Andrea Ruiz", edad: 71 },
-    { id: 102, nombre: "Carla Gómez", edad: 66 },
-    { id: 103, nombre: "José Pérez", edad: 74 }
-];
-
-let expedientes = [
-    {
-        id: 1,
-        alumnoId: 1,
-        nombre: "María del Carmen López",
-        edad: 68,
-        estado: "Activo",
-        ultimaActualizacion: "Hoy, 11:30",
-        consultas: [
-            {
-                id: 101,
-                fecha: "Hoy, 11:30",
-                tipo: "Seguimiento",
-                motivo: "Seguimiento de control de hipertensión arterial.",
-                antecedentes: "Hipertensión diagnosticada hace 8 años.\nDiabetes tipo 2 controlada.",
-                notas: "Paciente refiere sentirse estable.\nMantiene adherencia al tratamiento.\nSe recomienda continuar con dieta baja en sodio y actividad física ligera.",
-                eliminada: false
-            },
-            {
-                id: 102,
-                fecha: "08/05/2026, 10:00",
-                tipo: "Seguimiento",
-                motivo: "Revisión general y seguimiento de tratamiento.",
-                antecedentes: "Sin cambios relevantes desde la consulta anterior.",
-                notas: "Se mantiene observación y seguimiento mensual.",
-                eliminada: false
-            },
-            {
-                id: 103,
-                fecha: "24/04/2026, 09:30",
-                tipo: "Consulta inicial",
-                motivo: "Valoración inicial de gerontología.",
-                antecedentes: "Paciente refiere antecedentes de hipertensión.",
-                notas: "Se abre expediente para seguimiento.",
-                eliminada: false
-            }
-        ]
-    },
-    {
-        id: 2,
-        alumnoId: 2,
-        nombre: "José Antonio Ramírez",
-        edad: 72,
-        estado: "Activo",
-        ultimaActualizacion: "Ayer, 16:45",
-        consultas: [
-            {
-                id: 201,
-                fecha: "Ayer, 16:45",
-                tipo: "Seguimiento",
-                motivo: "Seguimiento por molestias articulares.",
-                antecedentes: "Dolor ocasional en rodilla derecha.",
-                notas: "Se sugiere registrar evolución y actividad física moderada.",
-                eliminada: false
-            }
-        ]
-    },
-    {
-        id: 3,
-        alumnoId: 3,
-        nombre: "Elena Pérez Martínez",
-        edad: 65,
-        estado: "Activo",
-        ultimaActualizacion: "15/05/2026",
-        consultas: []
-    },
-    {
-        id: 4,
-        alumnoId: 4,
-        nombre: "Roberto Flores Herrera",
-        edad: 70,
-        estado: "Archivado",
-        ultimaActualizacion: "10/05/2026",
-        consultas: [
-            {
-                id: 401,
-                fecha: "10/05/2026, 12:00",
-                tipo: "Seguimiento",
-                motivo: "Consulta archivada de seguimiento.",
-                antecedentes: "Expediente archivado.",
-                notas: "Se conserva historial para consulta posterior.",
-                eliminada: false
-            }
-        ]
-    }
-];
-
-let expedienteSeleccionadoId = 1;
-let consultaSeleccionadaId = 101;
-let modoFormularioConsulta = null;
-let consultaEditandoId = null;
-let accionConfirmada = null;
-
 document.addEventListener("DOMContentLoaded", function () {
-    configurarEventosGerontologia();
-    cargarAlumnosDisponibles();
-    renderizarTodo();
+    configurarFiltrosExpedientes();
+    configurarConsultas();
+    configurarFormularioConsulta();
+    configurarMiniModalGerontologia();
+    configurarConfirmacionesGerontologia();
 });
 
-function configurarEventosGerontologia() {
-    const buscarExpediente = document.getElementById("buscarExpediente");
-    const filtroExpediente = document.getElementById("filtroExpediente");
+function configurarFiltrosExpedientes() {
+    const buscar = document.getElementById("buscarExpediente");
+    const filtro = document.getElementById("filtroExpediente");
+    const items = Array.from(document.querySelectorAll(".gero-expediente-item"));
+    const contador = document.getElementById("contadorExpedientes");
+    const empty = document.getElementById("expedienteEmptyFilter");
+
+    if (!buscar || !filtro || items.length === 0) {
+        return;
+    }
+
+    function aplicarFiltros() {
+        const texto = buscar.value.toLowerCase().trim();
+        const estado = filtro.value;
+        let visibles = 0;
+
+        items.forEach(function (item) {
+            const nombre = item.dataset.nombre || "";
+            const estadoItem = item.dataset.estado || "";
+
+            const coincideTexto = nombre.includes(texto);
+            const coincideEstado = estado === "Todos" || estadoItem === estado;
+            const visible = coincideTexto && coincideEstado;
+
+            item.style.display = visible ? "" : "none";
+
+            if (visible) {
+                visibles++;
+            }
+        });
+
+        if (contador) {
+            contador.textContent = visibles;
+        }
+
+        if (empty) {
+            empty.classList.toggle("oculto", visibles > 0);
+        }
+    }
+
+    buscar.addEventListener("input", aplicarFiltros);
+    filtro.addEventListener("change", aplicarFiltros);
+
+    aplicarFiltros();
+}
+
+function configurarConsultas() {
+    const consultaItems = document.querySelectorAll(".gero-consulta-item");
+
+    consultaItems.forEach(function (item) {
+        item.addEventListener("click", function () {
+            seleccionarConsulta(item);
+        });
+
+        item.addEventListener("dblclick", function () {
+            seleccionarConsulta(item);
+            iniciarEditarConsulta();
+        });
+    });
+}
+
+function seleccionarConsulta(item) {
+    document.querySelectorAll(".gero-consulta-item").forEach(function (consulta) {
+        consulta.classList.remove("selected");
+    });
+
+    item.classList.add("selected");
+
+    setText("consultaPanelTitulo", "Detalle de la consulta");
+    setText("consultaFecha", item.dataset.fecha || "--");
+    setText("consultaPaciente", item.dataset.paciente || "--");
+    setText("consultaEdad", item.dataset.edad || "--");
+    setText("consultaMotivo", item.dataset.motivo || "Sin información registrada.");
+    setText("consultaAntecedentes", item.dataset.antecedentes || "Sin información registrada.");
+    setText("consultaNotas", item.dataset.notas || "Sin información registrada.");
+
+    const vista = document.getElementById("consultaVista");
+    const empty = document.getElementById("consultaEmptyState");
+    const form = document.getElementById("consultaForm");
+
+    if (vista) vista.classList.remove("oculto");
+    if (empty) empty.classList.add("oculto");
+    if (form) form.classList.add("oculto");
+}
+
+function configurarFormularioConsulta() {
     const btnNuevaConsulta = document.getElementById("btnNuevaConsulta");
-    const btnArchivarExpediente = document.getElementById("btnArchivarExpediente");
     const btnEditarConsulta = document.getElementById("btnEditarConsulta");
-    const btnEliminarConsulta = document.getElementById("btnEliminarConsulta");
     const btnCancelarConsulta = document.getElementById("btnCancelarConsulta");
     const consultaForm = document.getElementById("consultaForm");
-    const alumnoSelect = document.getElementById("alumnoExpedienteSelect");
-    const btnCrearExpediente = document.getElementById("btnCrearExpediente");
-
-    if (buscarExpediente) {
-        buscarExpediente.addEventListener("input", renderizarListaExpedientes);
-    }
-
-    if (filtroExpediente) {
-        filtroExpediente.addEventListener("change", renderizarListaExpedientes);
-    }
 
     if (btnNuevaConsulta) {
         btnNuevaConsulta.addEventListener("click", iniciarNuevaConsulta);
     }
 
-    if (btnArchivarExpediente) {
-        btnArchivarExpediente.addEventListener("click", confirmarArchivoExpediente);
-    }
-
     if (btnEditarConsulta) {
         btnEditarConsulta.addEventListener("click", iniciarEditarConsulta);
-    }
-
-    if (btnEliminarConsulta) {
-        btnEliminarConsulta.addEventListener("click", confirmarEliminarConsulta);
     }
 
     if (btnCancelarConsulta) {
@@ -144,569 +110,234 @@ function configurarEventosGerontologia() {
     }
 
     if (consultaForm) {
-        consultaForm.addEventListener("submit", guardarConsulta);
-    }
+        consultaForm.addEventListener("submit", function (event) {
+            const motivo = document.getElementById("consultaMotivoInput");
 
-    if (alumnoSelect) {
-        alumnoSelect.addEventListener("change", mostrarPreviewAlumno);
-    }
+            if (!motivo || !motivo.value.trim()) {
+                event.preventDefault();
 
-    if (btnCrearExpediente) {
-        btnCrearExpediente.addEventListener("click", crearExpedienteDemo);
-    }
-
-    configurarConfirmacionGerontologia();
-}
-
-function renderizarTodo() {
-    renderizarListaExpedientes();
-    renderizarDetalleExpediente();
-}
-
-function obtenerExpedienteSeleccionado() {
-    return expedientes.find(expediente => expediente.id === expedienteSeleccionadoId) || expedientes[0] || null;
-}
-
-function obtenerConsultasActivas(expediente) {
-    if (!expediente || !expediente.consultas) {
-        return [];
-    }
-
-    return expediente.consultas.filter(consulta => !consulta.eliminada);
-}
-
-function obtenerConsultaSeleccionada() {
-    const expediente = obtenerExpedienteSeleccionado();
-
-    if (!expediente) {
-        return null;
-    }
-
-    return obtenerConsultasActivas(expediente).find(consulta => consulta.id === consultaSeleccionadaId) || null;
-}
-
-function renderizarListaExpedientes() {
-    const lista = document.getElementById("listaExpedientes");
-    const contador = document.getElementById("contadorExpedientes");
-    const buscar = document.getElementById("buscarExpediente");
-    const filtro = document.getElementById("filtroExpediente");
-
-    if (!lista) {
-        return;
-    }
-
-    const texto = buscar ? buscar.value.toLowerCase().trim() : "";
-    const estado = filtro ? filtro.value : "Activo";
-
-    const expedientesFiltrados = expedientes.filter(expediente => {
-        const coincideTexto = expediente.nombre.toLowerCase().includes(texto);
-        const coincideEstado = estado === "Todos" || expediente.estado === estado;
-        return coincideTexto && coincideEstado;
-    });
-
-    if (contador) {
-        contador.textContent = expedientesFiltrados.length;
-    }
-
-    if (expedientesFiltrados.length === 0) {
-        lista.innerHTML = `
-            <div class="gero-empty-small">
-                No hay expedientes con los filtros seleccionados.
-            </div>
-        `;
-        return;
-    }
-
-    lista.innerHTML = expedientesFiltrados.map(expediente => {
-        const seleccionado = expediente.id === expedienteSeleccionadoId;
-        const estadoClase = expediente.estado === "Archivado" ? "archived" : "active";
-
-        return `
-            <article class="gero-expediente-item ${seleccionado ? "selected" : ""}" data-expediente-id="${expediente.id}">
-                <div class="gero-patient-avatar">${obtenerIniciales(expediente.nombre)}</div>
-
-                <div class="gero-expediente-body">
-                    <h4>${expediente.nombre}</h4>
-                    <p>${expediente.edad} años</p>
-
-                    <div class="gero-expediente-meta">
-                        <p>Última actualización: ${expediente.ultimaActualizacion}</p>
-                        <span class="status-badge ${estadoClase}">${expediente.estado}</span>
-                    </div>
-                </div>
-            </article>
-        `;
-    }).join("");
-
-    lista.querySelectorAll(".gero-expediente-item").forEach(item => {
-        item.addEventListener("click", function () {
-            expedienteSeleccionadoId = Number(item.dataset.expedienteId);
-            const expediente = obtenerExpedienteSeleccionado();
-            const consultas = obtenerConsultasActivas(expediente);
-
-            consultaSeleccionadaId = consultas.length > 0 ? consultas[0].id : null;
-            cancelarFormularioConsulta();
-            renderizarTodo();
+                mostrarMiniModalGerontologia(
+                    "Revisa la información",
+                    "El motivo de consulta es obligatorio.",
+                    motivo
+                );
+            }
         });
-    });
-}
-
-function renderizarDetalleExpediente() {
-    const expediente = obtenerExpedienteSeleccionado();
-
-    if (!expediente) {
-        return;
     }
-
-    const estadoClase = expediente.estado === "Archivado" ? "archived" : "active";
-
-    setText("expedienteIniciales", obtenerIniciales(expediente.nombre));
-    setText("expedienteNombre", expediente.nombre);
-    setText("expedienteEdad", `${expediente.edad} años`);
-    setText("expedienteActualizacion", expediente.ultimaActualizacion);
-
-    const estado = document.getElementById("expedienteEstado");
-    if (estado) {
-        estado.textContent = expediente.estado;
-        estado.className = `status-badge ${estadoClase}`;
-    }
-
-    const btnNuevaConsulta = document.getElementById("btnNuevaConsulta");
-    const btnArchivarExpediente = document.getElementById("btnArchivarExpediente");
-
-    if (btnNuevaConsulta) {
-        const archivado = expediente.estado === "Archivado";
-        btnNuevaConsulta.disabled = archivado;
-        btnNuevaConsulta.classList.toggle("disabled", archivado);
-    }
-
-    if (btnArchivarExpediente) {
-        btnArchivarExpediente.innerHTML = expediente.estado === "Archivado"
-            ? `<i class="bi bi-arrow-clockwise"></i><span>Reactivar expediente</span>`
-            : `<i class="bi bi-archive"></i><span>Archivar expediente</span>`;
-    }
-
-    renderizarListaConsultas();
-    renderizarDetalleConsulta();
-}
-
-function renderizarListaConsultas() {
-    const lista = document.getElementById("listaConsultas");
-    const expediente = obtenerExpedienteSeleccionado();
-
-    if (!lista || !expediente) {
-        return;
-    }
-
-    const consultas = obtenerConsultasActivas(expediente);
-
-    if (consultas.length === 0) {
-        lista.innerHTML = `
-            <div class="gero-empty-small">
-                No hay consultas registradas.
-            </div>
-        `;
-        return;
-    }
-
-    if (!consultaSeleccionadaId) {
-        consultaSeleccionadaId = consultas[0].id;
-    }
-
-    lista.innerHTML = consultas.map(consulta => {
-        const seleccionado = consulta.id === consultaSeleccionadaId;
-
-        return `
-            <article class="gero-consulta-item ${seleccionado ? "selected" : ""}" data-consulta-id="${consulta.id}">
-                <div class="gero-consulta-icon">
-                    <i class="bi bi-calendar2-week"></i>
-                </div>
-
-                <div>
-                    <h4>${consulta.fecha}</h4>
-                    <p>${consulta.tipo}</p>
-                </div>
-            </article>
-        `;
-    }).join("");
-
-    lista.querySelectorAll(".gero-consulta-item").forEach(item => {
-        item.addEventListener("click", function () {
-            consultaSeleccionadaId = Number(item.dataset.consultaId);
-            cancelarFormularioConsulta();
-            renderizarListaConsultas();
-            renderizarDetalleConsulta();
-        });
-
-        item.addEventListener("dblclick", function () {
-            consultaSeleccionadaId = Number(item.dataset.consultaId);
-            iniciarEditarConsulta();
-        });
-    });
-}
-
-function renderizarDetalleConsulta() {
-    const consulta = obtenerConsultaSeleccionada();
-    const expediente = obtenerExpedienteSeleccionado();
-
-    const vista = document.getElementById("consultaVista");
-    const empty = document.getElementById("consultaEmptyState");
-    const acciones = document.getElementById("consultaActions");
-
-    if (!consulta || !expediente) {
-        if (vista) vista.classList.add("oculto");
-        if (acciones) acciones.classList.add("oculto");
-        if (empty) empty.classList.remove("oculto");
-        return;
-    }
-
-    if (vista) vista.classList.remove("oculto");
-    if (acciones) acciones.classList.remove("oculto");
-    if (empty) empty.classList.add("oculto");
-
-    setText("consultaPanelTitulo", "Detalle de la consulta");
-    setText("consultaFecha", consulta.fecha);
-    setText("consultaPaciente", expediente.nombre);
-    setText("consultaEdad", `${expediente.edad} años`);
-    setText("consultaMotivo", consulta.motivo);
-    setText("consultaAntecedentes", consulta.antecedentes || "Sin antecedentes registrados.");
-    setText("consultaNotas", consulta.notas || "Sin notas registradas.");
 }
 
 function iniciarNuevaConsulta() {
-    const expediente = obtenerExpedienteSeleccionado();
+    const form = document.getElementById("consultaForm");
 
-    if (!expediente || expediente.estado === "Archivado") {
+    if (!form) {
         return;
     }
 
-    modoFormularioConsulta = "nuevo";
-    consultaEditandoId = null;
-
-    mostrarFormularioConsulta();
-    setText("consultaPanelTitulo", "Nueva consulta");
-
+    form.action = form.dataset.urlCrear;
+    document.getElementById("idConsultaInput").value = "";
     document.getElementById("consultaMotivoInput").value = "";
     document.getElementById("consultaAntecedentesInput").value = "";
     document.getElementById("consultaNotasInput").value = "";
 
-    setText("consultaFormPaciente", expediente.nombre);
-    setText("consultaFormMeta", `${expediente.edad} años · ${obtenerFechaHoraActual()}`);
+    mostrarFormularioConsulta("Nueva consulta");
 }
 
 function iniciarEditarConsulta() {
-    const expediente = obtenerExpedienteSeleccionado();
-    const consulta = obtenerConsultaSeleccionada();
+    const form = document.getElementById("consultaForm");
+    const seleccionada = document.querySelector(".gero-consulta-item.selected");
 
-    if (!expediente || !consulta || expediente.estado === "Archivado") {
+    if (!form || !seleccionada) {
         return;
     }
 
-    modoFormularioConsulta = "editar";
-    consultaEditandoId = consulta.id;
+    form.action = form.dataset.urlActualizar;
 
-    mostrarFormularioConsulta();
-    setText("consultaPanelTitulo", "Editar consulta");
+    document.getElementById("idConsultaInput").value = seleccionada.dataset.consultaId || "";
+    document.getElementById("consultaMotivoInput").value = seleccionada.dataset.motivo || "";
+    document.getElementById("consultaAntecedentesInput").value = seleccionada.dataset.antecedentes || "";
+    document.getElementById("consultaNotasInput").value = seleccionada.dataset.notas || "";
 
-    document.getElementById("consultaMotivoInput").value = consulta.motivo;
-    document.getElementById("consultaAntecedentesInput").value = consulta.antecedentes || "";
-    document.getElementById("consultaNotasInput").value = consulta.notas || "";
-
-    setText("consultaFormPaciente", expediente.nombre);
-    setText("consultaFormMeta", `${expediente.edad} años · ${consulta.fecha}`);
+    mostrarFormularioConsulta("Editar consulta");
 }
 
-function mostrarFormularioConsulta() {
+function mostrarFormularioConsulta(titulo) {
     const vista = document.getElementById("consultaVista");
-    const form = document.getElementById("consultaForm");
     const empty = document.getElementById("consultaEmptyState");
-    const acciones = document.getElementById("consultaActions");
+    const form = document.getElementById("consultaForm");
+
+    setText("consultaPanelTitulo", titulo);
 
     if (vista) vista.classList.add("oculto");
     if (empty) empty.classList.add("oculto");
-    if (acciones) acciones.classList.add("oculto");
     if (form) form.classList.remove("oculto");
+
+    const motivo = document.getElementById("consultaMotivoInput");
+
+    if (motivo) {
+        setTimeout(function () {
+            motivo.focus();
+        }, 80);
+    }
 }
 
 function cancelarFormularioConsulta() {
     const form = document.getElementById("consultaForm");
+    const vista = document.getElementById("consultaVista");
+    const empty = document.getElementById("consultaEmptyState");
+    const seleccionada = document.querySelector(".gero-consulta-item.selected");
 
     if (form) {
         form.classList.add("oculto");
     }
 
-    modoFormularioConsulta = null;
-    consultaEditandoId = null;
+    if (seleccionada) {
+        setText("consultaPanelTitulo", "Detalle de la consulta");
 
-    renderizarDetalleConsulta();
+        if (vista) vista.classList.remove("oculto");
+        if (empty) empty.classList.add("oculto");
+    } else {
+        setText("consultaPanelTitulo", "Sin consultas registradas");
+
+        if (vista) vista.classList.add("oculto");
+        if (empty) empty.classList.remove("oculto");
+    }
 }
 
-function guardarConsulta(event) {
-    event.preventDefault();
+function configurarMiniModalGerontologia() {
+    const modal = document.getElementById("cdcMiniModal");
+    const cerrar = document.getElementById("cdcMiniClose");
+    const ok = document.getElementById("cdcMiniOk");
 
-    const expediente = obtenerExpedienteSeleccionado();
-
-    if (!expediente) {
+    if (!modal || !cerrar || !ok) {
         return;
     }
 
-    const motivo = document.getElementById("consultaMotivoInput").value.trim();
-    const antecedentes = document.getElementById("consultaAntecedentesInput").value.trim();
-    const notas = document.getElementById("consultaNotasInput").value.trim();
+    cerrar.addEventListener("click", cerrarMiniModalGerontologia);
+    ok.addEventListener("click", cerrarMiniModalGerontologia);
 
-    if (!motivo) {
-        document.getElementById("consultaMotivoInput").focus();
-        return;
-    }
-
-    if (modoFormularioConsulta === "nuevo") {
-        const nuevaConsulta = {
-            id: Date.now(),
-            fecha: obtenerFechaHoraActual(),
-            tipo: expediente.consultas.length === 0 ? "Consulta inicial" : "Seguimiento",
-            motivo,
-            antecedentes,
-            notas,
-            eliminada: false
-        };
-
-        expediente.consultas.unshift(nuevaConsulta);
-        expediente.ultimaActualizacion = "Ahora";
-        consultaSeleccionadaId = nuevaConsulta.id;
-    }
-
-    if (modoFormularioConsulta === "editar") {
-        const consulta = expediente.consultas.find(item => item.id === consultaEditandoId);
-
-        if (consulta) {
-            consulta.motivo = motivo;
-            consulta.antecedentes = antecedentes;
-            consulta.notas = notas;
-            expediente.ultimaActualizacion = "Ahora";
-            consultaSeleccionadaId = consulta.id;
+    modal.addEventListener("click", function (event) {
+        if (event.target === modal) {
+            cerrarMiniModalGerontologia();
         }
-    }
-
-    modoFormularioConsulta = null;
-    consultaEditandoId = null;
-
-    renderizarTodo();
-}
-
-function confirmarEliminarConsulta() {
-    const consulta = obtenerConsultaSeleccionada();
-
-    if (!consulta) {
-        return;
-    }
-
-    mostrarConfirmacionGerontologia(
-        "Eliminar consulta",
-        "La consulta dejará de verse activa en el expediente, pero el historial podrá conservarse cuando conectemos base de datos.",
-        "Eliminar",
-        function () {
-            eliminarConsultaSeleccionada();
-        }
-    );
-}
-
-function eliminarConsultaSeleccionada() {
-    const expediente = obtenerExpedienteSeleccionado();
-
-    if (!expediente) {
-        return;
-    }
-
-    const consulta = expediente.consultas.find(item => item.id === consultaSeleccionadaId);
-
-    if (consulta) {
-        consulta.eliminada = true;
-        expediente.ultimaActualizacion = "Ahora";
-    }
-
-    const activas = obtenerConsultasActivas(expediente);
-    consultaSeleccionadaId = activas.length > 0 ? activas[0].id : null;
-
-    renderizarTodo();
-}
-
-function confirmarArchivoExpediente() {
-    const expediente = obtenerExpedienteSeleccionado();
-
-    if (!expediente) {
-        return;
-    }
-
-    const archivado = expediente.estado === "Archivado";
-
-    mostrarConfirmacionGerontologia(
-        archivado ? "Reactivar expediente" : "Archivar expediente",
-        archivado
-            ? "El expediente volverá a estar activo y permitirá nuevas consultas."
-            : "El expediente dejará de estar activo, pero conservará sus consultas e historial.",
-        archivado ? "Reactivar" : "Archivar",
-        function () {
-            expediente.estado = archivado ? "Activo" : "Archivado";
-            expediente.ultimaActualizacion = "Ahora";
-            renderizarTodo();
-        }
-    );
-}
-
-function cargarAlumnosDisponibles() {
-    const select = document.getElementById("alumnoExpedienteSelect");
-
-    if (!select) {
-        return;
-    }
-
-    alumnosDisponiblesDemo.forEach(alumno => {
-        const option = document.createElement("option");
-        option.value = alumno.id;
-        option.textContent = `${alumno.nombre} · ${alumno.edad} años`;
-        select.appendChild(option);
     });
 }
 
-function mostrarPreviewAlumno() {
-    const select = document.getElementById("alumnoExpedienteSelect");
-    const preview = document.getElementById("alumnoPreview");
+function mostrarMiniModalGerontologia(titulo, mensaje, campo) {
+    const modal = document.getElementById("cdcMiniModal");
+    const tituloModal = document.getElementById("cdcMiniTitle");
+    const mensajeModal = document.getElementById("cdcMiniMessage");
 
-    if (!select || !preview) {
+    if (!modal || !tituloModal || !mensajeModal) {
+        alert(mensaje);
         return;
     }
 
-    const alumno = alumnosDisponiblesDemo.find(item => item.id === Number(select.value));
+    activarModoInfoMiniModalGerontologia();
 
-    if (!alumno) {
-        preview.classList.add("oculto");
-        return;
-    }
+    tituloModal.textContent = titulo;
+    mensajeModal.textContent = mensaje;
 
-    setText("previewIniciales", obtenerIniciales(alumno.nombre));
-    setText("previewNombre", alumno.nombre);
-    setText("previewEdad", `${alumno.edad} años`);
+    modal.classList.remove("oculto");
 
-    preview.classList.remove("oculto");
+    modal._campoRetorno = campo || null;
 }
 
-function crearExpedienteDemo() {
-    const select = document.getElementById("alumnoExpedienteSelect");
+function cerrarMiniModalGerontologia() {
+    const modal = document.getElementById("cdcMiniModal");
 
-    if (!select || !select.value) {
-        select.focus();
+    if (!modal) {
         return;
     }
 
-    const alumno = alumnosDisponiblesDemo.find(item => item.id === Number(select.value));
+    const campo = modal._campoRetorno;
 
-    if (!alumno) {
-        return;
+    modal.classList.add("oculto");
+    modal._campoRetorno = null;
+
+    if (campo) {
+        setTimeout(function () {
+            campo.focus();
+        }, 80);
     }
-
-    const nuevoExpediente = {
-        id: Date.now(),
-        alumnoId: alumno.id,
-        nombre: alumno.nombre,
-        edad: alumno.edad,
-        estado: "Activo",
-        ultimaActualizacion: "Sin consultas",
-        consultas: []
-    };
-
-    expedientes.unshift(nuevoExpediente);
-    expedienteSeleccionadoId = nuevoExpediente.id;
-    consultaSeleccionadaId = null;
-
-    const indexAlumno = alumnosDisponiblesDemo.findIndex(item => item.id === alumno.id);
-    if (indexAlumno >= 0) {
-        alumnosDisponiblesDemo.splice(indexAlumno, 1);
-    }
-
-    const modalElement = document.getElementById("modalNuevoExpediente");
-    const modal = bootstrap.Modal.getInstance(modalElement);
-
-    if (modal) {
-        modal.hide();
-    }
-
-    select.value = "";
-    mostrarPreviewAlumno();
-
-    renderizarTodo();
 }
 
-function configurarConfirmacionGerontologia() {
-    const close = document.getElementById("geroConfirmClose");
-    const cancel = document.getElementById("geroConfirmCancel");
-    const accept = document.getElementById("geroConfirmAccept");
+function configurarConfirmacionesGerontologia() {
+    const formularios = document.querySelectorAll(".js-confirm-submit");
 
-    if (close) {
-        close.addEventListener("click", cerrarConfirmacionGerontologia);
-    }
-
-    if (cancel) {
-        cancel.addEventListener("click", cerrarConfirmacionGerontologia);
-    }
-
-    if (accept) {
-        accept.addEventListener("click", function () {
-            if (typeof accionConfirmada === "function") {
-                accionConfirmada();
+    formularios.forEach(function (formulario) {
+        formulario.addEventListener("submit", function (event) {
+            if (formulario.dataset.confirmado === "true") {
+                return;
             }
 
-            cerrarConfirmacionGerontologia();
+            event.preventDefault();
+
+            mostrarMiniModalConfirmacionGerontologia(
+                formulario.dataset.confirmTitle || "Confirmar acción",
+                formulario.dataset.confirmMessage || "¿Deseas continuar?",
+                formulario.dataset.confirmConfirmText || "Confirmar",
+                formulario.dataset.confirmDanger === "true",
+                formulario
+            );
         });
-    }
+    });
 }
 
-function mostrarConfirmacionGerontologia(titulo, mensaje, textoBoton, accion) {
-    accionConfirmada = accion;
+function mostrarMiniModalConfirmacionGerontologia(titulo, mensaje, textoConfirmar, esPeligroso, formulario) {
+    const modal = document.getElementById("cdcMiniModal");
+    const tituloModal = document.getElementById("cdcMiniTitle");
+    const mensajeModal = document.getElementById("cdcMiniMessage");
+    const botonOk = document.getElementById("cdcMiniOk");
+    const botonCancelar = document.getElementById("cdcMiniCancel");
+    const botonConfirmar = document.getElementById("cdcMiniConfirm");
 
-    setText("geroConfirmTitle", titulo);
-    setText("geroConfirmMessage", mensaje);
-    setText("geroConfirmAccept", textoBoton);
-
-    const modal = document.getElementById("geroConfirmModal");
-
-    if (modal) {
-        modal.classList.remove("oculto");
+    if (!modal || !tituloModal || !mensajeModal || !botonOk || !botonCancelar || !botonConfirmar) {
+        if (confirm(mensaje)) {
+            formulario.submit();
+        }
+        return;
     }
+
+    tituloModal.textContent = titulo;
+    mensajeModal.textContent = mensaje;
+
+    botonOk.classList.add("oculto");
+    botonCancelar.classList.remove("oculto");
+    botonConfirmar.classList.remove("oculto");
+
+    botonConfirmar.textContent = textoConfirmar;
+    botonConfirmar.classList.toggle("cdc-mini-btn-danger", esPeligroso);
+    botonConfirmar.classList.toggle("cdc-mini-btn-primary", !esPeligroso);
+
+    botonConfirmar.onclick = function () {
+        formulario.dataset.confirmado = "true";
+        formulario.submit();
+    };
+
+    botonCancelar.onclick = function () {
+        cerrarMiniModalGerontologia();
+    };
+
+    modal.classList.remove("oculto");
 }
 
-function cerrarConfirmacionGerontologia() {
-    const modal = document.getElementById("geroConfirmModal");
+function activarModoInfoMiniModalGerontologia() {
+    const botonOk = document.getElementById("cdcMiniOk");
+    const botonCancelar = document.getElementById("cdcMiniCancel");
+    const botonConfirmar = document.getElementById("cdcMiniConfirm");
 
-    if (modal) {
-        modal.classList.add("oculto");
+    if (botonOk) {
+        botonOk.classList.remove("oculto");
     }
 
-    accionConfirmada = null;
-}
-
-function obtenerIniciales(nombre) {
-    if (!nombre) {
-        return "--";
+    if (botonCancelar) {
+        botonCancelar.classList.add("oculto");
     }
 
-    const partes = nombre.trim().split(/\s+/);
-
-    if (partes.length >= 2) {
-        return (partes[0][0] + partes[1][0]).toUpperCase();
+    if (botonConfirmar) {
+        botonConfirmar.classList.add("oculto");
+        botonConfirmar.onclick = null;
     }
-
-    return partes[0][0].toUpperCase();
-}
-
-function obtenerFechaHoraActual() {
-    const ahora = new Date();
-    const dia = String(ahora.getDate()).padStart(2, "0");
-    const mes = String(ahora.getMonth() + 1).padStart(2, "0");
-    const anio = ahora.getFullYear();
-    const hora = String(ahora.getHours()).padStart(2, "0");
-    const minuto = String(ahora.getMinutes()).padStart(2, "0");
-
-    return `${dia}/${mes}/${anio}, ${hora}:${minuto}`;
 }
 
 function setText(id, valor) {

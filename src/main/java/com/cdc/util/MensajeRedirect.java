@@ -55,6 +55,21 @@ public final class MensajeRedirect {
         return url.toString();
     }
 
+    public static String gerontologia(HttpServletRequest request, Integer idPaciente, String tipo, String mensaje) {
+        StringBuilder url = new StringBuilder();
+
+        url.append(request.getContextPath()).append("/gerontologia?");
+
+        if (idPaciente != null && idPaciente > 0) {
+            url.append("id=").append(idPaciente).append("&");
+        }
+
+        url.append("tipoMensaje=").append(codificar(tipo));
+        url.append("&mensaje=").append(codificar(mensaje));
+
+        return url.toString();
+    }
+
     private static String codificar(String valor) {
         return URLEncoder.encode(valor, StandardCharsets.UTF_8);
     }
