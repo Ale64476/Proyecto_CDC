@@ -444,3 +444,34 @@ function activarModoInfoMiniModalEventos() {
         botonConfirmar.onclick = null;
     }
 }
+document.addEventListener("DOMContentLoaded", function () {
+    abrirModalDesdeAccesoRapidoEvento();
+});
+
+function abrirModalDesdeAccesoRapidoEvento() {
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.get("accion") !== "nuevo") {
+        return;
+    }
+
+    const botonNuevoEvento = buscarBotonPorTexto("Nuevo evento");
+
+    if (botonNuevoEvento) {
+        setTimeout(function () {
+            botonNuevoEvento.click();
+        }, 150);
+    }
+}
+
+function buscarBotonPorTexto(textoBuscado) {
+    const elementos = document.querySelectorAll("button, a");
+
+    for (const elemento of elementos) {
+        if (elemento.textContent.trim().toLowerCase() === textoBuscado.toLowerCase()) {
+            return elemento;
+        }
+    }
+
+    return null;
+}

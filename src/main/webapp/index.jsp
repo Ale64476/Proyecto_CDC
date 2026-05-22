@@ -340,25 +340,37 @@
                     </div>
 
                     <div class="quick-actions">
-                        <button class="quick-btn">
+
+                         <button class="quick-btn"
+                                onclick="window.location.href='<%= request.getContextPath() %>/alumnos?accion=nuevo'">
                             <i class="bi bi-person-plus-fill"></i>
                             <span>Registrar alumno</span>
                         </button>
 
-                        <button class="quick-btn">
+                        <button class="quick-btn"
+                                onclick="window.location.href='<%= request.getContextPath() %>/talleres?accion=nuevo'">
                             <i class="bi bi-calendar-plus-fill"></i>
                             <span>Crear taller</span>
                         </button>
 
-                        <button class="quick-btn">
-                            <i class="bi bi-check2-square"></i>
-                            <span>Pasar asistencia</span>
+                        <button class="quick-btn"
+                                onclick="window.location.href='<%= request.getContextPath() %>/instructores?accion=nuevo'">
+                            <i class="bi bi-person-badge-fill"></i>
+                            <span>Registrar instructor</span>
                         </button>
 
-                        <button class="quick-btn">
-                            <i class="bi bi-box-arrow-up-right"></i>
-                            <span>Ver reportes</span>
+                        <button class="quick-btn"
+                                onclick="window.location.href='<%= request.getContextPath() %>/eventos?accion=nuevo'">
+                            <i class="bi bi-megaphone-fill"></i>
+                            <span>Crear evento</span>
                         </button>
+
+                        <button class="quick-btn"
+                                onclick="window.location.href='<%= request.getContextPath() %>/gerontologia?accion=nuevo'">
+                            <i class="bi bi-folder-plus"></i>
+                            <span>Agregar expediente</span>
+                        </button>
+
                     </div>
                 </article>
 

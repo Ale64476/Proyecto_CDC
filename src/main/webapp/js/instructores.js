@@ -274,3 +274,34 @@ function activarModoInfoMiniModalInstructor() {
         botonConfirmar.onclick = null;
     }
 }
+document.addEventListener("DOMContentLoaded", function () {
+    abrirModalDesdeAccesoRapidoInstructor();
+});
+
+function abrirModalDesdeAccesoRapidoInstructor() {
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.get("accion") !== "nuevo") {
+        return;
+    }
+
+    const botonNuevoInstructor = buscarBotonPorTexto("Nuevo instructor");
+
+    if (botonNuevoInstructor) {
+        setTimeout(function () {
+            botonNuevoInstructor.click();
+        }, 150);
+    }
+}
+
+function buscarBotonPorTexto(textoBuscado) {
+    const elementos = document.querySelectorAll("button, a");
+
+    for (const elemento of elementos) {
+        if (elemento.textContent.trim().toLowerCase() === textoBuscado.toLowerCase()) {
+            return elemento;
+        }
+    }
+
+    return null;
+}

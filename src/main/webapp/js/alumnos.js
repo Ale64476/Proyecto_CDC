@@ -379,3 +379,34 @@ function obtenerNombreAlumno(tarjeta) {
     return tarjeta.textContent;
 }
 }
+document.addEventListener("DOMContentLoaded", function () {
+    abrirModalDesdeAccesoRapidoAlumno();
+});
+
+function abrirModalDesdeAccesoRapidoAlumno() {
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.get("accion") !== "nuevo") {
+        return;
+    }
+
+    const botonNuevoAlumno = buscarBotonPorTexto("Nuevo alumno");
+
+    if (botonNuevoAlumno) {
+        setTimeout(function () {
+            botonNuevoAlumno.click();
+        }, 150);
+    }
+}
+
+function buscarBotonPorTexto(textoBuscado) {
+    const elementos = document.querySelectorAll("button, a");
+
+    for (const elemento of elementos) {
+        if (elemento.textContent.trim().toLowerCase() === textoBuscado.toLowerCase()) {
+            return elemento;
+        }
+    }
+
+    return null;
+}
