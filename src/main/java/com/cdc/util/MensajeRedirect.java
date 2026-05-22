@@ -26,19 +26,34 @@ public final class MensajeRedirect {
     }
 
     public static String actividades(HttpServletRequest request, Integer idActividad, String tipo, String mensaje) {
-    StringBuilder url = new StringBuilder();
+        StringBuilder url = new StringBuilder();
 
-    url.append(request.getContextPath()).append("/talleres?");
+        url.append(request.getContextPath()).append("/talleres?");
 
-    if (idActividad != null && idActividad > 0) {
-        url.append("id=").append(idActividad).append("&");
+        if (idActividad != null && idActividad > 0) {
+            url.append("id=").append(idActividad).append("&");
     }
 
     url.append("tipoMensaje=").append(codificar(tipo));
     url.append("&mensaje=").append(codificar(mensaje));
 
     return url.toString();
-}
+    }
+
+    public static String instructores(HttpServletRequest request, Integer idInstructor, String tipo, String mensaje) {
+        StringBuilder url = new StringBuilder();
+
+        url.append(request.getContextPath()).append("/instructores?");
+
+        if (idInstructor != null && idInstructor > 0) {
+            url.append("id=").append(idInstructor).append("&");
+        }
+
+        url.append("tipoMensaje=").append(codificar(tipo));
+        url.append("&mensaje=").append(codificar(mensaje));
+
+        return url.toString();
+    }
 
     private static String codificar(String valor) {
         return URLEncoder.encode(valor, StandardCharsets.UTF_8);
