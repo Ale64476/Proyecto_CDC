@@ -72,6 +72,11 @@
                 <span class="nav-label">Alumnos</span>
             </a>
 
+            <a href="<%= request.getContextPath() %>/instructores" class="nav-item">
+                <i class="bi bi-person-badge-fill"></i>
+                <span class="nav-label">Instructores</span>
+            </a>
+
             <a href="<%= request.getContextPath() %>/reportes" class="nav-item">
                 <i class="bi bi-file-earmark-bar-graph-fill"></i>
                 <span class="nav-label">Reportes</span>
@@ -81,7 +86,6 @@
                 <i class="bi bi-heart-pulse-fill"></i>
                 <span class="nav-label">Gerontología</span>
             </a>
-
         </nav>
     </aside>
 
