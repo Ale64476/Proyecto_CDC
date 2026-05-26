@@ -60,6 +60,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const exportExcelBtn = document.getElementById("exportExcelBtn");
 
+    const nombreesReporte = {
+        "alumnos": "Reporte_Alumnos",
+        "actividades": "Reporte_Talleres",
+        "alumnos_por_actividad": "Reporte_Alumnos_por_Taller",
+        "asistencia_por_actividad": "Reporte_Asistencia_por_Taller"
+    };
+
 if (exportExcelBtn) {
     exportExcelBtn.addEventListener("click", () => {
         const tablaActiva = document.querySelector(".preview-table.active-preview");
@@ -68,6 +75,10 @@ if (exportExcelBtn) {
             alert("Primero genera o selecciona un reporte para exportar.");
             return;
         }
+
+        const tipoReporte = reportType.value;
+        const nombreArchivo = nombreesReporte[tipoReporte] || "reporte";
+        const fecha = new Date().toISOString().split("T")[0];
 
         const html = `
             <html>
@@ -88,7 +99,7 @@ if (exportExcelBtn) {
         const enlace = document.createElement("a");
 
         enlace.href = url;
-        enlace.download = "reporte.xls";
+        enlace.download = `${nombreArchivo}_${fecha}.xls`;
         enlace.click();
 
         URL.revokeObjectURL(url);
