@@ -30,8 +30,8 @@ public class ReporteDAO {
             """;
 
     private static final String SQL_REPORTE_ALUMNOS_POR_ACTIVIDAD = """
-            SELECT id_alumno, nombre_alumno, celular, id_actividad,
-                   nombre_actividad, instructor, asistencias_del_mes
+            SELECT id_alumno, nombre_alumno, celular, estado_alumno, id_actividad,
+                nombre_actividad, instructor, asistencias_del_mes
             FROM vw_reporte_alumnos_por_actividad
             """;
 
@@ -133,36 +133,46 @@ public class ReporteDAO {
         StringBuilder sql = new StringBuilder(SQL_REPORTE_ALUMNOS_POR_ACTIVIDAD);
         List<Object> parametros = new ArrayList<>();
 
+        sql.append(" WHERE 1 = 1 ");
 
-        if (idActividad != null && !idActividad.isBlank()) {
-            sql.append(" WHERE id_actividad = ?");
+        if (idActividad != null && !idActividad.trim().isEmpty() && !"0".equals(idActividad)) {
+            sql.append(" AND id_actividad = ? ");
             parametros.add(Integer.parseInt(idActividad));
-            
         }
 
+        if (estadoAlumno != null 
+                && !estadoAlumno.trim().isEmpty() 
+                && !"Todos".equalsIgnoreCase(estadoAlumno)) {
+            sql.append(" AND estado_alumno = ? ");
+            parametros.add(estadoAlumno);
+        }
 
-        
-        sql.append(" ORDER BY nombre_actividad ASC, nombre_alumno ASC");
+        sql.append(" ORDER BY nombre_alumno ASC ");
 
         try (Connection connection = ConexionDB.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql.toString())) {
+            PreparedStatement ps = connection.prepareStatement(sql.toString())) {
+
             for (int i = 0; i < parametros.size(); i++) {
-                statement.setObject(i + 1, parametros.get(i));
+                ps.setObject(i + 1, parametros.get(i));
             }
 
-            try (ResultSet resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    ReporteAlumnoActividad item = new ReporteAlumnoActividad();
-                    item.setIdAlumno(resultSet.getInt("id_alumno"));
-                    item.setNombreAlumno(resultSet.getString("nombre_alumno"));
-                    item.setCelular(resultSet.getString("celular"));
-                    item.setIdActividad(resultSet.getInt("id_actividad"));
-                    item.setNombreActividad(resultSet.getString("nombre_actividad"));
-                    item.setInstructor(resultSet.getString("instructor"));
-                    item.setAsistenciasDelMes(resultSet.getInt("asistencias_del_mes"));
-                    lista.add(item);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    ReporteAlumnoActividad reporte = new ReporteAlumnoActividad();
+
+                    reporte.setIdAlumno(rs.getInt("id_alumno"));
+                    reporte.setNombreAlumno(rs.getString("nombre_alumno"));
+                    reporte.setCelular(rs.getString("celular"));
+                    reporte.setEstadoAlumno(rs.getString("estado_alumno"));
+                    reporte.setIdActividad(rs.getInt("id_actividad"));
+                    reporte.setNombreActividad(rs.getString("nombre_actividad"));
+                    reporte.setInstructor(rs.getString("instructor"));
+                    reporte.setAsistenciasDelMes(rs.getInt("asistencias_del_mes"));
+
+                    lista.add(reporte);
                 }
             }
+
         } catch (SQLException e) {
             throw new RuntimeException("Error al obtener reporte de alumnos por taller.", e);
         }

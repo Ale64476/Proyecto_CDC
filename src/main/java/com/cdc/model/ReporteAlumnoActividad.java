@@ -8,6 +8,15 @@ public class ReporteAlumnoActividad {
     private String nombreActividad;
     private String instructor;
     private int asistenciasDelMes;
+    private String estadoAlumno;
+
+    public String getEstadoAlumno() {
+        return estadoAlumno;
+    }
+
+    public void setEstadoAlumno(String estadoAlumno) {
+        this.estadoAlumno = estadoAlumno;
+    }
 
     public int getIdAlumno() {
         return idAlumno;
