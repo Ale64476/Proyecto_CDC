@@ -136,8 +136,20 @@
                         </select>
                     </div>
 
+                    <div class="form-group dynamic-filter filter-activity-select hidden-filter">
+                        <label for="activityReportSelect">Taller</label>
+                        <select id="activityReportSelect" name="idActividad" class="form-select">
+                        <option value="" <%= idActividadSeleccionada == null || idActividadSeleccionada.isBlank() ? "selected" : "" %>>Todos los talleres</option>
+                        <option value="1" <%= "1".equals(idActividadSeleccionada) ? "selected" : "" %>>Manualidades</option>
+                        <option value="2" <%= "2".equals(idActividadSeleccionada) ? "selected" : "" %>>Boxeo</option>
+                        <option value="3" <%= "3".equals(idActividadSeleccionada) ? "selected" : "" %>>Computación</option>
+                        <option value="4" <%= "4".equals(idActividadSeleccionada) ? "selected" : "" %>>Música</option>
+                        <option value="5" <%= "5".equals(idActividadSeleccionada) ? "selected" : "" %>>Corte de cabello</option>
+                    </select>
+                    </div>
+
                     <div class="form-group dynamic-filter filter-student-status hidden-filter">
-                        <label for="studentStatusReport">Estado de alumno</label>
+                        <label for="studentStatusReport">Estado del alumno</label>
                         <select id="studentStatusReport" name="estadoAlumno" class="form-select">
                             <option value="" <%= estadoAlumnoSeleccionado == null || estadoAlumnoSeleccionado.isBlank() ? "selected" : "" %>>Todos</option>
                             <option value="Activo" <%= "Activo".equals(estadoAlumnoSeleccionado) ? "selected" : "" %>>Activo</option>
@@ -149,11 +161,10 @@
                     <div class="form-group dynamic-filter filter-activity-status hidden-filter">
                         <label for="activityStatusReport">Estado de taller</label>
                         <select id="activityStatusReport" name="estadoTaller" class="form-select">
-                            <option value="" <%= estadoTallerSeleccionado == null || estadoTallerSeleccionado.isBlank() ? "selected" : "" %>>Todas</option>
-                            <option value="Activa" <%= "Activa".equals(estadoTallerSeleccionado) ? "selected" : "" %>>Activa</option>
-                            <option value="Inactiva" <%= "Inactiva".equals(estadoTallerSeleccionado) ? "selected" : "" %>>Inactiva</option>
-                            <option value="Cancelada" <%= "Cancelada".equals(estadoTallerSeleccionado) ? "selected" : "" %>>Cancelada</option>
-                            <option value="Finalizada" <%= "Finalizada".equals(estadoTallerSeleccionado) ? "selected" : "" %>>Finalizada</option>
+                            <option value="" <%= estadoTallerSeleccionado == null || estadoTallerSeleccionado.isBlank() ? "selected" : "" %>>Todos</option>
+                            <option value="Activa" <%= "Activa".equals(estadoTallerSeleccionado) ? "selected" : "" %>>Activo</option>
+                            <option value="Inactiva" <%= "Inactiva".equals(estadoTallerSeleccionado) ? "selected" : "" %>>Inactivo</option>
+
                         </select>
                     </div>
 
