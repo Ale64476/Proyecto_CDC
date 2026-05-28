@@ -189,12 +189,6 @@
                     <i class="bi bi-search"></i>
                     <input type="text" id="buscarInstructor" placeholder="Buscar instructor">
                 </div>
-
-                <select id="filtroEstadoInstructor" class="toolbar-select">
-                    <option value="Estado: Todos">Todos</option>
-                    <option value="Estado: Activo">Activos</option>
-                    <option value="Estado: Inactivo">Inactivos</option>
-                </select>
             </section>
 
             <section class="instructors-layout">
