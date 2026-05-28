@@ -8,7 +8,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.cdc.model.Alumno;
 import com.cdc.model.GerontologiaConsulta;
 import com.cdc.model.GerontologiaPaciente;
 import com.cdc.util.ConexionDB;
@@ -17,40 +16,38 @@ public class GerontologiaDAO {
 
     private static final String SQL_LISTAR_PACIENTES = """
             SELECT
-                gp.id_paciente,
-                gp.id_alumno,
-                gp.estado_paciente,
-                gp.fecha_creacion,
-                gp.fecha_actualizacion,
-                a.nombre_completo,
-                a.fecha_nacimiento,
-                TIMESTAMPDIFF(YEAR, a.fecha_nacimiento, CURDATE()) AS edad,
-                a.celular
-            FROM gerontologia_paciente gp
-            INNER JOIN alumno a ON a.id_alumno = gp.id_alumno
+                id_paciente,
+                nombre_completo,
+                curp,
+                fecha_nacimiento,
+                TIMESTAMPDIFF(YEAR, fecha_nacimiento, CURDATE()) AS edad,
+                celular,
+                estado_paciente,
+                fecha_creacion,
+                fecha_actualizacion
+            FROM gerontologia_paciente
             ORDER BY
-                CASE gp.estado_paciente
+                CASE estado_paciente
                     WHEN 'Activo' THEN 1
                     ELSE 2
                 END,
-                gp.fecha_actualizacion DESC,
-                a.nombre_completo ASC
+                fecha_actualizacion DESC,
+                nombre_completo ASC
             """;
 
     private static final String SQL_BUSCAR_PACIENTE_POR_ID = """
             SELECT
-                gp.id_paciente,
-                gp.id_alumno,
-                gp.estado_paciente,
-                gp.fecha_creacion,
-                gp.fecha_actualizacion,
-                a.nombre_completo,
-                a.fecha_nacimiento,
-                TIMESTAMPDIFF(YEAR, a.fecha_nacimiento, CURDATE()) AS edad,
-                a.celular
-            FROM gerontologia_paciente gp
-            INNER JOIN alumno a ON a.id_alumno = gp.id_alumno
-            WHERE gp.id_paciente = ?
+                id_paciente,
+                nombre_completo,
+                curp,
+                fecha_nacimiento,
+                TIMESTAMPDIFF(YEAR, fecha_nacimiento, CURDATE()) AS edad,
+                celular,
+                estado_paciente,
+                fecha_creacion,
+                fecha_actualizacion
+            FROM gerontologia_paciente
+            WHERE id_paciente = ?
             """;
 
     private static final String SQL_LISTAR_CONSULTAS_POR_PACIENTE = """
@@ -70,32 +67,14 @@ public class GerontologiaDAO {
             ORDER BY fecha_consulta DESC, id_consulta DESC
             """;
 
-    private static final String SQL_LISTAR_ALUMNOS_DISPONIBLES = """
-            SELECT
-                a.id_alumno,
-                a.nombre_completo,
-                a.fecha_nacimiento,
-                a.curp,
-                a.domicilio,
-                a.celular,
-                a.estado_alumno,
-                a.fecha_baja,
-                a.fecha_registro
-            FROM alumno a
-            WHERE a.estado_alumno = 'Activo'
-              AND a.id_alumno NOT IN (
-                  SELECT gp.id_alumno
-                  FROM gerontologia_paciente gp
-              )
-            ORDER BY a.nombre_completo ASC
-            """;
-
     private static final String SQL_CREAR_PACIENTE = """
             INSERT INTO gerontologia_paciente (
-                id_alumno,
+                nombre_completo,
+                curp,
+                celular,
+                fecha_nacimiento,
                 estado_paciente
-            )
-            VALUES (?, 'Activo')
+            ) VALUES (?, ?, ?, ?, 'Activo')
             """;
 
     private static final String SQL_CAMBIAR_ESTADO_PACIENTE = """
@@ -104,27 +83,27 @@ public class GerontologiaDAO {
             WHERE id_paciente = ?
             """;
 
-    private static final String SQL_EXISTE_PACIENTE_POR_ALUMNO = """
+    private static final String SQL_EXISTE_PACIENTE_POR_CURP = """
             SELECT COUNT(*) AS total
             FROM gerontologia_paciente
-            WHERE id_alumno = ?
+            WHERE curp = ?
             """;
 
     private static final String SQL_BUSCAR_CONSULTA_POR_ID = """
-        SELECT
-            id_consulta,
-            id_paciente,
-            fecha_consulta,
-            nombre_paciente_snapshot,
-            edad_paciente_snapshot,
-            motivo_consulta,
-            antecedentes,
-            notas,
-            fecha_creacion,
-            fecha_actualizacion
-        FROM gerontologia_consulta
-        WHERE id_consulta = ?
-        """;
+            SELECT
+                id_consulta,
+                id_paciente,
+                fecha_consulta,
+                nombre_paciente_snapshot,
+                edad_paciente_snapshot,
+                motivo_consulta,
+                antecedentes,
+                notas,
+                fecha_creacion,
+                fecha_actualizacion
+            FROM gerontologia_consulta
+            WHERE id_consulta = ?
+            """;
 
     private static final String SQL_CREAR_CONSULTA = """
             INSERT INTO gerontologia_consulta (
@@ -134,13 +113,13 @@ public class GerontologiaDAO {
                 motivo_consulta,
                 antecedentes,
                 notas
-            )
-            VALUES (?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?)
             """;
 
     private static final String SQL_ACTUALIZAR_CONSULTA = """
             UPDATE gerontologia_consulta
-            SET motivo_consulta = ?,
+            SET
+                motivo_consulta = ?,
                 antecedentes = ?,
                 notas = ?
             WHERE id_consulta = ?
@@ -163,7 +142,6 @@ public class GerontologiaDAO {
             while (resultSet.next()) {
                 pacientes.add(mapearPaciente(resultSet));
             }
-
         } catch (SQLException e) {
             throw new RuntimeException("Error al listar pacientes de gerontología.", e);
         }
@@ -183,7 +161,6 @@ public class GerontologiaDAO {
                     return mapearPaciente(resultSet);
                 }
             }
-
         } catch (SQLException e) {
             throw new RuntimeException("Error al buscar paciente de gerontología.", e);
         }
@@ -205,7 +182,6 @@ public class GerontologiaDAO {
                     consultas.add(mapearConsulta(resultSet));
                 }
             }
-
         } catch (SQLException e) {
             throw new RuntimeException("Error al listar consultas de gerontología.", e);
         }
@@ -213,74 +189,30 @@ public class GerontologiaDAO {
         return consultas;
     }
 
-    public List<Alumno> listarAlumnosDisponiblesParaPaciente() {
-        List<Alumno> alumnos = new ArrayList<>();
-
+    public boolean existePacientePorCurp(String curp) {
         try (
                 Connection connection = ConexionDB.getConnection();
-                PreparedStatement statement = connection.prepareStatement(SQL_LISTAR_ALUMNOS_DISPONIBLES);
-                ResultSet resultSet = statement.executeQuery()
+                PreparedStatement statement = connection.prepareStatement(SQL_EXISTE_PACIENTE_POR_CURP)
         ) {
-            while (resultSet.next()) {
-                alumnos.add(mapearAlumno(resultSet));
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Error al listar alumnos disponibles para gerontología.", e);
-        }
-
-        return alumnos;
-    }
-
-    public boolean crearPaciente(int idAlumno) {
-        try (
-                Connection connection = ConexionDB.getConnection();
-                PreparedStatement statement = connection.prepareStatement(SQL_CREAR_PACIENTE)
-        ) {
-            statement.setInt(1, idAlumno);
-            return statement.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Error al crear paciente de gerontología.", e);
-        }
-    }
-
-    public boolean cambiarEstadoPaciente(int idPaciente, String nuevoEstado) {
-        try (
-                Connection connection = ConexionDB.getConnection();
-                PreparedStatement statement = connection.prepareStatement(SQL_CAMBIAR_ESTADO_PACIENTE)
-        ) {
-            statement.setString(1, nuevoEstado);
-            statement.setInt(2, idPaciente);
-
-            return statement.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Error al cambiar estado del paciente de gerontología.", e);
-        }
-    }
-
-    public boolean existePacientePorAlumno(int idAlumno) {
-        try (
-                Connection connection = ConexionDB.getConnection();
-                PreparedStatement statement = connection.prepareStatement(SQL_EXISTE_PACIENTE_POR_ALUMNO)
-        ) {
-            statement.setInt(1, idAlumno);
+            statement.setString(1, curp);
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
                     return resultSet.getInt("total") > 0;
                 }
             }
-
         } catch (SQLException e) {
-            throw new RuntimeException("Error al validar paciente existente.", e);
+            throw new RuntimeException("Error al validar CURP de paciente.", e);
         }
 
         return false;
     }
 
-    public int crearPacienteRetornandoId(int idAlumno) {
+    public boolean crearPaciente(GerontologiaPaciente paciente) {
+        return crearPacienteRetornandoId(paciente) > 0;
+    }
+
+    public int crearPacienteRetornandoId(GerontologiaPaciente paciente) {
         try (
                 Connection connection = ConexionDB.getConnection();
                 PreparedStatement statement = connection.prepareStatement(
@@ -288,7 +220,10 @@ public class GerontologiaDAO {
                         Statement.RETURN_GENERATED_KEYS
                 )
         ) {
-            statement.setInt(1, idAlumno);
+            statement.setString(1, paciente.getNombreCompleto());
+            statement.setString(2, paciente.getCurp());
+            statement.setString(3, paciente.getCelular());
+            statement.setDate(4, paciente.getFechaNacimiento());
 
             int filasAfectadas = statement.executeUpdate();
 
@@ -301,12 +236,25 @@ public class GerontologiaDAO {
                     return generatedKeys.getInt(1);
                 }
             }
-
         } catch (SQLException e) {
             throw new RuntimeException("Error al crear paciente de gerontología.", e);
         }
 
         return 0;
+    }
+
+    public boolean cambiarEstadoPaciente(int idPaciente, String nuevoEstado) {
+        try (
+                Connection connection = ConexionDB.getConnection();
+                PreparedStatement statement = connection.prepareStatement(SQL_CAMBIAR_ESTADO_PACIENTE)
+        ) {
+            statement.setString(1, nuevoEstado);
+            statement.setInt(2, idPaciente);
+
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Error al cambiar estado del paciente de gerontología.", e);
+        }
     }
 
     public GerontologiaConsulta buscarConsultaPorId(int idConsulta) {
@@ -321,7 +269,6 @@ public class GerontologiaDAO {
                     return mapearConsulta(resultSet);
                 }
             }
-
         } catch (SQLException e) {
             throw new RuntimeException("Error al buscar consulta de gerontología.", e);
         }
@@ -353,7 +300,6 @@ public class GerontologiaDAO {
                 connection.commit();
                 return creada;
             }
-
         } catch (SQLException e) {
             if (connection != null) {
                 try {
@@ -364,7 +310,6 @@ public class GerontologiaDAO {
             }
 
             throw new RuntimeException("Error al crear consulta de gerontología.", e);
-
         } finally {
             if (connection != null) {
                 try {
@@ -399,7 +344,6 @@ public class GerontologiaDAO {
                 connection.commit();
                 return actualizada;
             }
-
         } catch (SQLException e) {
             if (connection != null) {
                 try {
@@ -410,7 +354,6 @@ public class GerontologiaDAO {
             }
 
             throw new RuntimeException("Error al actualizar consulta de gerontología.", e);
-
         } finally {
             if (connection != null) {
                 try {
@@ -430,20 +373,18 @@ public class GerontologiaDAO {
         }
     }
 
-
     private GerontologiaPaciente mapearPaciente(ResultSet resultSet) throws SQLException {
         GerontologiaPaciente paciente = new GerontologiaPaciente();
 
         paciente.setIdPaciente(resultSet.getInt("id_paciente"));
-        paciente.setIdAlumno(resultSet.getInt("id_alumno"));
-        paciente.setEstadoPaciente(resultSet.getString("estado_paciente"));
-        paciente.setFechaCreacion(resultSet.getTimestamp("fecha_creacion"));
-        paciente.setFechaActualizacion(resultSet.getTimestamp("fecha_actualizacion"));
-
         paciente.setNombreCompleto(resultSet.getString("nombre_completo"));
+        paciente.setCurp(resultSet.getString("curp"));
         paciente.setFechaNacimiento(resultSet.getDate("fecha_nacimiento"));
         paciente.setEdad(resultSet.getInt("edad"));
         paciente.setCelular(resultSet.getString("celular"));
+        paciente.setEstadoPaciente(resultSet.getString("estado_paciente"));
+        paciente.setFechaCreacion(resultSet.getTimestamp("fecha_creacion"));
+        paciente.setFechaActualizacion(resultSet.getTimestamp("fecha_actualizacion"));
 
         return paciente;
     }
@@ -463,21 +404,5 @@ public class GerontologiaDAO {
         consulta.setFechaActualizacion(resultSet.getTimestamp("fecha_actualizacion"));
 
         return consulta;
-    }
-
-    private Alumno mapearAlumno(ResultSet resultSet) throws SQLException {
-        Alumno alumno = new Alumno();
-
-        alumno.setIdAlumno(resultSet.getInt("id_alumno"));
-        alumno.setNombreCompleto(resultSet.getString("nombre_completo"));
-        alumno.setFechaNacimiento(resultSet.getDate("fecha_nacimiento"));
-        alumno.setCurp(resultSet.getString("curp"));
-        alumno.setDomicilio(resultSet.getString("domicilio"));
-        alumno.setCelular(resultSet.getString("celular"));
-        alumno.setEstadoAlumno(resultSet.getString("estado_alumno"));
-        alumno.setFechaBaja(resultSet.getDate("fecha_baja"));
-        alumno.setFechaRegistro(resultSet.getDate("fecha_registro"));
-
-        return alumno;
     }
 }

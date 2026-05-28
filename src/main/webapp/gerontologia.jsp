@@ -5,7 +5,6 @@
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="java.time.LocalDate" %>
 <%@ page import="java.time.Period" %>
-<%@ page import="com.cdc.model.Alumno" %>
 <%@ page import="com.cdc.model.GerontologiaPaciente" %>
 <%@ page import="com.cdc.model.GerontologiaConsulta" %>
 
@@ -18,9 +17,6 @@
 
     List<GerontologiaConsulta> consultas =
             (List<GerontologiaConsulta>) request.getAttribute("consultasPaciente");
-
-    List<Alumno> alumnosDisponibles =
-            (List<Alumno>) request.getAttribute("alumnosDisponiblesGerontologia");
 
     String tipoMensaje = request.getParameter("tipoMensaje");
     String mensaje = request.getParameter("mensaje");
@@ -95,6 +91,39 @@
             case "paciente_archivado_no_editar_consulta":
                 textoMensaje = "No puedes editar consultas de un expediente archivado.";
                 break;
+
+            case "paciente_nombre_obligatorio":
+                textoMensaje = "El nombre completo del paciente es obligatorio.";
+                break;
+
+            case "paciente_curp_obligatoria":
+                textoMensaje = "La CURP del paciente es obligatoria.";
+                break;
+
+            case "paciente_curp_invalida":
+                textoMensaje = "La CURP debe tener 18 caracteres alfanuméricos.";
+                break;
+
+            case "paciente_curp_duplicada":
+                textoMensaje = "Ya existe un expediente de gerontología con esa CURP.";
+                break;
+
+            case "paciente_celular_invalido":
+                textoMensaje = "El teléfono debe contener exactamente 10 dígitos.";
+                break;
+
+            case "paciente_fecha_nacimiento_obligatoria":
+                textoMensaje = "La fecha de nacimiento es obligatoria.";
+                break;
+
+            case "paciente_fecha_nacimiento_futura":
+                textoMensaje = "La fecha de nacimiento no puede ser futura.";
+                break;
+
+            case "paciente_fecha_nacimiento_invalida":
+                textoMensaje = "La fecha de nacimiento no tiene un formato válido.";
+                break;
+
             case "error_sistema":
                 textoMensaje = "Ocurrió un error interno. Revisa la consola de Tomcat.";
                 break;
@@ -258,7 +287,7 @@
                         %>
                                     <a href="<%= request.getContextPath() %>/gerontologia?id=<%= paciente.getIdPaciente() %>"
                                        class="gero-expediente-item <%= seleccionado ? "selected" : "" %>"
-                                       data-nombre="<%= attr(paciente.getNombreCompleto()) %>"
+                                       data-nombre="<%= attr(paciente.getNombreCompleto() + " " + paciente.getCurp()) %>"
                                        data-estado="<%= attr(paciente.getEstadoPaciente()) %>">
 
                                         <div class="gero-patient-avatar">
@@ -268,6 +297,7 @@
                                         <div class="gero-expediente-body">
                                             <h4><%= esc(paciente.getNombreCompleto()) %></h4>
                                             <p><%= paciente.getEdad() %> años</p>
+                                            <p class="gero-expediente-curp">CURP: <%= esc(paciente.getCurp()) %></p>
 
                                             <div class="gero-expediente-meta">
                                                 <p>Última actualización: <%= formatoFechaHoraCorta(paciente.getFechaActualizacion()) %></p>
@@ -312,6 +342,24 @@
                                     <span>
                                         <i class="bi bi-person"></i>
                                         <strong><%= pacienteSeleccionado.getEdad() %> años</strong>
+                                    </span>
+
+                                    <span>
+                                        <i class="bi bi-card-text"></i>
+                                        CURP:
+                                        <strong><%= esc(pacienteSeleccionado.getCurp()) %></strong>
+                                    </span>
+
+                                    <span>
+                                        <i class="bi bi-telephone"></i>
+                                        Teléfono:
+                                        <strong><%= esc(pacienteSeleccionado.getCelular()) %></strong>
+                                    </span>
+
+                                    <span>
+                                        <i class="bi bi-calendar-heart"></i>
+                                        Nacimiento:
+                                        <strong><%= pacienteSeleccionado.getFechaNacimiento() != null ? pacienteSeleccionado.getFechaNacimiento().toString() : "--" %></strong>
                                     </span>
 
                                     <span>
@@ -523,46 +571,66 @@
               action="<%= request.getContextPath() %>/crear-paciente-gerontologia"
               class="modal-content custom-modal"
               id="formNuevoPaciente">
+
             <div class="modal-header">
                 <div>
                     <h5 class="modal-title">Nuevo expediente</h5>
-                    <p class="modal-note">Selecciona un alumno activo para crear su expediente de gerontología.</p>
+                    <p class="modal-note">
+                        Registra los datos básicos del paciente para crear su expediente de gerontología.
+                    </p>
                 </div>
+
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
 
             <div class="modal-body">
-                <div class="form-group full">
-                    <label for="alumnoExpedienteSelect">Alumno</label>
-                    <select id="alumnoExpedienteSelect" name="idAlumno" class="form-select" required>
-                        <option value="">Selecciona un alumno</option>
-
-                        <%
-                            if (alumnosDisponibles != null && !alumnosDisponibles.isEmpty()) {
-                                for (Alumno alumno : alumnosDisponibles) {
-                        %>
-                                    <option value="<%= alumno.getIdAlumno() %>">
-                                        <%= esc(alumno.getNombreCompleto()) %> · <%= calcularEdad(alumno.getFechaNacimiento()) %> años
-                                    </option>
-                        <%
-                                }
-                            }
-                        %>
-                    </select>
-                </div>
-
-                <% if (alumnosDisponibles == null || alumnosDisponibles.isEmpty()) { %>
-                    <div class="gero-empty-small mt-3">
-                        No hay alumnos activos disponibles para crear un nuevo expediente.
+                <div class="gero-modal-grid">
+                    <div class="form-group full">
+                        <label for="pacienteNombreCompleto">Nombre completo</label>
+                        <input type="text"
+                               id="pacienteNombreCompleto"
+                               name="nombreCompleto"
+                               class="form-control"
+                               maxlength="150"
+                               required>
                     </div>
-                <% } %>
+
+                    <div class="form-group full">
+                        <label for="pacienteCurp">CURP</label>
+                        <input type="text"
+                               id="pacienteCurp"
+                               name="curp"
+                               class="form-control"
+                               maxlength="18"
+                               required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pacienteCelular">Teléfono</label>
+                        <input type="text"
+                               id="pacienteCelular"
+                               name="celular"
+                               class="form-control"
+                               maxlength="10"
+                               inputmode="numeric"
+                               required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pacienteFechaNacimiento">Fecha de nacimiento</label>
+                        <input type="date"
+                               id="pacienteFechaNacimiento"
+                               name="fechaNacimiento"
+                               class="form-control"
+                               required>
+                    </div>
+                </div>
             </div>
 
             <div class="modal-footer">
                 <button type="button" class="gero-secondary-btn" data-bs-dismiss="modal">Cancelar</button>
-                <button type="submit"
-                        class="gero-primary-btn compact"
-                        <%= alumnosDisponibles == null || alumnosDisponibles.isEmpty() ? "disabled" : "" %>>
+
+                <button type="submit" class="gero-primary-btn compact">
                     Crear expediente
                 </button>
             </div>

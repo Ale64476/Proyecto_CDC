@@ -1,6 +1,9 @@
 package com.cdc.servlet;
 
 import java.io.IOException;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -8,16 +11,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.cdc.dao.AlumnoDAO;
 import com.cdc.dao.GerontologiaDAO;
-import com.cdc.model.Alumno;
+import com.cdc.model.GerontologiaPaciente;
 import com.cdc.util.MensajeRedirect;
 
 @WebServlet("/crear-paciente-gerontologia")
 public class CrearPacienteGerontologiaServlet extends HttpServlet {
 
     private final GerontologiaDAO gerontologiaDAO = new GerontologiaDAO();
-    private final AlumnoDAO alumnoDAO = new AlumnoDAO();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -26,99 +27,93 @@ public class CrearPacienteGerontologiaServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
 
         try {
-            String idAlumnoStr = request.getParameter("idAlumno");
+            String nombreCompleto = limpiar(request.getParameter("nombreCompleto"));
+            String curp = limpiar(request.getParameter("curp")).toUpperCase();
+            String celular = limpiar(request.getParameter("celular"));
+            String fechaNacimientoStr = limpiar(request.getParameter("fechaNacimiento"));
 
-            if (idAlumnoStr == null || idAlumnoStr.isBlank()) {
+            if (nombreCompleto.isBlank()) {
                 response.sendRedirect(MensajeRedirect.gerontologia(
-                        request,
-                        null,
-                        "error",
-                        "paciente_alumno_invalido"
+                        request, null, "error", "paciente_nombre_obligatorio"
                 ));
                 return;
             }
 
-            int idAlumno = Integer.parseInt(idAlumnoStr);
-
-            if (idAlumno <= 0) {
+            if (curp.isBlank()) {
                 response.sendRedirect(MensajeRedirect.gerontologia(
-                        request,
-                        null,
-                        "error",
-                        "paciente_alumno_invalido"
+                        request, null, "error", "paciente_curp_obligatoria"
                 ));
                 return;
             }
 
-            Alumno alumno = alumnoDAO.buscarPorId(idAlumno);
-
-            if (alumno == null) {
+            if (!curp.matches("[A-Z0-9]{18}")) {
                 response.sendRedirect(MensajeRedirect.gerontologia(
-                        request,
-                        null,
-                        "error",
-                        "paciente_alumno_no_encontrado"
+                        request, null, "error", "paciente_curp_invalida"
                 ));
                 return;
             }
 
-            if (!"Activo".equalsIgnoreCase(alumno.getEstadoAlumno())) {
+            if (!celular.matches("\\d{10}")) {
                 response.sendRedirect(MensajeRedirect.gerontologia(
-                        request,
-                        null,
-                        "error",
-                        "paciente_alumno_no_activo"
+                        request, null, "error", "paciente_celular_invalido"
                 ));
                 return;
             }
 
-            if (gerontologiaDAO.existePacientePorAlumno(idAlumno)) {
+            if (fechaNacimientoStr.isBlank()) {
                 response.sendRedirect(MensajeRedirect.gerontologia(
-                        request,
-                        null,
-                        "error",
-                        "paciente_ya_existe"
+                        request, null, "error", "paciente_fecha_nacimiento_obligatoria"
                 ));
                 return;
             }
 
-            int idPacienteCreado = gerontologiaDAO.crearPacienteRetornandoId(idAlumno);
+            LocalDate fechaNacimiento = LocalDate.parse(fechaNacimientoStr);
+
+            if (fechaNacimiento.isAfter(LocalDate.now())) {
+                response.sendRedirect(MensajeRedirect.gerontologia(
+                        request, null, "error", "paciente_fecha_nacimiento_futura"
+                ));
+                return;
+            }
+
+            if (gerontologiaDAO.existePacientePorCurp(curp)) {
+                response.sendRedirect(MensajeRedirect.gerontologia(
+                        request, null, "error", "paciente_curp_duplicada"
+                ));
+                return;
+            }
+
+            GerontologiaPaciente paciente = new GerontologiaPaciente();
+            paciente.setNombreCompleto(nombreCompleto);
+            paciente.setCurp(curp);
+            paciente.setCelular(celular);
+            paciente.setFechaNacimiento(Date.valueOf(fechaNacimiento));
+
+            int idPacienteCreado = gerontologiaDAO.crearPacienteRetornandoId(paciente);
 
             if (idPacienteCreado > 0) {
                 response.sendRedirect(MensajeRedirect.gerontologia(
-                        request,
-                        idPacienteCreado,
-                        "exito",
-                        "paciente_creado"
+                        request, idPacienteCreado, "exito", "paciente_creado"
                 ));
             } else {
                 response.sendRedirect(MensajeRedirect.gerontologia(
-                        request,
-                        null,
-                        "error",
-                        "paciente_no_creado"
+                        request, null, "error", "paciente_no_creado"
                 ));
             }
 
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-
+        } catch (DateTimeParseException e) {
             response.sendRedirect(MensajeRedirect.gerontologia(
-                    request,
-                    null,
-                    "error",
-                    "paciente_alumno_invalido"
+                    request, null, "error", "paciente_fecha_nacimiento_invalida"
             ));
-
         } catch (Exception e) {
             e.printStackTrace();
-
             response.sendRedirect(MensajeRedirect.gerontologia(
-                    request,
-                    null,
-                    "error",
-                    "error_sistema"
+                    request, null, "error", "error_sistema"
             ));
         }
+    }
+
+    private String limpiar(String valor) {
+        return valor == null ? "" : valor.trim();
     }
 }

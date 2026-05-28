@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.cdc.dao.GerontologiaDAO;
-import com.cdc.model.Alumno;
 import com.cdc.model.GerontologiaConsulta;
 import com.cdc.model.GerontologiaPaciente;
 
@@ -24,7 +23,6 @@ public class GerontologiaServlet extends HttpServlet {
             throws ServletException, IOException {
 
         List<GerontologiaPaciente> pacientes = gerontologiaDAO.listarPacientes();
-        List<Alumno> alumnosDisponibles = gerontologiaDAO.listarAlumnosDisponiblesParaPaciente();
 
         GerontologiaPaciente pacienteSeleccionado = null;
         List<GerontologiaConsulta> consultasPaciente = null;
@@ -53,7 +51,6 @@ public class GerontologiaServlet extends HttpServlet {
         request.setAttribute("pacientesGerontologia", pacientes);
         request.setAttribute("pacienteSeleccionado", pacienteSeleccionado);
         request.setAttribute("consultasPaciente", consultasPaciente);
-        request.setAttribute("alumnosDisponiblesGerontologia", alumnosDisponibles);
 
         request.getRequestDispatcher("/gerontologia.jsp").forward(request, response);
     }

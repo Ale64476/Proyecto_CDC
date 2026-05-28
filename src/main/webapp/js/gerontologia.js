@@ -378,3 +378,87 @@ function buscarBotonPorTexto(textoBuscado) {
 
     return null;
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+    configurarFormularioPacienteGerontologia();
+});
+
+function configurarFormularioPacienteGerontologia() {
+    const form = document.getElementById("formNuevoPaciente");
+
+    if (!form) {
+        return;
+    }
+
+    const nombre = document.getElementById("pacienteNombreCompleto");
+    const curp = document.getElementById("pacienteCurp");
+    const celular = document.getElementById("pacienteCelular");
+    const fechaNacimiento = document.getElementById("pacienteFechaNacimiento");
+
+    if (curp) {
+        curp.addEventListener("input", function () {
+            curp.value = curp.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 18);
+        });
+    }
+
+    if (celular) {
+        celular.addEventListener("input", function () {
+            celular.value = celular.value.replace(/\D/g, "").slice(0, 10);
+        });
+    }
+
+    form.addEventListener("submit", function (event) {
+        if (!nombre || !nombre.value.trim()) {
+            event.preventDefault();
+            mostrarMiniModalGerontologia(
+                "Revisa la información",
+                "El nombre completo del paciente es obligatorio.",
+                nombre
+            );
+            return;
+        }
+
+        if (!curp || !/^[A-Z0-9]{18}$/.test(curp.value.trim())) {
+            event.preventDefault();
+            mostrarMiniModalGerontologia(
+                "Revisa la información",
+                "La CURP debe tener 18 caracteres alfanuméricos.",
+                curp
+            );
+            return;
+        }
+
+        if (!celular || !/^\d{10}$/.test(celular.value.trim())) {
+            event.preventDefault();
+            mostrarMiniModalGerontologia(
+                "Revisa la información",
+                "El teléfono debe contener exactamente 10 dígitos.",
+                celular
+            );
+            return;
+        }
+
+        if (!fechaNacimiento || !fechaNacimiento.value) {
+            event.preventDefault();
+            mostrarMiniModalGerontologia(
+                "Revisa la información",
+                "La fecha de nacimiento es obligatoria.",
+                fechaNacimiento
+            );
+            return;
+        }
+
+        const fechaSeleccionada = new Date(fechaNacimiento.value + "T00:00:00");
+        const hoy = new Date();
+        hoy.setHours(0, 0, 0, 0);
+
+        if (fechaSeleccionada > hoy) {
+            event.preventDefault();
+            mostrarMiniModalGerontologia(
+                "Revisa la información",
+                "La fecha de nacimiento no puede ser futura.",
+                fechaNacimiento
+            );
+        }
+    });
+}

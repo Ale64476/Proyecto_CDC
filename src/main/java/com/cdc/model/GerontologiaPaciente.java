@@ -6,13 +6,11 @@ import java.sql.Timestamp;
 public class GerontologiaPaciente {
 
     private int idPaciente;
-    private int idAlumno;
-
     private String nombreCompleto;
+    private String curp;
     private Date fechaNacimiento;
     private int edad;
     private String celular;
-
     private String estadoPaciente;
     private Timestamp fechaCreacion;
     private Timestamp fechaActualizacion;
@@ -28,20 +26,20 @@ public class GerontologiaPaciente {
         this.idPaciente = idPaciente;
     }
 
-    public int getIdAlumno() {
-        return idAlumno;
-    }
-
-    public void setIdAlumno(int idAlumno) {
-        this.idAlumno = idAlumno;
-    }
-
     public String getNombreCompleto() {
         return nombreCompleto;
     }
 
     public void setNombreCompleto(String nombreCompleto) {
         this.nombreCompleto = nombreCompleto;
+    }
+
+    public String getCurp() {
+        return curp;
+    }
+
+    public void setCurp(String curp) {
+        this.curp = curp;
     }
 
     public Date getFechaNacimiento() {

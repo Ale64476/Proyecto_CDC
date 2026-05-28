@@ -766,3 +766,49 @@ button {
     background: rgba(180, 35, 24, 0.05);
     color: #991b1b;
 }
+.gero-expediente-curp {
+    margin-top: 2px !important;
+    font-size: 0.82rem !important;
+    color: var(--muted);
+}
+
+.gero-modal-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.gero-modal-grid .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.gero-modal-grid .form-group.full {
+    grid-column: 1 / -1;
+}
+
+.gero-modal-grid label {
+    font-weight: 700;
+    color: var(--text);
+    font-size: 0.92rem;
+}
+
+.gero-modal-grid .form-control {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 11px 12px;
+    font-size: 0.95rem;
+}
+
+.gero-modal-grid .form-control:focus {
+    outline: none;
+    border-color: rgba(118, 15, 56, 0.55);
+    box-shadow: 0 0 0 3px rgba(118, 15, 56, 0.10);
+}
+
+@media (max-width: 700px) {
+    .gero-modal-grid {
+        grid-template-columns: 1fr;
+    }
+}
