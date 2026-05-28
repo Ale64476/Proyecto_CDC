@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
     configurarFormularioConsulta();
     configurarMiniModalGerontologia();
     configurarConfirmacionesGerontologia();
+    configurarBotonPdfConsulta();
 });
 
 function configurarFiltrosExpedientes() {
@@ -71,6 +72,8 @@ function seleccionarConsulta(item) {
     document.querySelectorAll(".gero-consulta-item").forEach(function (consulta) {
         consulta.classList.remove("selected");
     });
+
+    actualizarBotonPdfConsulta(item);
 
     item.classList.add("selected");
 
@@ -459,6 +462,54 @@ function configurarFormularioPacienteGerontologia() {
                 "La fecha de nacimiento no puede ser futura.",
                 fechaNacimiento
             );
+        }
+    });
+}
+
+function actualizarBotonPdfConsulta(item) {
+    const botonPdf = document.getElementById("btnDescargarConsultaPdf");
+
+    if (!botonPdf || !item) {
+        return;
+    }
+
+    const idConsulta = item.dataset.consultaId;
+
+    if (!idConsulta) {
+        botonPdf.setAttribute("href", "#");
+        botonPdf.classList.add("disabled");
+        botonPdf.setAttribute("aria-disabled", "true");
+        return;
+    }
+
+    const contexto = window.location.pathname.split("/")[1];
+    const baseUrl = contexto ? `/${contexto}` : "";
+
+    botonPdf.setAttribute(
+        "href",
+        `${baseUrl}/descargar-consulta-gerontologia-pdf?idConsulta=${encodeURIComponent(idConsulta)}`
+    );
+
+    botonPdf.classList.remove("disabled");
+    botonPdf.removeAttribute("aria-disabled");
+}
+
+function configurarBotonPdfConsulta() {
+    const botonPdf = document.getElementById("btnDescargarConsultaPdf");
+
+    if (!botonPdf) {
+        return;
+    }
+
+    const consultaSeleccionada = document.querySelector(".gero-consulta-item.selected");
+
+    if (consultaSeleccionada) {
+        actualizarBotonPdfConsulta(consultaSeleccionada);
+    }
+
+    botonPdf.addEventListener("click", function (event) {
+        if (botonPdf.classList.contains("disabled")) {
+            event.preventDefault();
         }
     });
 }

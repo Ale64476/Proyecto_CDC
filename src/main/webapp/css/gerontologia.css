@@ -812,3 +812,172 @@ button {
         grid-template-columns: 1fr;
     }
 }
+
+.gero-pdf-btn {
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.gero-pdf-btn.disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    pointer-events: auto;
+}
+
+.gero-pdf-btn i {
+    font-size: 1rem;
+}
+.gero-pdf-btn {
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.gero-pdf-icon-btn {
+    text-decoration: none;
+}
+
+.gero-pdf-icon-btn.disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    pointer-events: auto;
+}
+
+.gero-pdf-btn {
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.gero-pdf-icon-btn {
+    text-decoration: none;
+}
+
+.gero-pdf-icon-btn.disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    pointer-events: auto;
+}
+
+.gero-patient-card {
+    display: grid !important;
+    grid-template-columns: 72px minmax(0, 1fr);
+    grid-template-areas:
+        "avatar info"
+        "avatar actions";
+    align-items: start !important;
+    gap: 14px 20px;
+    padding: 26px 30px !important;
+}
+
+.gero-patient-card > .gero-patient-avatar {
+    grid-area: avatar;
+    align-self: center;
+}
+
+.gero-patient-card > .gero-patient-info {
+    grid-area: info;
+    min-width: 0;
+    width: 100%;
+}
+
+.gero-patient-card > .gero-patient-actions {
+    grid-area: actions;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start !important;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 6px;
+}
+
+.gero-patient-title-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.gero-patient-title-row h2 {
+    max-width: 100%;
+    margin: 0;
+    font-size: 1.65rem;
+    line-height: 1.18;
+    overflow-wrap: anywhere;
+}
+
+.gero-patient-meta {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 10px 22px !important;
+    margin-top: 10px !important;
+}
+
+.gero-patient-meta span {
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 8px;
+    min-width: 0;
+    line-height: 1.35;
+}
+
+.gero-patient-meta span i {
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.gero-patient-meta strong {
+    overflow-wrap: anywhere;
+}
+
+.gero-patient-actions .gero-primary-btn,
+.gero-patient-actions .gero-secondary-btn,
+.gero-patient-actions .gero-outline-danger-btn {
+    white-space: nowrap;
+}
+
+.gero-patient-actions form {
+    margin: 0;
+}
+
+.gero-pdf-btn {
+    color: var(--text);
+}
+
+.gero-pdf-btn:hover {
+    color: var(--primary);
+    border-color: rgba(118, 15, 56, 0.22);
+    background: rgba(118, 15, 56, 0.04);
+}
+
+/* Responsive: en pantallas pequeñas todo se apila limpio */
+@media (max-width: 760px) {
+    .gero-patient-card {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "avatar"
+            "info"
+            "actions";
+        justify-items: flex-start;
+    }
+
+    .gero-patient-card > .gero-patient-actions {
+        width: 100%;
+    }
+
+    .gero-patient-actions .gero-primary-btn,
+    .gero-patient-actions .gero-secondary-btn,
+    .gero-patient-actions .gero-outline-danger-btn,
+    .gero-patient-actions form,
+    .gero-patient-actions form button {
+        width: 100%;
+    }
+}

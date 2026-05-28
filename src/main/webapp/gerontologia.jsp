@@ -124,6 +124,30 @@
                 textoMensaje = "La fecha de nacimiento no tiene un formato válido.";
                 break;
 
+            case "consulta_pdf_id_invalido":
+                textoMensaje = "No se pudo generar el PDF porque la consulta no es válida.";
+                break;
+
+            case "consulta_pdf_no_encontrada":
+                textoMensaje = "No se encontró la consulta solicitada para generar el PDF.";
+                break;
+
+            case "consulta_pdf_error":
+                textoMensaje = "Ocurrió un error al generar el PDF de la consulta.";
+                break;
+
+            case "historial_pdf_id_invalido":
+                textoMensaje = "No se pudo generar el PDF porque el expediente no es válido.";
+                break;
+
+            case "historial_pdf_error":
+                textoMensaje = "Ocurrió un error al generar el PDF del historial.";
+                break;
+
+            case "paciente_pdf_no_encontrado":
+                textoMensaje = "No se encontró el paciente solicitado para generar el PDF.";
+                break;
+
             case "error_sistema":
                 textoMensaje = "Ocurrió un error interno. Revisa la consola de Tomcat.";
                 break;
@@ -379,6 +403,14 @@
                                     Nueva consulta
                                 </button>
 
+                                <a href="<%= request.getContextPath() %>/descargar-historial-gerontologia-pdf?idPaciente=<%= pacienteSeleccionado.getIdPaciente() %>"
+                                class="gero-secondary-btn gero-pdf-btn">
+                                    <i class="bi bi-file-earmark-pdf"></i>
+                                    Descargar historial PDF
+                                </a>
+
+
+
                                 <form method="post"
                                       action="<%= request.getContextPath() %>/cambiar-estado-paciente-gerontologia"
                                       class="js-confirm-submit"
@@ -405,6 +437,7 @@
                                 </div>
                             </div>
                         <% } %>
+
                     </article>
 
                     <section class="gero-consultas-card">
@@ -457,13 +490,30 @@
                                     <%= consultaInicial != null ? "Detalle de la consulta" : "Sin consultas registradas" %>
                                 </h3>
 
-                                <div class="gero-consulta-actions" id="consultaActions">
-                                    <% if (hayPaciente && consultaInicial != null && pacienteActivo) { %>
-                                        <button type="button" class="table-icon-btn" id="btnEditarConsulta" title="Editar consulta">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                    <% } %>
-                                </div>
+                            <div class="gero-consulta-actions" id="consultaActions">
+                                <% if (hayPaciente && consultaInicial != null && pacienteActivo) { %>
+                                    <button type="button" class="table-icon-btn" id="btnEditarConsulta" title="Editar consulta">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                <% } %>
+
+                                <% if (hayPaciente && consultaInicial != null) { %>
+                                    <a href="<%= request.getContextPath() %>/descargar-consulta-gerontologia-pdf?idConsulta=<%= consultaInicial.getIdConsulta() %>"
+                                    id="btnDescargarConsultaPdf"
+                                    class="table-icon-btn gero-pdf-icon-btn"
+                                    title="Descargar consulta PDF">
+                                        <i class="bi bi-file-earmark-pdf"></i>
+                                    </a>
+                                <% } else { %>
+                                    <a href="#"
+                                    id="btnDescargarConsultaPdf"
+                                    class="table-icon-btn gero-pdf-icon-btn disabled"
+                                    title="Descargar consulta PDF"
+                                    aria-disabled="true">
+                                        <i class="bi bi-file-earmark-pdf"></i>
+                                    </a>
+                                <% } %>
+                            </div>
                             </div>
 
                             <div id="consultaVista" class="gero-consulta-view <%= consultaInicial == null ? "oculto" : "" %>">
