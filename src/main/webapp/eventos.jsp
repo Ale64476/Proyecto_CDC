@@ -215,18 +215,42 @@
         </header>
 
         <main class="content">
-            <% if (textoMensaje != null) { %>
-                <div class="cdc-toast <%= "exito".equalsIgnoreCase(tipoMensaje) ? "cdc-toast-success" : "cdc-toast-error" %>" id="cdcToast">
-                    <div class="cdc-toast-icon">
-                        <%= "exito".equalsIgnoreCase(tipoMensaje) ? "✓" : "!" %>
-                    </div>
-                    <div class="cdc-toast-content">
-                        <strong><%= "exito".equalsIgnoreCase(tipoMensaje) ? "Operación exitosa" : "Revisa la información" %></strong>
-                        <span><%= esc(textoMensaje) %></span>
-                    </div>
-                    <button type="button" class="cdc-toast-close" onclick="document.getElementById('cdcToast').remove()">×</button>
+            <%
+            String codigoMensajeGoogleToast = request.getParameter("mensaje");
+
+            if (textoMensaje == null && codigoMensajeGoogleToast != null) {
+                if ("formulario_generado".equals(codigoMensajeGoogleToast)) {
+                    textoMensaje = "Formulario de asistencia generado correctamente.";
+                } else if ("formulario_google_error".equals(codigoMensajeGoogleToast)) {
+                    textoMensaje = "No se pudo generar el formulario de asistencia en Google.";
+                } else if ("formulario_guardado_error".equals(codigoMensajeGoogleToast)) {
+                    textoMensaje = "El formulario fue creado, pero no se pudieron guardar los enlaces en el sistema.";
+                } else if ("evento_ya_tiene_formulario".equals(codigoMensajeGoogleToast)) {
+                    textoMensaje = "Este evento ya tiene un formulario registrado.";
+                } else if ("evento_no_encontrado".equals(codigoMensajeGoogleToast)) {
+                    textoMensaje = "No se encontró el evento seleccionado.";
+                } else if ("evento_no_valido".equals(codigoMensajeGoogleToast)) {
+                    textoMensaje = "El identificador del evento no es válido.";
+                }
+            }
+
+            if (tipoMensaje == null || tipoMensaje.trim().isEmpty()) {
+                tipoMensaje = "error";
+            }
+        %>
+
+        <% if (textoMensaje != null) { %>
+            <div class="cdc-toast <%= "exito".equalsIgnoreCase(tipoMensaje) ? "cdc-toast-success" : "cdc-toast-error" %>" id="cdcToast">
+                <div class="cdc-toast-icon">
+                    <%= "exito".equalsIgnoreCase(tipoMensaje) ? "✓" : "!" %>
                 </div>
-            <% } %>
+                <div class="cdc-toast-content">
+                    <strong><%= "exito".equalsIgnoreCase(tipoMensaje) ? "Operación exitosa" : "Revisa la información" %></strong>
+                    <span><%= esc(textoMensaje) %></span>
+                </div>
+                <button type="button" class="cdc-toast-close" onclick="document.getElementById('cdcToast').remove()">×</button>
+            </div>
+        <% } %>
 
             <section class="events-toolbar">
                 <div class="toolbar-search">
@@ -406,12 +430,20 @@
                             <div class="event-links-grid">
                                 <div class="event-link-card">
                                     <span>Formulario de registro</span>
+
                                     <% if (tieneTexto(eventoSeleccionado.getUrlFormulario())) { %>
                                         <a href="<%= esc(eventoSeleccionado.getUrlFormulario()) %>" target="_blank" rel="noopener noreferrer">
                                             Abrir formulario
                                         </a>
                                     <% } else { %>
-                                        <strong>Pendiente</strong>
+                                        <form action="<%= request.getContextPath() %>/eventos" method="post" class="google-form-action">
+                                            <input type="hidden" name="accion" value="generarFormularioGoogle">
+                                            <input type="hidden" name="idEvento" value="<%= eventoSeleccionado.getIdEvento() %>">
+
+                                            <button type="submit" class="google-form-link">
+                                                Generar formulario automático
+                                            </button>
+                                        </form>
                                     <% } %>
                                 </div>
 

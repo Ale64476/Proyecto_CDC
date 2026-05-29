@@ -9,9 +9,36 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cdc.model.Evento;
+import com.cdc.model.GoogleFormResponse;
 import com.cdc.util.ConexionDB;
 
 public class EventoDAO {
+
+    public boolean actualizarDatosGoogleFormulario(int idEvento, GoogleFormResponse respuesta) {
+        String sql = """
+            UPDATE evento
+            SET url_formulario = ?,
+                google_form_id = ?,
+                url_hoja_respuestas = ?,
+                google_sheet_id = ?
+            WHERE id_evento = ?
+            """;
+
+        try (Connection conn = ConexionDB.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, respuesta.getFormUrl());
+            ps.setString(2, respuesta.getFormId());
+            ps.setString(3, respuesta.getSheetUrl());
+            ps.setString(4, respuesta.getSheetId());
+            ps.setInt(5, idEvento);
+
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error al actualizar datos de Google Forms del evento.", e);
+        }
+    }
 
     private static final String SQL_LISTAR_EVENTOS = """
             SELECT

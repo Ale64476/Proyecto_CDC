@@ -22,3 +22,7 @@ Thumbs.db
 
 # DB
 db.properties
+
+# GOOGLE
+src/main/resources/google.properties
+google.properties
