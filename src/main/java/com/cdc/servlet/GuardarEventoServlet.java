@@ -87,7 +87,6 @@ public class GuardarEventoServlet extends HttpServlet {
         evento.setGoogleFormId(limpiar(request.getParameter("googleFormId")));
         evento.setUrlHojaRespuestas(limpiar(request.getParameter("urlHojaRespuestas")));
         evento.setGoogleSheetId(limpiar(request.getParameter("googleSheetId")));
-        evento.setFacebookPostId(limpiar(request.getParameter("facebookPostId")));
 
         return evento;
     }
@@ -140,8 +139,7 @@ public class GuardarEventoServlet extends HttpServlet {
 
                 Fecha: %s
                 Hora: %s
-
-                Habrá:
+                
                 %s
 
                 Esperamos contar con tu presencia.

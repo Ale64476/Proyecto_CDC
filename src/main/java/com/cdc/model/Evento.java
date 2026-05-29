@@ -28,7 +28,7 @@ public class Evento {
     private String urlHojaRespuestas;
     private String googleSheetId;
 
-    private String facebookPostId;
+
 
     private Timestamp fechaCreacion;
     private Timestamp fechaActualizacion;
@@ -148,13 +148,6 @@ public class Evento {
         this.googleSheetId = googleSheetId;
     }
 
-    public String getFacebookPostId() {
-        return facebookPostId;
-    }
-
-    public void setFacebookPostId(String facebookPostId) {
-        this.facebookPostId = facebookPostId;
-    }
 
     public Timestamp getFechaCreacion() {
         return fechaCreacion;

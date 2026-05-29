@@ -488,13 +488,7 @@
                                 <pre id="textoPublicacion"><%= esc(valorVacio(eventoSeleccionado.getTextoPublicacion())) %></pre>
                             </div>
 
-                            <div class="event-section event-note">
-                                <i class="bi bi-info-circle"></i>
-                                <div>
-                                    <strong>Registros del evento</strong>
-                                    <span>Por ahora los registros de asistentes se revisan desde la hoja de respuestas de Google Forms. La integración con Google Forms/Sheets queda preparada para una fase posterior.</span>
-                                </div>
-                            </div>
+                           
                         <% } else { %>
                             <div class="event-empty-detail">
                                 <i class="bi bi-megaphone"></i>
@@ -530,7 +524,7 @@
                     </div>
 
                     <div class="form-group full">
-                        <label>Descripción / Habrá</label>
+                        <label>Descripción</label>
                         <textarea name="descripcionEvento" class="form-control" rows="4" placeholder="Describe lo que habrá en el evento." required></textarea>
                     </div>
 
@@ -579,10 +573,7 @@
                         <input type="text" name="googleSheetId" class="form-control" placeholder="Opcional">
                     </div>
 
-                    <div class="form-group">
-                        <label>Facebook Post ID</label>
-                        <input type="text" name="facebookPostId" class="form-control" placeholder="Futuro">
-                    </div>
+                    
                 </div>
             </div>
 
@@ -622,7 +613,7 @@
                     </div>
 
                     <div class="form-group full">
-                        <label>Descripción / Habrá</label>
+                        <label>Descripción</label>
                         <textarea name="descripcionEvento" class="form-control" rows="4" required><%= esc(eventoSeleccionado.getDescripcionEvento()) %></textarea>
                     </div>
 
@@ -702,13 +693,7 @@
                                value="<%= attr(eventoSeleccionado.getGoogleSheetId()) %>">
                     </div>
 
-                    <div class="form-group">
-                        <label>Facebook Post ID</label>
-                        <input type="text"
-                               name="facebookPostId"
-                               class="form-control"
-                               value="<%= attr(eventoSeleccionado.getFacebookPostId()) %>">
-                    </div>
+                    
                 </div>
             </div>
 

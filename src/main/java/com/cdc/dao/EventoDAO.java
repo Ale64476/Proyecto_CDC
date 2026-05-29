@@ -56,7 +56,6 @@ public class EventoDAO {
                 google_form_id,
                 url_hoja_respuestas,
                 google_sheet_id,
-                facebook_post_id,
                 fecha_creacion,
                 fecha_actualizacion
             FROM evento
@@ -87,7 +86,6 @@ public class EventoDAO {
                 google_form_id,
                 url_hoja_respuestas,
                 google_sheet_id,
-                facebook_post_id,
                 fecha_creacion,
                 fecha_actualizacion
             FROM evento
@@ -108,10 +106,9 @@ public class EventoDAO {
                 url_formulario,
                 google_form_id,
                 url_hoja_respuestas,
-                google_sheet_id,
-                facebook_post_id
+                google_sheet_id
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, 'Borrador', ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, 'Borrador', ?, ?, ?, ?, ?)
             """;
 
     private static final String SQL_ACTUALIZAR_EVENTO = """
@@ -127,8 +124,7 @@ public class EventoDAO {
                 url_formulario = ?,
                 google_form_id = ?,
                 url_hoja_respuestas = ?,
-                google_sheet_id = ?,
-                facebook_post_id = ?
+                google_sheet_id = ?
             WHERE id_evento = ?
             """;
 
@@ -211,7 +207,7 @@ public class EventoDAO {
                 PreparedStatement statement = connection.prepareStatement(SQL_ACTUALIZAR_EVENTO)
         ) {
             prepararStatementEvento(statement, evento);
-            statement.setInt(14, evento.getIdEvento());
+            statement.setInt(13, evento.getIdEvento());
 
             return statement.executeUpdate() > 0;
 
@@ -254,7 +250,6 @@ public class EventoDAO {
         statement.setString(10, evento.getGoogleFormId());
         statement.setString(11, evento.getUrlHojaRespuestas());
         statement.setString(12, evento.getGoogleSheetId());
-        statement.setString(13, evento.getFacebookPostId());
     }
 
     private Evento mapearEvento(ResultSet resultSet) throws SQLException {
@@ -274,7 +269,6 @@ public class EventoDAO {
         evento.setGoogleFormId(resultSet.getString("google_form_id"));
         evento.setUrlHojaRespuestas(resultSet.getString("url_hoja_respuestas"));
         evento.setGoogleSheetId(resultSet.getString("google_sheet_id"));
-        evento.setFacebookPostId(resultSet.getString("facebook_post_id"));
         evento.setFechaCreacion(resultSet.getTimestamp("fecha_creacion"));
         evento.setFechaActualizacion(resultSet.getTimestamp("fecha_actualizacion"));
 
