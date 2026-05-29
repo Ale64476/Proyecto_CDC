@@ -202,19 +202,6 @@
                         </select>
                     </div>
 
-                    <div class="form-group dynamic-filter filter-activity-select hidden-filter">
-                        <label for="activityReportSelect">Taller</label>
-                        <select id="activityReportSelect" name="idActividad" class="form-select">
-                        <option value="" <%= idActividadSeleccionada == null || idActividadSeleccionada.isBlank() ? "selected" : "" %>>Todos los talleres</option>
-                        <option value="1" <%= "1".equals(idActividadSeleccionada) ? "selected" : "" %>>Manualidades</option>
-                        <option value="2" <%= "2".equals(idActividadSeleccionada) ? "selected" : "" %>>Boxeo</option>
-                        <option value="3" <%= "3".equals(idActividadSeleccionada) ? "selected" : "" %>>Computación</option>
-                        <option value="4" <%= "4".equals(idActividadSeleccionada) ? "selected" : "" %>>Música</option>
-                        <option value="5" <%= "5".equals(idActividadSeleccionada) ? "selected" : "" %>>Corte de cabello</option>
-                    </select>
-                    </div>
-
-
                     <div class="form-group dynamic-filter filter-date-from hidden-filter">
                         <label for="reportDateFrom">Fecha desde</label>
                         <input type="date" id="reportDateFrom" name="fechaInicio" class="form-control" value="<%= fechaInicioSeleccionada != null ? fechaInicioSeleccionada : "" %>">
@@ -381,10 +368,11 @@
                     <table class="report-preview-table preview-table <%= "alumnos_por_actividad".equals(tipoReporteSeleccionado) ? "active-preview" : "" %>" id="previewAlumnosActividad">
                         <thead>
                         <tr>
+                            <th>Taller</th>
                             <th>Alumno</th>
                             <th>Celular</th>
-                            <th>Taller</th>
                             <th>Instructor</th>
+                            <th>Estado</th>
                             <th>Asistencias del mes</th>
                         </tr>
                         </thead>
@@ -394,10 +382,11 @@
                                 for (ReporteAlumnoActividad item : reporteAlumnosActividad) {
                         %>
                         <tr>
+                            <td><%= item.getNombreActividad() %></td>
                             <td><%= item.getNombreAlumno() %></td>
                             <td><%= item.getCelular() %></td>
-                            <td><%= item.getNombreActividad() %></td>
                             <td><%= item.getInstructor() %></td>
+                            <td><%= item.getEstadoAlumno() %></td>
                             <td><%= item.getAsistenciasDelMes() %></td>
                         </tr>
                         <%
@@ -405,7 +394,7 @@
                             } else {
                         %>
                         <tr>
-                            <td colspan="5">No hay datos disponibles.</td>
+                            <td colspan="6">No hay datos disponibles.</td>
                         </tr>
                         <%
                             }

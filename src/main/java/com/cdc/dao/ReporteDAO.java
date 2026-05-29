@@ -164,7 +164,11 @@ public class ReporteDAO {
             parametros.add(estadoAlumno);
         }
 
-        sql.append(" ORDER BY nombre_alumno ASC ");
+        if (idActividad != null && !idActividad.trim().isEmpty() && !"0".equals(idActividad)) {
+            sql.append(" ORDER BY nombre_alumno ASC ");
+        } else {
+            sql.append(" ORDER BY nombre_actividad ASC, nombre_alumno ASC ");
+        }
 
         try (Connection connection = ConexionDB.getConnection();
             PreparedStatement ps = connection.prepareStatement(sql.toString())) {
@@ -319,7 +323,6 @@ public class ReporteDAO {
         } catch (SQLException e) {
             throw new RuntimeException("Error al obtener reporte de pacientes de gerontología.", e);
         }
-
         return lista;
     }
 }
