@@ -16,25 +16,27 @@ public class EventoDAO {
 
     public boolean actualizarDatosGoogleFormulario(int idEvento, GoogleFormResponse respuesta) {
         String sql = """
-            UPDATE evento
-            SET url_formulario = ?,
+            UPDATE evento SET
+                url_formulario = ?,
+                url_edicion_formulario = ?,
                 google_form_id = ?,
                 url_hoja_respuestas = ?,
                 google_sheet_id = ?
             WHERE id_evento = ?
             """;
 
-        try (Connection conn = ConexionDB.getConnection();
-            PreparedStatement ps = conn.prepareStatement(sql)) {
-
+        try (
+            Connection conn = ConexionDB.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql)
+        ) {
             ps.setString(1, respuesta.getFormUrl());
-            ps.setString(2, respuesta.getFormId());
-            ps.setString(3, respuesta.getSheetUrl());
-            ps.setString(4, respuesta.getSheetId());
-            ps.setInt(5, idEvento);
+            ps.setString(2, respuesta.getFormEditUrl());
+            ps.setString(3, respuesta.getFormId());
+            ps.setString(4, respuesta.getSheetUrl());
+            ps.setString(5, respuesta.getSheetId());
+            ps.setInt(6, idEvento);
 
             return ps.executeUpdate() > 0;
-
         } catch (SQLException e) {
             throw new RuntimeException("Error al actualizar datos de Google Forms del evento.", e);
         }
@@ -53,6 +55,7 @@ public class EventoDAO {
                 estado_evento,
                 texto_publicacion,
                 url_formulario,
+                url_edicion_formulario,
                 google_form_id,
                 url_hoja_respuestas,
                 google_sheet_id,
@@ -83,6 +86,7 @@ public class EventoDAO {
                 estado_evento,
                 texto_publicacion,
                 url_formulario,
+                url_edicion_formulario,
                 google_form_id,
                 url_hoja_respuestas,
                 google_sheet_id,
@@ -271,6 +275,7 @@ public class EventoDAO {
         evento.setGoogleSheetId(resultSet.getString("google_sheet_id"));
         evento.setFechaCreacion(resultSet.getTimestamp("fecha_creacion"));
         evento.setFechaActualizacion(resultSet.getTimestamp("fecha_actualizacion"));
+        evento.setUrlEdicionFormulario(resultSet.getString("url_edicion_formulario"));
 
         return evento;
     }

@@ -429,22 +429,38 @@
 
                             <div class="event-links-grid">
                                 <div class="event-link-card">
+
                                     <span>Formulario de registro</span>
 
-                                    <% if (tieneTexto(eventoSeleccionado.getUrlFormulario())) { %>
-                                        <a href="<%= esc(eventoSeleccionado.getUrlFormulario()) %>" target="_blank" rel="noopener noreferrer">
-                                            Abrir formulario
-                                        </a>
-                                    <% } else { %>
-                                        <form action="<%= request.getContextPath() %>/eventos" method="post" class="google-form-action">
-                                            <input type="hidden" name="accion" value="generarFormularioGoogle">
-                                            <input type="hidden" name="idEvento" value="<%= eventoSeleccionado.getIdEvento() %>">
+                                    <% if (tieneTexto(eventoSeleccionado.getUrlEdicionFormulario())) { %>
+                                    <a href="<%= esc(eventoSeleccionado.getUrlEdicionFormulario()) %>" target="_blank" rel="noopener noreferrer">
 
-                                            <button type="submit" class="google-form-link">
-                                                Generar formulario automático
-                                            </button>
-                                        </form>
+                                        Editar Google Form
+
+                                    </a>
+
+                                    <% } else if (!tieneTexto(eventoSeleccionado.getUrlFormulario())) { %>
+
+                                    <form action="<%= request.getContextPath() %>/eventos" method="post" class="google-form-action">
+
+                                        <input type="hidden" name="accion" value="generarFormularioGoogle">
+
+                                        <input type="hidden" name="idEvento" value="<%= eventoSeleccionado.getIdEvento() %>">
+
+                                        <button type="submit" class="google-form-link">
+
+                                            Generar formulario automático
+
+                                        </button>
+
+                                    </form>
+
+                                    <% } else { %>
+
+                                    <strong>Edición pendiente</strong>
+
                                     <% } %>
+
                                 </div>
 
                                 <div class="event-link-card">
@@ -467,12 +483,36 @@
                                     </div>
 
                                     <div class="event-publication-actions">
+
                                         <button type="button"
                                                 class="event-secondary-btn compact"
                                                 id="btnCopiarPublicacion">
                                             <i class="bi bi-clipboard"></i>
+
                                             Copiar texto
+
                                         </button>
+
+                                        <% if (tieneTexto(eventoSeleccionado.getUrlFormulario())) { %>
+                                        <a href="<%= esc(eventoSeleccionado.getUrlFormulario()) %>"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="event-secondary-btn compact">
+                                            <i class="bi bi-box-arrow-up-right"></i>
+
+                                            Abrir formulario
+
+                                        </a>
+                                        <% } else { %>
+                                        <button type="button"
+                                                class="event-secondary-btn compact"
+                                                disabled>
+                                            <i class="bi bi-box-arrow-up-right"></i>
+
+                                            Abrir formulario
+
+                                        </button>
+                                        <% } %>
 
                                         <button type="button"
                                                 class="event-secondary-btn compact"
@@ -480,8 +520,11 @@
                                                 data-url-formulario="<%= attr(eventoSeleccionado.getUrlFormulario()) %>"
                                                 <%= tieneTexto(eventoSeleccionado.getUrlFormulario()) ? "" : "disabled" %>>
                                             <i class="bi bi-qr-code"></i>
+
                                             Generar QR
+
                                         </button>
+
                                     </div>
                                 </div>
 

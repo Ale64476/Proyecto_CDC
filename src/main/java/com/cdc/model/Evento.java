@@ -23,6 +23,7 @@ public class Evento {
     private String textoPublicacion;
 
     private String urlFormulario;
+    private String urlEdicionFormulario;
     private String googleFormId;
 
     private String urlHojaRespuestas;
@@ -32,6 +33,14 @@ public class Evento {
 
     private Timestamp fechaCreacion;
     private Timestamp fechaActualizacion;
+
+    public String getUrlEdicionFormulario() {
+        return urlEdicionFormulario;
+    }
+
+    public void setUrlEdicionFormulario(String urlEdicionFormulario) {
+        this.urlEdicionFormulario = urlEdicionFormulario;
+    }
 
     public Evento() {
     }
