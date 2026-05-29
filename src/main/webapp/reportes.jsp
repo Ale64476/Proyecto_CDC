@@ -3,30 +3,63 @@
 <%@ page import="com.cdc.model.ReporteActividad" %>
 <%@ page import="com.cdc.model.ReporteAlumnoActividad" %>
 <%@ page import="com.cdc.model.ReporteAsistenciaActividad" %>
+<%@ page import="com.cdc.model.ReporteGerontologiaPaciente" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
+<%!
+    private String formatearFechaReporte(java.sql.Date fecha) {
+        if (fecha == null) {
+            return "--";
+        }
+
+        java.text.SimpleDateFormat formato = new java.text.SimpleDateFormat("dd/MM/yyyy");
+        return formato.format(fecha);
+    }
+
+    private String formatearFechaHoraReporte(java.sql.Timestamp fechaHora) {
+        if (fechaHora == null) {
+            return "--";
+        }
+
+        java.text.SimpleDateFormat formato = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm");
+        return formato.format(fechaHora);
+    }
+%>
 
 <%
     String tipoReporteSeleccionado = (String) request.getAttribute("tipoReporteSeleccionado");
     if (tipoReporteSeleccionado == null || tipoReporteSeleccionado.isBlank()) {
         tipoReporteSeleccionado = "alumnos";
     }
+
     String estadoAlumnoSeleccionado = (String) request.getAttribute("estadoAlumnoSeleccionado");
     String estadoTallerSeleccionado = (String) request.getAttribute("estadoTallerSeleccionado");
     String idActividadSeleccionada = (String) request.getAttribute("idActividadSeleccionada");
+
     String fechaInicioSeleccionada = (String) request.getAttribute("fechaInicioSeleccionada");
     String fechaFinSeleccionada = (String) request.getAttribute("fechaFinSeleccionada");
+
+    String estadoGerontologiaSeleccionado = (String) request.getAttribute("estadoGerontologiaSeleccionado");
+    String fechaInicioGerontologiaSeleccionada = (String) request.getAttribute("fechaInicioGerontologiaSeleccionada");
+    String fechaFinGerontologiaSeleccionada = (String) request.getAttribute("fechaFinGerontologiaSeleccionada");
 
     String nombreTipoReporte = (String) request.getAttribute("nombreTipoReporte");
     Integer totalRegistrosReporte = (Integer) request.getAttribute("totalRegistrosReporte");
 
     List<ReporteAlumno> reporteAlumnos =
             (List<ReporteAlumno>) request.getAttribute("reporteAlumnos");
+
     List<ReporteActividad> reporteActividades =
             (List<ReporteActividad>) request.getAttribute("reporteActividades");
+
     List<ReporteAlumnoActividad> reporteAlumnosActividad =
             (List<ReporteAlumnoActividad>) request.getAttribute("reporteAlumnosActividad");
+
     List<ReporteAsistenciaActividad> reporteAsistencia =
             (List<ReporteAsistenciaActividad>) request.getAttribute("reporteAsistencia");
+
+    List<ReporteGerontologiaPaciente> reporteGerontologia =
+            (List<ReporteGerontologiaPaciente>) request.getAttribute("reporteGerontologia");
 %>
 
 <!DOCTYPE html>
@@ -133,6 +166,7 @@
                             <option value="actividades" <%= "actividades".equals(tipoReporteSeleccionado) ? "selected" : "" %>>Talleres disponibles</option>
                             <option value="alumnos_por_actividad" <%= "alumnos_por_actividad".equals(tipoReporteSeleccionado) ? "selected" : "" %>>Alumnos por taller</option>
                             <option value="asistencia_por_actividad" <%= "asistencia_por_actividad".equals(tipoReporteSeleccionado) ? "selected" : "" %>>Asistencia por taller</option>
+                            <option value="gerontologia" <%= "gerontologia".equals(tipoReporteSeleccionado) ? "selected" : "" %>> Pacientes de Gerontología </option>
                         </select>
                     </div>
 
@@ -191,6 +225,38 @@
                         <input type="date" id="reportDateTo" name="fechaFin" class="form-control" value="<%= fechaFinSeleccionada != null ? fechaFinSeleccionada : "" %>">
                     </div>
 
+                    <div class="form-group filter-gerontologia-status hidden-filter">
+                        <label for="estadoGerontologia">Estado del expediente</label>
+                        <select id="estadoGerontologia" name="estadoGerontologia" class="form-control">
+                            <option value="Todos" <%= estadoGerontologiaSeleccionado == null || "Todos".equals(estadoGerontologiaSeleccionado) ? "selected" : "" %>>
+                                Todos
+                            </option>
+                            <option value="Activo" <%= "Activo".equals(estadoGerontologiaSeleccionado) ? "selected" : "" %>>
+                                Activo
+                            </option>
+                            <option value="Archivado" <%= "Archivado".equals(estadoGerontologiaSeleccionado) ? "selected" : "" %>>
+                                Archivado
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group filter-gerontologia-date-from hidden-filter">
+                        <label for="fechaInicioGerontologia">Fecha creación desde</label>
+                        <input type="date"
+                            id="fechaInicioGerontologia"
+                            name="fechaInicioGerontologia"
+                            class="form-control"
+                            value="<%= fechaInicioGerontologiaSeleccionada != null ? fechaInicioGerontologiaSeleccionada : "" %>">
+                    </div>
+
+                    <div class="form-group filter-gerontologia-date-to hidden-filter">
+                        <label for="fechaFinGerontologia">Fecha creación hasta</label>
+                        <input type="date"
+                            id="fechaFinGerontologia"
+                            name="fechaFinGerontologia"
+                            class="form-control"
+                            value="<%= fechaFinGerontologiaSeleccionada != null ? fechaFinGerontologiaSeleccionada : "" %>">
+                    </div>
 
                 </div>
 
@@ -378,6 +444,54 @@
                         <%
                             }
                         %>
+                        </tbody>
+                    </table>
+
+                    <table class="report-preview-table preview-table <%= "gerontologia".equals(tipoReporteSeleccionado) ? "active-preview" : "" %>"
+                        id="previewGerontologia">
+                        <thead>
+                            <tr>
+                                <th>Nombre completo</th>
+                                <th>CURP</th>
+                                <th>Teléfono</th>
+                                <th>Fecha de nacimiento</th>
+                                <th>Edad</th>
+                                <th>Estado</th>
+                                <th>Total de consultas</th>
+                                <th>Última consulta</th>
+                                <th>Fecha de creación</th>
+                                <th>Última actualización</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <%
+                                if (reporteGerontologia != null && !reporteGerontologia.isEmpty()) {
+                                    for (ReporteGerontologiaPaciente item : reporteGerontologia) {
+                            %>
+                                <tr>
+                                    <td><%= item.getNombreCompleto() %></td>
+                                    <td><%= item.getCurp() %></td>
+                                    <td><%= item.getCelular() %></td>
+                                    <td style='mso-number-format:"\@";'><%= formatearFechaReporte(item.getFechaNacimiento()) %></td>
+                                    <td><%= item.getEdad() %> años</td>
+                                    <td><%= item.getEstadoPaciente() %></td>
+                                    <td><%= item.getTotalConsultas() %></td>
+                                    <td style='mso-number-format:"\@";'>
+                                        <%= item.getUltimaConsulta() != null ? formatearFechaHoraReporte(item.getUltimaConsulta()) : "Sin consultas" %>
+                                    </td>
+                                    <td style='mso-number-format:"\@";'><%= formatearFechaHoraReporte(item.getFechaCreacion()) %></td>
+                                    <td style='mso-number-format:"\@";'><%= formatearFechaHoraReporte(item.getFechaActualizacion()) %></td>
+                                </tr>
+                            <%
+                                    }
+                                } else {
+                            %>
+                                <tr>
+                                    <td colspan="10">No hay datos disponibles.</td>
+                                </tr>
+                            <%
+                                }
+                            %>
                         </tbody>
                     </table>
                 </div>

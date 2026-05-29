@@ -14,6 +14,7 @@ import com.cdc.model.ReporteActividad;
 import com.cdc.model.ReporteAlumno;
 import com.cdc.model.ReporteAlumnoActividad;
 import com.cdc.model.ReporteAsistenciaActividad;
+import com.cdc.model.ReporteGerontologiaPaciente;
 
 @WebServlet("/reportes")
 public class ReporteServlet extends HttpServlet {
@@ -37,11 +38,19 @@ public class ReporteServlet extends HttpServlet {
         String fechaInicio = request.getParameter("fechaInicio");
         String fechaFin = request.getParameter("fechaFin");
 
+        String estadoGerontologia = request.getParameter("estadoGerontologia");
+        String fechaInicioGerontologia = request.getParameter("fechaInicioGerontologia");
+        String fechaFinGerontologia = request.getParameter("fechaFinGerontologia");
+
         List<ReporteAlumno> reporteAlumnos = reporteDAO.listarReporteAlumnos(estadoAlumno);
         List<ReporteActividad> reporteActividades = reporteDAO.listarReporteActividades(estadoTaller);
         List<ReporteAlumnoActividad> reporteAlumnosActividad = reporteDAO.listarReporteAlumnosPorActividad(idActividad, estadoAlumno);
         List<ReporteAsistenciaActividad> reporteAsistencia = reporteDAO.listarReporteAsistenciaPorActividad(idActividad, fechaInicio, fechaFin);
-
+        List<ReporteGerontologiaPaciente> reporteGerontologia = reporteDAO.listarReportePacientesGerontologia(
+                estadoGerontologia,
+                fechaInicioGerontologia,
+                fechaFinGerontologia
+        );
         
         request.setAttribute("tipoReporteSeleccionado", tipo);
         request.setAttribute("estadoAlumnoSeleccionado", estadoAlumno);
@@ -49,16 +58,21 @@ public class ReporteServlet extends HttpServlet {
         request.setAttribute("idActividadSeleccionada", idActividad);
         request.setAttribute("fechaInicioSeleccionada", fechaInicio);
         request.setAttribute("fechaFinSeleccionada", fechaFin);
+        request.setAttribute("estadoGerontologiaSeleccionado", estadoGerontologia);
+        request.setAttribute("fechaInicioGerontologiaSeleccionada", fechaInicioGerontologia);
+        request.setAttribute("fechaFinGerontologiaSeleccionada", fechaFinGerontologia);
 
         request.setAttribute("reporteAlumnos", reporteAlumnos);
         request.setAttribute("reporteActividades", reporteActividades);
         request.setAttribute("reporteAlumnosActividad", reporteAlumnosActividad);
         request.setAttribute("reporteAsistencia", reporteAsistencia);
+        request.setAttribute("reporteGerontologia", reporteGerontologia);
 
         int totalRegistros = switch (tipo) {
             case "actividades" -> reporteActividades.size();
             case "alumnos_por_actividad" -> reporteAlumnosActividad.size();
             case "asistencia_por_actividad" -> reporteAsistencia.size();
+            case "gerontologia" -> reporteGerontologia.size();
             default -> reporteAlumnos.size();
         };
 
@@ -66,6 +80,7 @@ public class ReporteServlet extends HttpServlet {
             case "actividades" -> "Reporte de talleres";
             case "alumnos_por_actividad" -> "Alumnos por taller";
             case "asistencia_por_actividad" -> "Asistencia por taller";
+            case "gerontologia" -> "Pacientes de Gerontología";
             default -> "Reporte de alumnos";
         };
 

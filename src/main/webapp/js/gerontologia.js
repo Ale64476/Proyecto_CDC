@@ -24,10 +24,10 @@ function configurarFiltrosExpedientes() {
         let visibles = 0;
 
         items.forEach(function (item) {
-            const nombre = item.dataset.nombre || "";
-            const estadoItem = item.dataset.estado || "";
+        const nombre = (item.dataset.nombre || "").toLowerCase();
+        const estadoItem = item.dataset.estado || "";
 
-            const coincideTexto = nombre.includes(texto);
+        const coincideTexto = nombre.includes(texto);
             const coincideEstado = estado === "Todos" || estadoItem === estado;
             const visible = coincideTexto && coincideEstado;
 

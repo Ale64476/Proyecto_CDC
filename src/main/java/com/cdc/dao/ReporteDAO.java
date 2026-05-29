@@ -11,6 +11,7 @@ import com.cdc.model.ReporteActividad;
 import com.cdc.model.ReporteAlumno;
 import com.cdc.model.ReporteAlumnoActividad;
 import com.cdc.model.ReporteAsistenciaActividad;
+import com.cdc.model.ReporteGerontologiaPaciente;
 import com.cdc.util.ConexionDB;
 
 public class ReporteDAO {
@@ -40,6 +41,22 @@ public class ReporteDAO {
                    asistio, fecha_registro_asistencia, registrado_por
             FROM vw_reporte_asistencia_por_actividad
            
+            """;
+
+    private static final String SQL_REPORTE_GERONTOLOGIA_PACIENTES = """
+            SELECT
+                p.nombre_completo,
+                p.curp,
+                p.celular,
+                p.fecha_nacimiento,
+                TIMESTAMPDIFF(YEAR, p.fecha_nacimiento, CURDATE()) AS edad,
+                p.estado_paciente,
+                COUNT(c.id_consulta) AS total_consultas,
+                MAX(c.fecha_consulta) AS ultima_consulta,
+                p.fecha_creacion,
+                p.fecha_actualizacion
+            FROM gerontologia_paciente p
+            LEFT JOIN gerontologia_consulta c ON p.id_paciente = c.id_paciente
             """;
 
     public List<ReporteAlumno> listarReporteAlumnos(String estadoAlumno) {
@@ -228,6 +245,80 @@ public class ReporteDAO {
     } catch (SQLException e) {
         throw new RuntimeException("Error al obtener reporte de asistencia por taller.", e);
     }
+
+        return lista;
+    }
+
+    public List<ReporteGerontologiaPaciente> listarReportePacientesGerontologia(
+            String estadoPaciente,
+            String fechaInicio,
+            String fechaFin
+    ) {
+        List<ReporteGerontologiaPaciente> lista = new ArrayList<>();
+        StringBuilder sql = new StringBuilder(SQL_REPORTE_GERONTOLOGIA_PACIENTES);
+        List<Object> parametros = new ArrayList<>();
+
+        sql.append(" WHERE 1 = 1 ");
+
+        if (estadoPaciente != null
+                && !estadoPaciente.trim().isEmpty()
+                && !"Todos".equalsIgnoreCase(estadoPaciente)) {
+            sql.append(" AND p.estado_paciente = ? ");
+            parametros.add(estadoPaciente);
+        }
+
+        if (fechaInicio != null && !fechaInicio.trim().isEmpty()) {
+            sql.append(" AND DATE(p.fecha_creacion) >= ? ");
+            parametros.add(fechaInicio);
+        }
+
+        if (fechaFin != null && !fechaFin.trim().isEmpty()) {
+            sql.append(" AND DATE(p.fecha_creacion) <= ? ");
+            parametros.add(fechaFin);
+        }
+
+        sql.append("""
+                GROUP BY
+                    p.id_paciente,
+                    p.nombre_completo,
+                    p.curp,
+                    p.celular,
+                    p.fecha_nacimiento,
+                    p.estado_paciente,
+                    p.fecha_creacion,
+                    p.fecha_actualizacion
+                ORDER BY p.fecha_actualizacion DESC, p.nombre_completo ASC
+                """);
+
+        try (
+                Connection connection = ConexionDB.getConnection();
+                PreparedStatement statement = connection.prepareStatement(sql.toString())
+        ) {
+            for (int i = 0; i < parametros.size(); i++) {
+                statement.setObject(i + 1, parametros.get(i));
+            }
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    ReporteGerontologiaPaciente item = new ReporteGerontologiaPaciente();
+
+                    item.setNombreCompleto(resultSet.getString("nombre_completo"));
+                    item.setCurp(resultSet.getString("curp"));
+                    item.setCelular(resultSet.getString("celular"));
+                    item.setFechaNacimiento(resultSet.getDate("fecha_nacimiento"));
+                    item.setEdad(resultSet.getInt("edad"));
+                    item.setEstadoPaciente(resultSet.getString("estado_paciente"));
+                    item.setTotalConsultas(resultSet.getInt("total_consultas"));
+                    item.setUltimaConsulta(resultSet.getTimestamp("ultima_consulta"));
+                    item.setFechaCreacion(resultSet.getTimestamp("fecha_creacion"));
+                    item.setFechaActualizacion(resultSet.getTimestamp("fecha_actualizacion"));
+
+                    lista.add(item);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error al obtener reporte de pacientes de gerontología.", e);
+        }
 
         return lista;
     }
