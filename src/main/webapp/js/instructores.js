@@ -7,29 +7,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function configurarFiltrosInstructores() {
     const buscar = document.getElementById("buscarInstructor");
-    const filtroEstado = document.getElementById("filtroEstadoInstructor");
     const items = Array.from(document.querySelectorAll(".instructor-list-item"));
     const contador = document.getElementById("contadorInstructores");
     const empty = document.getElementById("instructorEmptyFilter");
 
-    if (!buscar || !filtroEstado || items.length === 0) {
+    if (!buscar || items.length === 0) {
         return;
     }
 
     function aplicarFiltros() {
         const texto = buscar.value.toLowerCase().trim();
-        const estado = filtroEstado.value;
         let visibles = 0;
 
         items.forEach(function (item) {
-            const nombre = item.dataset.nombre || "";
-            const celular = item.dataset.celular || "";
-            const estadoItem = item.dataset.estado || "";
-
-            const coincideTexto = nombre.includes(texto) || celular.includes(texto);
-            const coincideEstado = estado === "Todos" || estadoItem === estado;
-
-            const visible = coincideTexto && coincideEstado;
+            const nombre = (item.dataset.nombre || "").toLowerCase();
+            const visible = nombre.includes(texto);
 
             item.style.display = visible ? "" : "none";
 
@@ -48,7 +40,7 @@ function configurarFiltrosInstructores() {
     }
 
     buscar.addEventListener("input", aplicarFiltros);
-    filtroEstado.addEventListener("change", aplicarFiltros);
+    aplicarFiltros();
 }
 
 function configurarValidacionInstructores() {
